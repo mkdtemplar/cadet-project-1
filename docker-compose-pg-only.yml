@@ -13,6 +13,7 @@ services:
       - '5432:5432'
     volumes:
       - db:/var/lib/postgresql/data
+      - ./db/migrations/000001_init_schema.up.sql:/docker-entrypoint-initdb.d/
 volumes:
   db:
     driver: bridge
