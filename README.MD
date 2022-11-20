@@ -1,3 +1,17 @@
+To create container:
+Before use of the command
+in terminal run: "docker build --tag cadet-project" 
+in go.mod file change the name of the module to "cadet-project"
+otherwise it will not build the image.
+After the image is build in terminal run the following command:
+"docker run --publish 8080:8080 cadet-project" to start the container
+
+Changing the module name in go.mod will be not required when the branch is
+merged to main.
+
+
+
+
 What is Viper?
 Viper is a complete configuration solution for Go applications including 12-Factor apps. It is designed to work within an application, and can handle all types of configuration needs and formats. It supports:
 

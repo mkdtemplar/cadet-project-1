@@ -1,3 +1,11 @@
+# To create container:
+# Before use of the command in terminal "docker build --tag cadet-project"
+# in go.mod file change the name of the module to "cadet-project"
+# otherwise it will not build the image.
+# After the image is build in terminal run the following command: "docker run --publish 8080:8080 cadet-project" to start the container
+
+# Changing the module name in go.mod will be not required when the branch is merged to master.
+
 # Start from golang base image
 FROM golang:latest
 
