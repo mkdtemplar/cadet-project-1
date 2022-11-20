@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/IvanMarkovskiSF/cadet-project/api/saml_handler"
-	"github.com/IvanMarkovskiSF/cadet-project/api/server"
+	"github.com/IvanMarkovskiSF/cadet-project/saml_handler"
+	"github.com/IvanMarkovskiSF/cadet-project/server"
 	"log"
 	"net/http"
 )

@@ -6,7 +6,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"github.com/IvanMarkovskiSF/cadet-project/api/configurations"
+	"github.com/IvanMarkovskiSF/cadet-project/configurations"
 	"log"
 	"net/http"
 	"net/url"
@@ -15,12 +15,12 @@ import (
 )
 
 func SamlRequest() *samlsp.Middleware {
-	config, err := configurations.LoadConfig("./api/configurations")
+	config, err := configurations.LoadConfig(".configurations")
 	if err != nil {
 		log.Fatalln("cannot load configurations")
 	}
 
-	keyPair, err := tls.LoadX509KeyPair("api/saml_handler/myservice.crt", "api/saml_handler/myservice.key")
+	keyPair, err := tls.LoadX509KeyPair("saml_handler/myservice.crt", "saml_handler/myservice.key")
 	if err != nil {
 		log.Println(err)
 	}
