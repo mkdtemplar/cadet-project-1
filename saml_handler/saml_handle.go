@@ -1,12 +1,12 @@
 package saml_handler
 
 import (
-	"cadet-project/configurations"
 	"context"
 	"crypto/rsa"
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"github.com/IvanMarkovskiSF/cadet-project/configurations"
 	"log"
 	"net/http"
 	"net/url"
