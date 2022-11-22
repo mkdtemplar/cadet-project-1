@@ -1,3 +1,4 @@
 /.env
 /.idea/
 /README.MD
+/configurations/app.env
