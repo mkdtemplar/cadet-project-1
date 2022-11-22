@@ -17,7 +17,7 @@ RUN mkdir /app
 WORKDIR /app
 
 # Copy the source from the current directory to the working Directory inside the container
-COPY . /app
+COPY .. /app
 
 
 # Download all the dependencies
