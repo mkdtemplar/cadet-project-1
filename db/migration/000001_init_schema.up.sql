@@ -13,18 +13,18 @@ create table if not exists user_preferences
 );
 create table if not exists "ships-routes"
 (
-    _key      text,
-    name      text,
-    city      text,
-    country   text,
-    latitude  numeric,
-    longitude numeric,
-    province  text,
-    timezone  text,
-    unlocs_0  text,
+    _key      varchar(6),
+    name      varchar(50),
+    city      varchar(50),
+    country   varchar(50),
+    latitude  double precision,
+    longitude double precision,
+    province  varchar(40),
+    timezone  varchar(40),
+    unlocs_0  varchar(6),
     code      integer,
-    alias_0   text,
-    alias_1   text,
-    alias_2   text,
-    unlocs_1  text
+    alias_0   varchar(50),
+    alias_1   varchar(50),
+    alias_2   varchar(50),
+    unlocs_1  varchar(50)
 );
