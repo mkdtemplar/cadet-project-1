@@ -29,8 +29,7 @@ func SamlRequest() *samlsp.Middleware {
 		log.Println(err)
 
 	}
-	microsoftURL := fmt.Sprintf("https://login.microsoftonline.com/%s/federationmetadata/2007-06/federationmetadata.xml",
-		config.TenantID)
+	microsoftURL := fmt.Sprintf(config.MSUrl, config.TenantID)
 
 	idpMetadataURL, err := url.Parse(microsoftURL)
 	if err != nil {

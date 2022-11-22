@@ -5,6 +5,7 @@ import "github.com/spf13/viper"
 type Config struct {
 	TenantID string `mapstructure:"TENANT_ID"`
 	AppId    string `mapstructure:"APP_ID"`
+	MSUrl    string `mapstructure:"MS_URL"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
