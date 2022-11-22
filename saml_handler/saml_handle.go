@@ -20,7 +20,7 @@ func SamlRequest() *samlsp.Middleware {
 		log.Fatalln("cannot load configurations")
 	}
 
-	keyPair, err := tls.LoadX509KeyPair("saml_handler/myservice.crt", "saml_handler/myservice.key")
+	keyPair, err := tls.LoadX509KeyPair(config.Crt, config.Key)
 	if err != nil {
 		log.Println(err)
 	}

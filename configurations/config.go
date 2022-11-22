@@ -6,6 +6,8 @@ type Config struct {
 	TenantID string `mapstructure:"TENANT_ID"`
 	AppId    string `mapstructure:"APP_ID"`
 	MSUrl    string `mapstructure:"MS_URL"`
+	Crt      string `mapstructure:"CRT"`
+	Key      string `mapstructure:"KEY"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
