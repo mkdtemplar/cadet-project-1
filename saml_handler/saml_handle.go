@@ -43,7 +43,7 @@ func SamlRequest() *samlsp.Middleware {
 
 	}
 
-	rootURL, err := url.Parse("http://localhost:8080")
+	rootURL, err := url.Parse(config.RootUrl)
 	if err != nil {
 		log.Println(err)
 

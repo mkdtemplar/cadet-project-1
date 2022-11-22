@@ -8,6 +8,7 @@ type Config struct {
 	MSUrl    string `mapstructure:"MS_URL"`
 	Crt      string `mapstructure:"CRT"`
 	Key      string `mapstructure:"KEY"`
+	RootUrl  string `mapstructure:"ROOT_URL"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
