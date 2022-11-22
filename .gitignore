@@ -2,3 +2,5 @@
 /.idea/
 /README.MD
 /configurations/app.env
+/saml_handler/myservice.crt
+/saml_handler/myservice.key
