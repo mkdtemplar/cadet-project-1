@@ -9,6 +9,7 @@ type Config struct {
 	Crt      string `mapstructure:"CRT"`
 	Key      string `mapstructure:"KEY"`
 	RootUrl  string `mapstructure:"ROOT_URL"`
+	Email    string `mapstructure:"EMAIL"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
