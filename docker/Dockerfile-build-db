@@ -1,15 +1,15 @@
 # Start from golang base image
 FROM postgres:latest
 
-           # Add Maintainer info
+# Add Maintainer info
 LABEL maintainer="Database"
 
-           # Setup folders
+# Setup folders
 RUN mkdir /app
 WORKDIR /app
 RUN mkdir migrations
 
 COPY ../api/db/migrations/* /migrations
-RUN migrate -path ../api/db/migrations -database "postgresql://root:i76248591M@localhost:5432/ships_data?sslmode=disable"-verbose up
+RUN migrate -path ../api/db/migrations -database "postgresql://${DB_USER}:${DB_PASSWORD}@localhost:5432/ships_data?sslmode=disable"-verbose up
 
 EXPOSE 5432
