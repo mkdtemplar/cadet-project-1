@@ -5,3 +5,4 @@
 /api/saml_handler/myservice.crt
 /api/saml_handler/myservice.key
 /docker-commands.txt
+/Makefile
