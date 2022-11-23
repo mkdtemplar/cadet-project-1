@@ -1,8 +1,8 @@
 package server
 
 import (
+	"cadet-project/configurations"
 	"fmt"
-	"github.com/IvanMarkovskiSF/cadet-project/configurations"
 	"github.com/crewjam/saml/samlsp"
 	"log"
 	"net/http"

@@ -1,4 +1,4 @@
-module github.com/IvanMarkovskiSF/cadet-project
+module cadet-project
 
 go 1.19
 
