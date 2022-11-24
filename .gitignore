@@ -1,4 +1,4 @@
-/docker/.env
+/.env
 /.idea/
 /README.MD
 /api/configurations/app.env
