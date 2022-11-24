@@ -15,7 +15,7 @@ import (
 )
 
 func SamlRequest() *samlsp.Middleware {
-	config, err := configurations.LoadConfig("api/configurations")
+	config, err := configurations.LoadConfig("./configurations")
 	if err != nil {
 		log.Fatalln("cannot load configurations")
 	}
