@@ -4,7 +4,7 @@ services:
     container_name: cadetproject
     build:
       dockerfile: Dockerfile
-      context: .
+      context: ./
     ports:
       - "8080:8080"
     restart: on-failure
