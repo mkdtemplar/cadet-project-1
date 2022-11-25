@@ -1,4 +1,4 @@
-include ./configurations/.env
+include ./configurations/app.env
 
 postgres:
 	docker run --name scalefocusdb -p $(DB_PORT):$(DB_PORT)  -e POSTGRES_USER=$(DB_USER)  -e POSTGRES_PASSWORD=$(DB_PASSWORD) -d postgres:latest
