@@ -15,7 +15,8 @@ import (
 )
 
 func SamlRequest() *samlsp.Middleware {
-	config, err := configurations.LoadConfig("./configurations")
+	// Before running docker-compose change path to ./configurations
+	config, err := configurations.LoadConfig("./api/configurations")
 	if err != nil {
 		log.Fatalln("cannot load configurations")
 	}
