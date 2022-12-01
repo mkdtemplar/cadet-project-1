@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	samlSp := saml_handler.SamlRequest()
+	samlSp := saml_handler.AuthorizationRequest()
 	app := http.HandlerFunc(server.Index)
 	http.Handle("/hello", samlSp.RequireAccount(app))
 	http.Handle("/saml/acs", samlSp)

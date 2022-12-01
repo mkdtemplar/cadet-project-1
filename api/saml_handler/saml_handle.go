@@ -14,7 +14,7 @@ import (
 	"github.com/crewjam/saml/samlsp"
 )
 
-func SamlRequest() *samlsp.Middleware {
+func AuthorizationRequest() *samlsp.Middleware {
 	// Before running docker-compose change path to ./configurations
 	config, err := configurations.LoadConfig("./api/configurations")
 	if err != nil {
