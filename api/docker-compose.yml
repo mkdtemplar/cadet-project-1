@@ -20,6 +20,7 @@ services:
     container_name: scalefocusdb
     env_file:
       - .env
+      - ./configurations/app.env
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}

@@ -4,28 +4,40 @@ import (
 	"cadet-project/configurations"
 	"fmt"
 	"github.com/crewjam/saml/samlsp"
-	"log"
 	"net/http"
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	// Before running docker-compose change path to ./configurations // make const
-	config, err := configurations.LoadConfig("./api/configurations")
-	if err != nil {
-		log.Fatalln("cannot load configurations")
-	}
+	var err error
 
-	s := samlsp.AttributeFromContext(r.Context(), config.Email)
+	defer func() {
+		if err != nil {
+			http.Error(w, err.Error(), 401)
+			return
+		}
+	}()
+
+	s := samlsp.AttributeFromContext(r.Context(), configurations.Config.Email)
 
 	if s == "" {
 		return
 	}
-
-	tokenValue, err := r.Cookie("token")
+	var tokenName *http.Cookie
+	tokenName, err = r.Cookie("token")
 	if err != nil {
-		log.Fatalf("Error occured while reading cookie")
+		return
 	}
-	_, err = fmt.Fprintf(w, "E-mail: %v\n Token: %v\n", s, tokenValue.Value)
+
+	cookie := http.Cookie{
+		Name:     "token",
+		Value:    tokenName.Value,
+		Path:     "/", // Available for all paths
+		MaxAge:   5 * 60,
+		HttpOnly: true,
+	}
+	http.SetCookie(w, &cookie)
+
+	_, err = fmt.Fprintf(w, "E-mail: %v\n Token: %v\n", s, tokenName.Value) // TODO
 
 }
 

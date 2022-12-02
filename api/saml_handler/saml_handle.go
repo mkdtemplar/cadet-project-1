@@ -7,21 +7,16 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"github.com/crewjam/saml/samlsp"
 	"log"
 	"net/http"
 	"net/url"
-
-	"github.com/crewjam/saml/samlsp"
 )
 
 func AuthorizationRequest() *samlsp.Middleware {
 	// Before running docker-compose change path to ./configurations
-	config, err := configurations.LoadConfig("./api/configurations")
-	if err != nil {
-		log.Fatalln("cannot load configurations")
-	}
 
-	keyPair, err := tls.LoadX509KeyPair(config.Crt, config.Key)
+	keyPair, err := tls.LoadX509KeyPair(configurations.Config.Crt, configurations.Config.Key)
 	if err != nil {
 		log.Println(err)
 	}
@@ -30,11 +25,11 @@ func AuthorizationRequest() *samlsp.Middleware {
 		log.Println(err)
 
 	}
-	microsoftURL := fmt.Sprintf(config.MSUrl, config.TenantID)
+	microsoftURL := fmt.Sprintf(configurations.Config.MSUrl, configurations.Config.TenantID)
 
 	idpMetadataURL, err := url.Parse(microsoftURL)
 	if err != nil {
-		log.Println(err)
+		log.Fatalln(err)
 
 	}
 	idpMetadata, err := samlsp.FetchMetadata(context.Background(), http.DefaultClient,
@@ -44,14 +39,14 @@ func AuthorizationRequest() *samlsp.Middleware {
 
 	}
 
-	rootURL, err := url.Parse(config.RootUrl)
+	rootURL, err := url.Parse(configurations.Config.RootUrl)
 	if err != nil {
 		log.Println(err)
 
 	}
 
 	samlSP, _ := samlsp.New(samlsp.Options{
-		EntityID:    "spn:" + config.AppId,
+		EntityID:    "spn:" + configurations.Config.AppId,
 		URL:         *rootURL,
 		Key:         keyPair.PrivateKey.(*rsa.PrivateKey),
 		Certificate: keyPair.Leaf,
