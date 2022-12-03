@@ -3,7 +3,10 @@ module cadet-project
 go 1.19
 
 require (
+	github.com/badoux/checkmail v1.2.1
 	github.com/crewjam/saml v0.4.8
+	github.com/gorilla/mux v1.8.0
+	github.com/jinzhu/gorm v1.9.16
 	github.com/spf13/viper v1.14.0
 )
 
@@ -13,7 +16,9 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/golang-jwt/jwt/v4 v4.4.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
+	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jonboulle/clockwork v0.2.2 // indirect
+	github.com/lib/pq v1.1.1 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mattermost/xml-roundtrip-validator v0.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
