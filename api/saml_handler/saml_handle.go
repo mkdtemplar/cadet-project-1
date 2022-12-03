@@ -14,7 +14,6 @@ import (
 )
 
 func AuthorizationRequest() *samlsp.Middleware {
-	// Before running docker-compose change path to ./configurations
 
 	keyPair, err := tls.LoadX509KeyPair(configurations.Config.Crt, configurations.Config.Key)
 	if err != nil {
