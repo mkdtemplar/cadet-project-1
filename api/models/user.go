@@ -19,37 +19,28 @@ func (u *User) PrepareUserData() {
 	u.Email = html.EscapeString(strings.TrimSpace(u.Email))
 }
 
-func (u *User) ValidateUserData(action string) error {
+func (u *User) ValidateUserData(action string) (err error) {
 	switch strings.ToLower(action) {
 	case "update":
 		if u.Email == "" {
 			return errors.New("e-mail is required")
 		}
-		if err := checkmail.ValidateFormat(u.Email); err != nil {
+		if err = checkmail.ValidateFormat(u.Email); err != nil {
 			return errors.New("invalid E-mail format")
 		}
-		return nil
 	default:
 		if u.Email == "" {
 			return errors.New("e-mail is required")
 		}
-		if err := checkmail.ValidateFormat(u.Email); err != nil {
+		if err = checkmail.ValidateFormat(u.Email); err != nil {
 			return errors.New("invalid E-mail format")
 		}
-		return nil
 	}
-
+	return
 }
 
-func (u *User) SaveUserDb(db *gorm.DB) (*User, error) {
-	var err error
-
-	err = db.Debug().Create(&u).Error
-	if err != nil {
-		return &User{}, err
-	}
-
-	return u, nil
+func (u *User) SaveUserDb(db *gorm.DB) error {
+	return db.Debug().Create(u).Error
 }
 
 func ExtractToken(r *http.Request) string {

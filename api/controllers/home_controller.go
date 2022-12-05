@@ -21,6 +21,8 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 
 	userEmail := samlsp.AttributeFromContext(r.Context(), configurations.Config.Email)
 
+	userName := samlsp.AttributeFromContext(r.Context(), configurations.Config.DisplayName)
+
 	if userEmail == "" {
 		return
 	}
@@ -32,10 +34,13 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &cookie)
 
 	userCreated, err := user.SaveUserDb(s.DB)
+	if err != nil {
+		responses.ERROR(w, 401, err)
+	}
 
 	w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.RequestURI, userCreated.ID))
 
 	responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %v is authorized And created in database with Id: %v "+
-		"And E-mail: %v", userEmail, userCreated.ID, userCreated.Email))
+		"And E-mail: %v, Token: %v, Display name: %v", userEmail, userCreated.ID, userCreated.Email, cookie.Value, userName))
 
 }

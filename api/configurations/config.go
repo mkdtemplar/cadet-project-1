@@ -8,13 +8,14 @@ import (
 )
 
 type AppConfig struct {
-	TenantID string `mapstructure:"TENANT_ID"`
-	AppId    string `mapstructure:"APP_ID"`
-	MSUrl    string `mapstructure:"MS_URL"`
-	Crt      string `mapstructure:"CRT"`
-	Key      string `mapstructure:"KEY"`
-	RootUrl  string `mapstructure:"ROOT_URL"`
-	Email    string `mapstructure:"EMAIL"`
+	TenantID    string `mapstructure:"TENANT_ID"`
+	AppId       string `mapstructure:"APP_ID"`
+	MSUrl       string `mapstructure:"MS_URL"`
+	Crt         string `mapstructure:"CRT"`
+	Key         string `mapstructure:"KEY"`
+	RootUrl     string `mapstructure:"ROOT_URL"`
+	Email       string `mapstructure:"EMAIL"`
+	DisplayName string `mapstructure:"DISPLAY_NAME"`
 }
 
 var Config AppConfig
