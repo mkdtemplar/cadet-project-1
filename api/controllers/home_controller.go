@@ -4,6 +4,7 @@ import (
 	"cadet-project/configurations"
 	"cadet-project/models"
 	"cadet-project/responses"
+	"errors"
 	"fmt"
 	"github.com/crewjam/saml/samlsp"
 	"net/http"
@@ -24,12 +25,17 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 	userName := samlsp.AttributeFromContext(r.Context(), configurations.Config.DisplayName)
 
 	if userEmail == "" {
-		return
+		responses.ERROR(w, 401, errors.New("user email not provided"))
+
 	}
 	user := models.User{
 		Email: userEmail,
 	}
-
+	user.PrepareUserData()
+	err = user.ValidateUserData("")
+	if err != nil {
+		responses.ERROR(w, 401, errors.New("invalid E-mail format"))
+	}
 	cookie := models.SetCookieToAllEndPoints(r)
 	http.SetCookie(w, &cookie)
 
@@ -40,7 +46,6 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.RequestURI, userCreated.ID))
 
-	responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %v is authorized And created in database with Id: %v "+
-		"And E-mail: %v, Token: %v, Display name: %v", userEmail, userCreated.ID, userCreated.Email, cookie.Value, userName))
+	responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %v  with E-mail: %v authorized", userName, userEmail))
 
 }
