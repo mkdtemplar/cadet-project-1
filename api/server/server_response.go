@@ -40,16 +40,3 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	_, err = fmt.Fprintf(w, "E-mail: %v\n Token: %v\n", s, tokenName.Value) // TODO
 
 }
-
-func GetAllAttributes(w http.ResponseWriter, r *http.Request) {
-	s := samlsp.SessionFromContext(r.Context())
-	if s == nil {
-		return
-	}
-	sa, ok := s.(samlsp.SessionWithAttributes)
-	if !ok {
-		return
-	}
-
-	fmt.Fprintf(w, "SAML Response: , %v", sa.GetAttributes())
-}
