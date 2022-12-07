@@ -8,7 +8,6 @@ create table if not exists user_preferences
     id         bigserial constraint user_preferences_pk primary key,
     country    varchar(100),
     user_id_fk bigserial constraint user_preferences_users_null_fk references users,
-    password   varchar(16),
     name       varchar(50)
 );
 create table if not exists "ships-routes"
