@@ -1,14 +1,14 @@
 create table if not exists users
 (
     id    bigserial primary key,
-    email text unique
+    email text unique,
+    name  varchar(100)
 );
 create table if not exists user_preferences
 (
     id         bigserial constraint user_preferences_pk primary key,
     country    varchar(100),
-    user_id_fk bigserial constraint user_preferences_users_null_fk references users,
-    name       varchar(50)
+    user_id bigserial constraint user_preferences_users_null_fk references users
 );
 create table if not exists "ships-routes"
 (
