@@ -30,6 +30,7 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 	}
 	user := models.User{
 		Email: userEmail,
+		Name:  userName,
 	}
 	user.PrepareUserData()
 	err = user.ValidateUserData("")
