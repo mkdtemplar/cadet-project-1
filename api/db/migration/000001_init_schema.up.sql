@@ -6,9 +6,11 @@ create table if not exists users
 );
 create table if not exists user_preferences
 (
-    id         bigserial constraint user_preferences_pk primary key,
-    country    varchar(100),
-    user_id bigserial constraint user_preferences_users_null_fk references users
+    id      bigserial
+        constraint user_preferences_pk
+            primary key,
+    country varchar(100),
+    user_id integer not null constraint user_preferences_users_null_fk references public.users
 );
 create table if not exists "ships-routes"
 (
