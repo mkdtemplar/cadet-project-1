@@ -42,7 +42,7 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 
 	userCreated, err := user.SaveUserDb(s.DB)
 	if err != nil {
-		responses.ERROR(w, 401, err)
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 	}
 
 	w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.RequestURI, userCreated.ID))

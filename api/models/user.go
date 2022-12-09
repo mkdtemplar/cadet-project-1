@@ -54,7 +54,8 @@ func (u *User) SaveUserDb(db *gorm.DB) (*User, error) {
 	return u, nil
 }
 
-func (u *User) DeleteUserDb(db *gorm.DB) (err error) {
+func (u *User) DeleteUserDb(db *gorm.DB, uid uint32) (int64, error) {
+	var err error
 	tx := db.Begin()
 	defer func() {
 		if err != nil {
@@ -65,15 +66,13 @@ func (u *User) DeleteUserDb(db *gorm.DB) (err error) {
 	}()
 	err = tx.Model(u).Association("UserPref").Clear().Error
 	if err != nil {
-		return
+		return 0, err
 	}
-	err = tx.Debug().Where("userid=?", u.ID).Delete(User{}).Error
-	if err != nil {
-		if gorm.IsRecordNotFoundError(err) {
-			err = nil
-		}
+	db = db.Debug().Model(&User{}).Where("id = ?", uid).Take(&User{}).Delete(&User{})
+	if db.Error != nil {
+		return 0, db.Error
 	}
-	return
+	return db.RowsAffected, nil
 }
 
 func ExtractToken(r *http.Request) string {
@@ -101,7 +100,10 @@ func SetCookieToAllEndPoints(r *http.Request) http.Cookie {
 }
 
 func TokenValid(r *http.Request) error {
-	tokenValue := SetCookieToAllEndPoints(r)
+	tokenValue, err := r.Cookie("token")
+	if err != nil {
+		return errors.New("Invalid token ")
+	}
 
 	if tokenValue.Valid() != nil {
 		return errors.New("token expired")
