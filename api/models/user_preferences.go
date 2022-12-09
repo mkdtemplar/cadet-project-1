@@ -10,7 +10,6 @@ import (
 type UserPreferences struct {
 	ID      uint32 `gorm:"primary_key;auto_increment" json:"id"`
 	Country string `json:"country"`
-	Users   User   `json:"users"`
 	UserId  uint32 `json:"user_id"`
 }
 
@@ -79,13 +78,13 @@ func (up *UserPreferences) UpdateAPost(db *gorm.DB) (*UserPreferences, error) {
 	return up, nil
 }
 
-func (up *UserPreferences) DeleteUserPref(db *gorm.DB, userid uint64, userPrefId uint32) (int64, error) {
+func (up *UserPreferences) DeleteUserPref(db *gorm.DB, userid uint32, userPrefId uint32) (int64, error) {
 
 	db = db.Debug().Model(&UserPreferences{}).Where("id = ? and user_id = ?", userid, userPrefId).Take(&UserPreferences{}).Delete(&UserPreferences{})
 
 	if db.Error != nil {
 		if gorm.IsRecordNotFoundError(db.Error) {
-			return 0, errors.New("Post not found")
+			return 0, errors.New("user preferences record not found")
 		}
 		return 0, db.Error
 	}

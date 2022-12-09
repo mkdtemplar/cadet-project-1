@@ -10,9 +10,10 @@ import (
 )
 
 type User struct {
-	ID    uint32 `gorm:"primary_key;auto_increment" json:"id"`
-	Email string `gorm:"size:100;not null;unique" json:"email"`
-	Name  string `gorm:"size:100" json:"name"`
+	ID       uint32            `gorm:"primary_key;auto_increment" json:"id"`
+	Email    string            `gorm:"size:100;not null;unique" json:"email"`
+	Name     string            `gorm:"size:100" json:"name"`
+	UserPref []UserPreferences `gorm:"foreignKey:user_id"`
 }
 
 func (u *User) PrepareUserData() {
@@ -51,6 +52,28 @@ func (u *User) SaveUserDb(db *gorm.DB) (*User, error) {
 	}
 
 	return u, nil
+}
+
+func (u *User) DeleteUserDb(db *gorm.DB) (err error) {
+	tx := db.Begin()
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		} else {
+			tx.Commit()
+		}
+	}()
+	err = tx.Model(u).Association("UserPref").Clear().Error
+	if err != nil {
+		return
+	}
+	err = tx.Debug().Where("userid=?", u.ID).Delete(User{}).Error
+	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			err = nil
+		}
+	}
+	return
 }
 
 func ExtractToken(r *http.Request) string {
