@@ -54,25 +54,40 @@ func (u *User) SaveUserDb(db *gorm.DB) (*User, error) {
 	return u, nil
 }
 
-func (u *User) DeleteUserDb(db *gorm.DB, uid uint32) (int64, error) {
+func (u *User) DeleteUserDb(db *gorm.DB, uid uint64) (int64, error) {
 	var err error
 	tx := db.Begin()
-	defer func() {
-		if err != nil {
-			tx.Rollback()
-		} else {
-			tx.Commit()
-		}
-	}()
 	err = tx.Model(u).Association("UserPref").Clear().Error
 	if err != nil {
 		return 0, err
 	}
-	db = db.Debug().Model(&User{}).Where("id = ?", uid).Take(&User{}).Delete(&User{})
-	if db.Error != nil {
-		return 0, db.Error
+	deltx := tx.Unscoped().Delete(&User{}, uid)
+	/*
+		defer func() {
+			if err != nil {
+				tx.Rollback()
+			} else {
+				tx.Commit()
+			}
+		}()
+	*/
+	if err = deltx.Error; err != nil {
+		return 0, err
+	} else {
+		tx.Commit()
 	}
-	return db.RowsAffected, nil
+	/*
+		if err != nil {
+			return 0, err
+		}
+		db = db.Debug().Model(&User{}).Where("id = ?", uid).Take(&User{}).Unscoped().Delete(&User{})
+
+		if db.Error != nil {
+			return 0, db.Error
+		}
+
+	*/
+	return tx.RowsAffected, nil
 }
 
 func ExtractToken(r *http.Request) string {
@@ -93,17 +108,21 @@ func SetCookieToAllEndPoints(r *http.Request) http.Cookie {
 		Name:     "token",
 		Value:    tokenValue,
 		MaxAge:   5 * 60,
-		HttpOnly: true,
+		HttpOnly: false,
+		Path:     "/userpref",
 	}
 
 	return cookie
 }
 
 func TokenValid(r *http.Request) error {
-	tokenValue, err := r.Cookie("token")
+	tokenValue := SetCookieToAllEndPoints(r)
+	/*tokenValue, err := r.Cookie("token")
 	if err != nil {
 		return errors.New("Invalid token ")
 	}
+
+	*/
 
 	if tokenValue.Valid() != nil {
 		return errors.New("token expired")

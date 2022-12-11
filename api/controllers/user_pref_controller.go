@@ -37,8 +37,10 @@ func (s *Server) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 	}
 
+	userPrefCreated, err := userPref.SaveUserPreferences(s.DB)
+
 	w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.URL.Path, userPref.ID))
-	responses.JSON(w, http.StatusCreated, userPref)
+	responses.JSON(w, http.StatusCreated, userPrefCreated)
 
 }
 
@@ -54,22 +56,33 @@ func (s *Server) GetUserPreferences(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusOK, userPreferences)
 }
 
+func (s *Server) GetSingleUserPreference(w http.ResponseWriter, r *http.Request) {
+	parms := mux.Vars(r)
+
+	paramsID, err := strconv.ParseUint(parms["id"], 10, 32)
+	if err != nil {
+		formattedError := formaterrors.FormatError(err.Error())
+		responses.ERROR(w, http.StatusUnprocessableEntity, formattedError)
+		return
+	}
+
+	userPref := models.UserPreferences{}
+	userPreferences, err := userPref.FindOneUserPref(s.DB, uint32(paramsID))
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, userPreferences)
+}
+
 func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	paramsID, err := strconv.ParseUint(params["id"], 10, 32)
-
+	paramsID, err := strconv.ParseUint(r.URL.Query().Get("id"), 10, 32)
 	if err != nil {
-		responses.ERROR(w, http.StatusBadRequest, err)
+		formattedError := formaterrors.FormatError(err.Error())
+		responses.ERROR(w, http.StatusUnprocessableEntity, formattedError)
 		return
 	}
-
-	err = models.TokenValid(r)
-
-	if err != nil {
-		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
-		return
-	}
-
+	http.SetCookie(w, &Cookie)
 	userPref := models.UserPreferences{}
 	err = s.DB.Debug().Model(models.UserPreferences{}).Where("id = ?", paramsID).Take(&userPref).Error
 
@@ -94,7 +107,7 @@ func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 	}
 	userPrefUpdate.ID = userPref.ID
 
-	userPrefUpdated, err := userPref.UpdateAPost(s.DB)
+	userPrefUpdated, err := userPrefUpdate.UpdateUserPref(s.DB)
 
 	if err != nil {
 		formattedError := formaterrors.FormatError(err.Error())
@@ -103,4 +116,33 @@ func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 	}
 	responses.JSON(w, http.StatusOK, userPrefUpdated)
 
+}
+
+func (s *Server) DeleteUserPref(w http.ResponseWriter, r *http.Request) {
+
+	paramsID, err := strconv.ParseUint(r.URL.Query().Get("id"), 10, 32)
+	if err != nil {
+		formattedError := formaterrors.FormatError(err.Error())
+		responses.ERROR(w, http.StatusUnprocessableEntity, formattedError)
+		return
+	}
+
+	userPref := models.UserPreferences{}
+
+	err = s.DB.Debug().Model(models.UserPreferences{}).Where("id = ?", paramsID).Take(&userPref).Error
+	if err != nil {
+		formattedError := formaterrors.FormatError(err.Error())
+		responses.ERROR(w, http.StatusNotFound, formattedError)
+		return
+	}
+
+	_, err = userPref.DeleteUserPref(s.DB, uint32(paramsID))
+
+	if err != nil {
+		formattedError := formaterrors.FormatError(err.Error())
+		responses.ERROR(w, http.StatusBadRequest, formattedError)
+		return
+	}
+	w.Header().Set("Entity", fmt.Sprintf("%d", paramsID))
+	responses.JSON(w, http.StatusNoContent, "")
 }

@@ -16,7 +16,7 @@ type UserPreferences struct {
 func (up *UserPreferences) PrepareUserPref() {
 	up.ID = 0
 	up.Country = html.EscapeString(strings.TrimSpace(up.Country))
-	up.Users = User{}
+	//up.Users = User{}
 }
 
 func (up *UserPreferences) ValidateUserPref() error {
@@ -50,18 +50,20 @@ func (up *UserPreferences) FindAllUserPref(db *gorm.DB) (*[]UserPreferences, err
 		return &[]UserPreferences{}, err
 	}
 
-	if len(userPref) > 0 {
-		for i, _ := range userPref {
-			err := db.Debug().Model(&User{}).Where("id = ?", userPref[i].UserId).Take(&userPref[i].Users).Error
-			if err != nil {
-				return &[]UserPreferences{}, err
-			}
-		}
-	}
 	return &userPref, nil
 }
 
-func (up *UserPreferences) UpdateAPost(db *gorm.DB) (*UserPreferences, error) {
+func (up *UserPreferences) FindOneUserPref(db *gorm.DB, id uint32) (*UserPreferences, error) {
+	var err error
+	err = db.Debug().Model(&UserPreferences{}).Where("id = ?", id).Take(&up).Error
+	if err != nil {
+		return &UserPreferences{}, err
+	}
+
+	return up, nil
+}
+
+func (up *UserPreferences) UpdateUserPref(db *gorm.DB) (*UserPreferences, error) {
 
 	var err error
 
@@ -69,18 +71,13 @@ func (up *UserPreferences) UpdateAPost(db *gorm.DB) (*UserPreferences, error) {
 	if err != nil {
 		return &UserPreferences{}, err
 	}
-	if up.ID != 0 {
-		err = db.Debug().Model(&User{}).Where("id = ?", up.UserId).Take(&up.Users).Error
-		if err != nil {
-			return &UserPreferences{}, err
-		}
-	}
+
 	return up, nil
 }
 
-func (up *UserPreferences) DeleteUserPref(db *gorm.DB, userid uint32, userPrefId uint32) (int64, error) {
+func (up *UserPreferences) DeleteUserPref(db *gorm.DB, userid uint32) (int64, error) {
 
-	db = db.Debug().Model(&UserPreferences{}).Where("id = ? and user_id = ?", userid, userPrefId).Take(&UserPreferences{}).Delete(&UserPreferences{})
+	db = db.Debug().Model(&UserPreferences{}).Where("id = ?", userid).Take(&UserPreferences{}).Delete(&UserPreferences{})
 
 	if db.Error != nil {
 		if gorm.IsRecordNotFoundError(db.Error) {

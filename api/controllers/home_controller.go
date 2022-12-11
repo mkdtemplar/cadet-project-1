@@ -10,6 +10,8 @@ import (
 	"net/http"
 )
 
+var Cookie http.Cookie
+
 func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 	var err error
 
@@ -37,8 +39,8 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		responses.ERROR(w, 401, errors.New("invalid E-mail format"))
 	}
-	cookie := models.SetCookieToAllEndPoints(r)
-	http.SetCookie(w, &cookie)
+	Cookie = models.SetCookieToAllEndPoints(r)
+	http.SetCookie(w, &Cookie)
 
 	userCreated, err := user.SaveUserDb(s.DB)
 	if err != nil {
