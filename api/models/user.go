@@ -10,10 +10,9 @@ import (
 )
 
 type User struct {
-	ID       uint32            `gorm:"primary_key;auto_increment" json:"id"`
-	Email    string            `gorm:"size:100;not null;unique" json:"email"`
-	Name     string            `gorm:"size:100" json:"name"`
-	UserPref []UserPreferences `gorm:"foreignKey:user_id"`
+	ID    uint32 `gorm:"primary_key;auto_increment" json:"id"`
+	Email string `gorm:"size:100;not null;unique" json:"email"`
+	Name  string `gorm:"size:100" json:"name"`
 }
 
 func (u *User) PrepareUserData() {
@@ -56,37 +55,17 @@ func (u *User) SaveUserDb(db *gorm.DB) (*User, error) {
 
 func (u *User) DeleteUserDb(db *gorm.DB, uid uint64) (int64, error) {
 	var err error
+
 	tx := db.Begin()
-	err = tx.Model(u).Association("UserPref").Clear().Error
-	if err != nil {
-		return 0, err
-	}
-	deltx := tx.Unscoped().Delete(&User{}, uid)
-	/*
-		defer func() {
-			if err != nil {
-				tx.Rollback()
-			} else {
-				tx.Commit()
-			}
-		}()
-	*/
-	if err = deltx.Error; err != nil {
+
+	delTx := tx.Delete(&User{}, uid)
+
+	if err = delTx.Error; err != nil {
 		return 0, err
 	} else {
 		tx.Commit()
 	}
-	/*
-		if err != nil {
-			return 0, err
-		}
-		db = db.Debug().Model(&User{}).Where("id = ?", uid).Take(&User{}).Unscoped().Delete(&User{})
 
-		if db.Error != nil {
-			return 0, db.Error
-		}
-
-	*/
 	return tx.RowsAffected, nil
 }
 
