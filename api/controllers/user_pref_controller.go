@@ -76,13 +76,20 @@ func (s *Server) GetSingleUserPreference(w http.ResponseWriter, r *http.Request)
 }
 
 func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
+
+	err := models.TokenValid(w, r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+
 	paramsID, err := strconv.ParseUint(r.URL.Query().Get("id"), 10, 32)
 	if err != nil {
 		formattedError := formaterrors.FormatError(err.Error())
 		responses.ERROR(w, http.StatusUnprocessableEntity, formattedError)
 		return
 	}
-	http.SetCookie(w, &Cookie)
+
 	userPref := models.UserPreferences{}
 	err = s.DB.Debug().Model(models.UserPreferences{}).Where("id = ?", paramsID).Take(&userPref).Error
 

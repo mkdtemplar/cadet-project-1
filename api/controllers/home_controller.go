@@ -8,26 +8,18 @@ import (
 	"fmt"
 	"github.com/crewjam/saml/samlsp"
 	"net/http"
+	"time"
 )
-
-var Cookie http.Cookie
 
 func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 	var err error
-
-	defer func() {
-		if err != nil {
-			http.Error(w, err.Error(), 401)
-			return
-		}
-	}()
 
 	userEmail := samlsp.AttributeFromContext(r.Context(), configurations.Config.Email)
 
 	userName := samlsp.AttributeFromContext(r.Context(), configurations.Config.DisplayName)
 
 	if userEmail == "" {
-		responses.ERROR(w, 401, errors.New("user email not provided"))
+		responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("user email not provided"))
 
 	}
 	user := models.User{
@@ -39,8 +31,13 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		responses.ERROR(w, 401, errors.New("invalid E-mail format"))
 	}
-	Cookie = models.SetCookieToAllEndPoints(r)
-	http.SetCookie(w, &Cookie)
+	tokenValue := models.ExtractToken(r)
+	expiresAt := time.Now().Add(300 * time.Second)
+
+	models.Sessions[tokenValue] = models.Session{Expiry: expiresAt}
+
+	cookie := models.CreateCookieToAllEndPoints(tokenValue, expiresAt)
+	http.SetCookie(w, &cookie)
 
 	userCreated, err := user.SaveUserDb(s.DB)
 	if err != nil {

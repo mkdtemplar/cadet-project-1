@@ -16,7 +16,7 @@ type UserPreferences struct {
 func (up *UserPreferences) PrepareUserPref() {
 	up.ID = 0
 	up.Country = html.EscapeString(strings.TrimSpace(up.Country))
-	//up.Users = User{}
+	up.UserId = 0
 }
 
 func (up *UserPreferences) ValidateUserPref() error {
