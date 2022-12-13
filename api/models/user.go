@@ -96,12 +96,6 @@ func SetCookieToAllEndPoints(r *http.Request) http.Cookie {
 
 func TokenValid(r *http.Request) error {
 	tokenValue := SetCookieToAllEndPoints(r)
-	/*tokenValue, err := r.Cookie("token")
-	if err != nil {
-		return errors.New("Invalid token ")
-	}
-
-	*/
 
 	if tokenValue.Valid() != nil {
 		return errors.New("token expired")
