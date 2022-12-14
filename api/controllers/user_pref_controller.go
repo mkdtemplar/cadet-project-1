@@ -13,6 +13,14 @@ import (
 	"strconv"
 )
 
+func authorization(w http.ResponseWriter, r *http.Request) error {
+	err := models.TokenValid(w, r)
+	if err != nil {
+		return errors.New("unauthorized")
+	}
+	return nil
+}
+
 func (s *Server) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 
@@ -76,8 +84,9 @@ func (s *Server) GetSingleUserPreference(w http.ResponseWriter, r *http.Request)
 }
 
 func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, &models.Cookie)
 
-	err := models.TokenValid(w, r)
+	err := authorization(w, r)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnauthorized, err)
 		return
