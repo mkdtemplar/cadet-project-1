@@ -9,7 +9,11 @@ import (
 
 func SetMiddlewareJSON(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		http.SetCookie(w, &models.Cookie)
+		_, err := r.Cookie("token")
+		if err != nil {
+			http.Redirect(w, r, "/hello", 302)
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
 		next(w, r)
 	}

@@ -11,6 +11,7 @@ type UserPreferences struct {
 	ID      uint32 `gorm:"primary_key;auto_increment" json:"id"`
 	Country string `json:"country"`
 	UserId  uint32 `json:"user_id"`
+	Port    []Ports
 }
 
 func (up *UserPreferences) PrepareUserPref() {
@@ -87,3 +88,23 @@ func (up *UserPreferences) DeleteUserPref(db *gorm.DB, userid uint32) (int64, er
 	}
 	return db.RowsAffected, nil
 }
+
+/*
+func (up *UserPreferences) FindUserPrefPorts(db *gorm.DB, country string) (*UserPreferences, error) {
+	var err error
+
+	err = db.Debug().Model(&UserPreferences{}).Where("country =?", country).Take(&up.Country).Error
+	if err != nil {
+		return &UserPreferences{}, err
+	}
+
+	if up.Country == country {
+		return up, errors.New("user preferences country not found")
+	}
+	var ports []Ports
+
+	err = db.Raw("")
+}
+
+
+*/
