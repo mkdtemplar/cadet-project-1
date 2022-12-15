@@ -65,3 +65,8 @@ func (s *Server) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	responses.JSON(w, http.StatusNoContent, "")
 
 }
+
+func (s *Server) SetCookieHandler(w http.ResponseWriter, r *http.Request) {
+
+	http.SetCookie(w, &models.Cookie)
+}
