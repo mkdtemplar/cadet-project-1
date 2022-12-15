@@ -37,7 +37,6 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 	models.Sessions[tokenValue] = models.Session{Expiry: expiresAt}
 
 	models.Cookie = models.CreateCookieToAllEndPoints(tokenValue, expiresAt)
-	//http.SetCookie(w, &models.Cookie)
 
 	userCreated, err := user.SaveUserDb(s.DB)
 	if err != nil {
