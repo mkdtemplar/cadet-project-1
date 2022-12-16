@@ -94,7 +94,7 @@ func CreateCookieToAllEndPoints(tokenValue string, exp time.Time) http.Cookie {
 }
 
 func TokenValid(w http.ResponseWriter, r *http.Request) error {
-	cookie, err := r.Cookie("session_token")
+	cookie, err := r.Cookie("token")
 	if err != nil {
 		return err
 	}
