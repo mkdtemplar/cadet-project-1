@@ -9,11 +9,15 @@ import (
 
 func SetMiddlewareJSON(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		_, err := r.Cookie("token")
+		cookie, err := r.Cookie("token")
 		if err != nil {
-			http.Redirect(w, r, "/hello", 302)
+			responses.ERROR(w, http.StatusUnauthorized, errors.New("cookie not found your not authorized"))
 			return
 		}
+		if cookie.Name == "token" {
+			cookie.MaxAge = 300
+		}
+		http.SetCookie(w, cookie)
 		w.Header().Set("Content-Type", "application/json")
 		next(w, r)
 	}

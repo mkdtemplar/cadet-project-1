@@ -76,6 +76,19 @@ func (s *Server) GetSingleUserPreference(w http.ResponseWriter, r *http.Request)
 	responses.JSON(w, http.StatusOK, userPreferences)
 }
 
+func (s *Server) GetUserPreferencesPorts(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+
+	userPref := models.UserPreferences{}
+	userPreferences, err := userPref.FindUserPrefPorts(s.DB, params["country"])
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, userPreferences)
+}
+
 func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 
 	paramsID, err := strconv.ParseUint(r.URL.Query().Get("id"), 10, 32)

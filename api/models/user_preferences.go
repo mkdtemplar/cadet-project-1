@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/jinzhu/gorm"
 	"html"
+	"log"
 	"strings"
 )
 
@@ -70,7 +71,8 @@ func (up *UserPreferences) UpdateUserPref(db *gorm.DB) (*UserPreferences, error)
 
 	err = db.Debug().Model(&UserPreferences{}).Where("id = ?", up.ID).Updates(UserPreferences{Country: up.Country}).Error
 	if err != nil {
-		return &UserPreferences{}, err
+
+		log.Printf("User preferences no exists %v %v", &UserPreferences{}, err)
 	}
 
 	return up, nil
@@ -89,22 +91,21 @@ func (up *UserPreferences) DeleteUserPref(db *gorm.DB, userid uint32) (int64, er
 	return db.RowsAffected, nil
 }
 
-/*
-func (up *UserPreferences) FindUserPrefPorts(db *gorm.DB, country string) (*UserPreferences, error) {
+func (up *UserPreferences) FindUserPrefPorts(db *gorm.DB, country string) (*[]UserPreferences, error) {
 	var err error
-
-	err = db.Debug().Model(&UserPreferences{}).Where("country =?", country).Take(&up.Country).Error
+	var userPref []UserPreferences
+	err = db.Debug().Model(&UserPreferences{}).Where("country = ?", country).Take(&up).Error
 	if err != nil {
-		return &UserPreferences{}, err
+		return &[]UserPreferences{}, err
 	}
 
-	if up.Country == country {
-		return up, errors.New("user preferences country not found")
+	for i, user := range userPref {
+		var ports []Ports
+		if err = db.Debug().Model(&Ports{}).Where("country =?", user.Country).Find(&ports).Error; err != nil {
+			return &[]UserPreferences{}, err
+		}
+		userPref[i].Port = ports
 	}
-	var ports []Ports
 
-	err = db.Raw("")
+	return &userPref, nil
 }
-
-
-*/
