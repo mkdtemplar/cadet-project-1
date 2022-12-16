@@ -2,7 +2,7 @@
 FROM golang:1.19-alpine
 
 # Add Maintainer info
-LABEL maintainer="Ports application"
+LABEL maintainer="ShipsRoutes application"
 
 # Setup folders
 RUN mkdir cadet-project

@@ -12,13 +12,12 @@ type UserPreferences struct {
 	ID      uint32 `gorm:"primary_key;auto_increment" json:"id"`
 	Country string `json:"country"`
 	UserId  uint32 `json:"user_id"`
-	Port    []Ports
+	Port    []ShipsRoutes
 }
 
 func (up *UserPreferences) PrepareUserPref() {
 	up.ID = 0
 	up.Country = html.EscapeString(strings.TrimSpace(up.Country))
-	up.UserId = 0
 }
 
 func (up *UserPreferences) ValidateUserPref() error {
@@ -100,8 +99,8 @@ func (up *UserPreferences) FindUserPrefPorts(db *gorm.DB, country string) (*[]Us
 	}
 
 	for i, user := range userPref {
-		var ports []Ports
-		if err = db.Debug().Model(&Ports{}).Where("country =?", user.Country).Find(&ports).Error; err != nil {
+		var ports []ShipsRoutes
+		if err = db.Debug().Model(&ShipsRoutes{}).Where("country =?", user.Country).Find(&ports[i].Name).Error; err != nil {
 			return &[]UserPreferences{}, err
 		}
 		userPref[i].Port = ports

@@ -7,14 +7,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 )
 
 func (s *Server) CreateUserInDb(w http.ResponseWriter, r *http.Request) {
 
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 	}
@@ -64,9 +64,4 @@ func (s *Server) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Entity", fmt.Sprintf("%d", paramsID))
 	responses.JSON(w, http.StatusNoContent, "")
 
-}
-
-func (s *Server) SetCookieHandler(w http.ResponseWriter, r *http.Request) {
-
-	http.SetCookie(w, &models.Cookie)
 }

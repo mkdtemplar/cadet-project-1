@@ -23,6 +23,6 @@ func (s *Server) InitializeRoutes() {
 	s.Router.HandleFunc("/userpref", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(s.GetUserPreferences))).Methods("GET")
 	s.Router.HandleFunc("/userpref/{id}", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(s.GetSingleUserPreference))).Methods("GET")
 	s.Router.HandleFunc("/userpref", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(s.GetUserPreferencesPorts))).Methods("PUT")
-	s.Router.HandleFunc("/userpref", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(s.DeleteUserPref))).Methods("DELETE")
+	s.Router.HandleFunc("/userpref", middlewares.SetMiddlewareAuthentication(s.DeleteUserPref)).Methods("DELETE")
 	s.Router.HandleFunc("/userprefports", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(s.GetUserPreferencesPorts))).Methods("GET")
 }

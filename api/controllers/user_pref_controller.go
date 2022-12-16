@@ -8,13 +8,13 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 )
 
 func (s *Server) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
@@ -105,7 +105,7 @@ func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusNotFound, errors.New("User preferences not found"))
 	}
 
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
