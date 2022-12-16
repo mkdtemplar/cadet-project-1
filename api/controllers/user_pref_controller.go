@@ -77,10 +77,10 @@ func (s *Server) GetSingleUserPreference(w http.ResponseWriter, r *http.Request)
 }
 
 func (s *Server) GetUserPreferencesPorts(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
+	params := r.URL.Query().Get("country")
 
 	userPref := models.UserPreferences{}
-	userPreferences, err := userPref.FindUserPrefPorts(s.DB, params["country"])
+	userPreferences, err := userPref.FindUserPrefPorts(s.DB, params)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return

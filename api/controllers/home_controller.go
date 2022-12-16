@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/crewjam/saml/samlsp"
 	"net/http"
+	"time"
 )
 
 func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
@@ -30,6 +31,12 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		responses.ERROR(w, 401, errors.New("invalid E-mail format"))
 	}
+	tokenValue := models.ExtractToken(r)
+	expiresAt := time.Now().Add(300 * time.Second)
+
+	models.Sessions[tokenValue] = models.Session{Expiry: expiresAt}
+
+	models.Cookie = models.CreateCookieToAllEndPoints(tokenValue, expiresAt)
 
 	userCreated, err := user.SaveUserDb(s.DB)
 	if err != nil {

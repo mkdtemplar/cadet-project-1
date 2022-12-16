@@ -100,7 +100,7 @@ func (up *UserPreferences) FindUserPrefPorts(db *gorm.DB, country string) (*[]Us
 
 	for i, user := range userPref {
 		var ports []ShipsRoutes
-		if err = db.Debug().Model(&ShipsRoutes{}).Where("country =?", user.Country).Find(&ports[i].Name).Error; err != nil {
+		if err = db.Debug().Model(&ShipsRoutes{}).Where("country =?", user.Country).Take(&ports[i].Name).Error; err != nil {
 			return &[]UserPreferences{}, err
 		}
 		userPref[i].Port = ports

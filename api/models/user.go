@@ -8,6 +8,7 @@ import (
 	"html"
 	"net/http"
 	"strings"
+	"time"
 )
 
 type User struct {
@@ -68,6 +69,28 @@ func (u *User) DeleteUserDb(db *gorm.DB, uid uint64) (int64, error) {
 	}
 
 	return tx.RowsAffected, nil
+}
+
+func ExtractToken(r *http.Request) string {
+	tokenName, err := r.Cookie("token")
+
+	if err != nil {
+		return ""
+	}
+	return tokenName.Value
+}
+
+func CreateCookieToAllEndPoints(tokenValue string, exp time.Time) http.Cookie {
+
+	cookie := http.Cookie{
+		Name:     "session_token",
+		Value:    tokenValue,
+		HttpOnly: false,
+		Path:     "/",
+		Expires:  exp,
+	}
+
+	return cookie
 }
 
 func TokenValid(w http.ResponseWriter, r *http.Request) error {
