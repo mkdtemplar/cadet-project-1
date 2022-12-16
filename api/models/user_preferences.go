@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/jinzhu/gorm"
 	"html"
+	"log"
 	"strings"
 )
 
@@ -69,7 +70,8 @@ func (up *UserPreferences) UpdateUserPref(db *gorm.DB) (*UserPreferences, error)
 
 	err = db.Debug().Model(&UserPreferences{}).Where("id = ?", up.ID).Updates(UserPreferences{Country: up.Country}).Error
 	if err != nil {
-		return &UserPreferences{}, err
+
+		log.Printf("User preferences no exists %v %v", &UserPreferences{}, err)
 	}
 
 	return up, nil
