@@ -93,18 +93,14 @@ func (up *UserPreferences) DeleteUserPref(db *gorm.DB, userid uint32) (int64, er
 func (up *UserPreferences) FindUserPrefPorts(db *gorm.DB, country string) (*[]UserPreferences, error) {
 	var err error
 	var userPref []UserPreferences
+	var ports []ShipsRoutes
 	err = db.Debug().Model(&UserPreferences{}).Where("country = ?", country).Take(&up).Error
 	if err != nil {
 		return &[]UserPreferences{}, err
 	}
 
-	for i, user := range userPref {
-		var ports []ShipsRoutes
-		if err = db.Debug().Model(&ShipsRoutes{}).Where("country =?", user.Country).Take(&ports[i].Name).Error; err != nil {
-			return &[]UserPreferences{}, err
-		}
-		userPref[i].Port = ports
-	}
+	db.Joins("user_preferences up on up.country = ships_routes.country").
+		Preload("UserPreferences.Port").Where("ships_routes.country = ?", country).Take(&ports)
 
 	return &userPref, nil
 }
