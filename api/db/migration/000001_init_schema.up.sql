@@ -10,7 +10,7 @@ create table if not exists user_preferences
     country varchar(100),
     user_id integer not null constraint user_preferences_users_null_fk references public.users ON DELETE CASCADE
 );
-create table if not exists "ships-routes"
+create table if not exists ships_routes
 (
     _key      varchar(6),
     name      varchar(50),

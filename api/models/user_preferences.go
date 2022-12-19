@@ -9,10 +9,10 @@ import (
 )
 
 type UserPreferences struct {
-	ID      uint32 `gorm:"primary_key;auto_increment" json:"id"`
-	Country string `json:"country"`
-	UserId  uint32 `json:"user_id"`
-	Port    []ShipsRoutes
+	ID      uint32        `gorm:"primary_key;auto_increment" json:"id"`
+	Country string        `json:"country"`
+	UserId  uint32        `json:"user_id"`
+	Ports   []ShipsRoutes `json:"ports"`
 }
 
 func (up *UserPreferences) PrepareUserPref() {
@@ -90,17 +90,18 @@ func (up *UserPreferences) DeleteUserPref(db *gorm.DB, userid uint32) (int64, er
 	return db.RowsAffected, nil
 }
 
-func (up *UserPreferences) FindUserPrefPorts(db *gorm.DB, country string) (*[]UserPreferences, error) {
+func (up *UserPreferences) FindUserPrefPorts(db *gorm.DB, country string) (*UserPreferences, error) {
 	var err error
-	var userPref []UserPreferences
-	var ports []ShipsRoutes
-	err = db.Debug().Model(&UserPreferences{}).Where("country = ?", country).Take(&up).Error
-	if err != nil {
-		return &[]UserPreferences{}, err
+
+	if err = db.Joins("join ships_routes ON ships_routes.country = user_preferences.country").Find(&up).Error; err != nil {
+		return nil, err
 	}
+	var ports []ShipsRoutes
 
-	db.Joins("user_preferences up on up.country = ships_routes.country").
-		Preload("UserPreferences.Port").Where("ships_routes.country = ?", country).Take(&ports)
+	if err := db.Where("country = ?", up.Country).Model(&ShipsRoutes{}).Find(&ports).Error; err != nil {
+		return &UserPreferences{}, err
+	}
+	up.Ports = ports
 
-	return &userPref, nil
+	return up, nil
 }
