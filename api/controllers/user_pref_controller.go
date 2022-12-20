@@ -6,11 +6,12 @@ import (
 	"cadet-project/responses"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/pkg/errors"
 	"io"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
+	"github.com/pkg/errors"
 )
 
 func (s *Server) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {

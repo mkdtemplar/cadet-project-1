@@ -2,10 +2,11 @@ package models
 
 import (
 	"errors"
-	"github.com/jinzhu/gorm"
 	"html"
 	"log"
 	"strings"
+
+	"github.com/jinzhu/gorm"
 )
 
 type UserPreferences struct {
@@ -98,7 +99,7 @@ func (up *UserPreferences) FindUserPrefPorts(db *gorm.DB, country string) (*User
 	}
 	var ports []ShipsRoutes
 
-	if err := db.Where("country = ?", up.Country).Model(&ShipsRoutes{}).Find(&ports).Error; err != nil {
+	if err := db.Where("country = ?", country).Model(&ShipsRoutes{}).Find(&ports).Error; err != nil {
 		return &UserPreferences{}, err
 	}
 	up.Ports = ports
