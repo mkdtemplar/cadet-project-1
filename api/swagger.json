@@ -3,8 +3,20 @@
   "paths": {},
   "info": {
     "contact": {
+      "name": "Ivan Markovski",
+      "email": "ivan.markovski@scalefocus.com"
     },
     "version": "1.0.0",
     "title": "Cadet API"
-  }
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": ["application/json"],
+  "host": "localhost:8080",
+  "basePath": "/"
 }
