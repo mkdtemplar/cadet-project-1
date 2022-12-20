@@ -1,0 +1,10 @@
+{
+  "swagger": "2.0",
+  "paths": {},
+  "info": {
+    "contact": {
+    },
+    "version": "1.0.0",
+    "title": "Cadet API"
+  }
+}
