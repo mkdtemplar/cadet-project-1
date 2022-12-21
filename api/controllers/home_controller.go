@@ -6,9 +6,10 @@ import (
 	"cadet-project/responses"
 	"errors"
 	"fmt"
-	"github.com/crewjam/saml/samlsp"
 	"net/http"
 	"time"
+
+	"github.com/crewjam/saml/samlsp"
 )
 
 func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
@@ -38,13 +39,18 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 
 	models.Cookie = models.CreateCookieToAllEndPoints(tokenValue, expiresAt)
 
-	userCreated, err := user.SaveUserDb(s.DB)
+	err = user.CheckUser(s.DB, userEmail)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		userCreated, err := user.SaveUserDb(s.DB)
+		if err != nil {
+			responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		}
+
+		w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.RequestURI, userCreated.ID))
+
+		responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %v  with E-mail: %v is authorized and created in database", userName, userEmail))
+	} else {
+		responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %v  with E-mail: %v is already in database and authorized", userName, userEmail))
 	}
-
-	w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.RequestURI, userCreated.ID))
-
-	responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %v  with E-mail: %v authorized", userName, userEmail))
 
 }

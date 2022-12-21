@@ -8,11 +8,21 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/pkg/errors"
 )
+
+func trimSpaces(parm string) string {
+	re := regexp.MustCompile(`\s+`)
+	out := re.ReplaceAllString(parm, " ")
+	out = strings.TrimSpace(out)
+
+	return out
+}
 
 func (s *Server) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
@@ -79,6 +89,8 @@ func (s *Server) GetSingleUserPreference(w http.ResponseWriter, r *http.Request)
 
 func (s *Server) GetUserPreferencesPorts(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query().Get("country")
+	params = trimSpaces(params)
+	strings.Replace(params, " ", "%20", -1)
 
 	userPref := models.UserPreferences{}
 	userPreferences, err := userPref.FindUserPrefPorts(s.DB, params)

@@ -3,12 +3,13 @@ package models
 import (
 	"cadet-project/responses"
 	"errors"
-	"github.com/badoux/checkmail"
-	"github.com/jinzhu/gorm"
 	"html"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/badoux/checkmail"
+	"github.com/jinzhu/gorm"
 )
 
 type User struct {
@@ -69,6 +70,14 @@ func (u *User) DeleteUserDb(db *gorm.DB, uid uint64) (int64, error) {
 	}
 
 	return tx.RowsAffected, nil
+}
+
+func (u *User) CheckUser(db *gorm.DB, mail string) error {
+	//var err error
+
+	err := db.Debug().Model(&User{}).Where("email = ?", mail).Find(&u).Error
+	return err
+
 }
 
 func ExtractToken(r *http.Request) string {
