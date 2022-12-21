@@ -50,6 +50,7 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 
 		responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %v  with E-mail: %v is authorized and created in database", userName, userEmail))
 	} else {
+		w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.RequestURI, user.ID))
 		responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %v  with E-mail: %v is already in database and authorized", userName, userEmail))
 	}
 
