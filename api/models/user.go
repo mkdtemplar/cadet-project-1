@@ -1,17 +1,20 @@
 package models
 
 import (
+	"cadet-project/responses"
 	"errors"
 	"github.com/badoux/checkmail"
 	"github.com/jinzhu/gorm"
 	"html"
 	"net/http"
 	"strings"
+	"time"
 )
 
 type User struct {
 	ID    uint32 `gorm:"primary_key;auto_increment" json:"id"`
 	Email string `gorm:"size:100;not null;unique" json:"email"`
+	Name  string `gorm:"size:100" json:"name"`
 }
 
 func (u *User) PrepareUserData() {
@@ -52,35 +55,60 @@ func (u *User) SaveUserDb(db *gorm.DB) (*User, error) {
 	return u, nil
 }
 
-func ExtractToken(r *http.Request) string {
+func (u *User) DeleteUserDb(db *gorm.DB, uid uint64) (int64, error) {
 	var err error
-	var tokenName *http.Cookie
-	tokenName, err = r.Cookie("token")
+
+	tx := db.Begin()
+
+	delTx := tx.Delete(&User{}, uid)
+
+	if err = delTx.Error; err != nil {
+		return 0, err
+	} else {
+		tx.Commit()
+	}
+
+	return tx.RowsAffected, nil
+}
+
+func ExtractToken(r *http.Request) string {
+	tokenName, err := r.Cookie("token")
+
 	if err != nil {
 		return ""
 	}
-
 	return tokenName.Value
 }
 
-func SetCookieToAllEndPoints(r *http.Request) http.Cookie {
-	tokenValue := ExtractToken(r)
+func CreateCookieToAllEndPoints(tokenValue string, exp time.Time) http.Cookie {
 
 	cookie := http.Cookie{
-		Name:     "token",
+		Name:     "session_token",
 		Value:    tokenValue,
-		MaxAge:   5 * 60,
-		HttpOnly: true,
+		HttpOnly: false,
+		Path:     "/",
+		Expires:  exp,
 	}
 
 	return cookie
 }
 
-func TokenValid(r *http.Request) error {
-	tokenValue := SetCookieToAllEndPoints(r)
+func TokenValid(w http.ResponseWriter, r *http.Request) error {
+	cookie, err := r.Cookie("token")
+	if err != nil {
+		return err
+	}
+	sessionToken := cookie.Value
+	userSession, exists := Sessions[sessionToken]
+	if !exists {
+		responses.ERROR(w, http.StatusBadRequest, errors.New("token not present in session"))
+		return errors.New("invalid token")
+	}
 
-	if tokenValue.Valid() != nil {
-		return errors.New("token expired")
+	if userSession.IsExpired() {
+		delete(Sessions, sessionToken)
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return errors.New("unauthorized")
 	}
 
 	return nil
