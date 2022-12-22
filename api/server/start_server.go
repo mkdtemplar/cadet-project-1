@@ -7,7 +7,7 @@ import (
 
 var server = controllers.Server{}
 
-func Run() {
+func Run(string) {
 	configurations.InitDbConfig("configurations")
 	server.InitializeDB(configurations.ConfigDB.DBDriver, configurations.ConfigDB.DBUser,
 		configurations.ConfigDB.DBPassword, configurations.ConfigDB.DBPort, configurations.ConfigDB.DBHost,

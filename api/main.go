@@ -27,5 +27,5 @@ func main() {
 
 	configurations.InitConfig("configurations")
 	configurations.InitDbConfig("configurations")
-	server.Run()
+	server.Run(":8080")
 }

@@ -19,7 +19,9 @@ func SetMiddlewareJSON(next http.HandlerFunc) http.HandlerFunc {
 		}
 		http.SetCookie(w, cookie)
 		w.Header().Set("Content-Type", "application/json")
+		http.Redirect(w, r, "/swagger", 200)
 		next(w, r)
+
 	}
 }
 
