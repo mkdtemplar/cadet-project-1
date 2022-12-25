@@ -137,6 +137,12 @@ func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 		}
 		userPrefUpdate.ID = userPref.ID
 
+		err = userPrefUpdate.ValidateUserPref(userPrefUpdate.Country, userPrefUpdate.UserId)
+		if err != nil {
+			responses.ERROR(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
 		userPrefUpdated, err := userPrefUpdate.UpdateUserPref(s.DB)
 
 		if err != nil {

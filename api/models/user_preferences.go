@@ -22,7 +22,7 @@ func (up *UserPreferences) ConstructUserPrefObject(country string, userid uint32
 }
 
 func (up *UserPreferences) ValidateUserPref(country string, userid uint32) error {
-	checkLetters := regexp.MustCompile(`^[a-zA-Z]+$`)
+	checkLetters := regexp.MustCompile(`^[a-zA-Z ]+$`)
 	checkNumber := regexp.MustCompile(`\d+`)
 
 	if country == "" || checkLetters.MatchString(country) == false {

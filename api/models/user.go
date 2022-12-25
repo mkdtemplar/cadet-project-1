@@ -24,15 +24,14 @@ func (u *User) PrepareUserData(email string, name string) {
 	name = html.EscapeString(strings.TrimSpace(name))
 }
 
-func (u *User) ValidateUserData(action string, email string, name string) error {
-	checkLetters := regexp.MustCompile(`^[a-zA-Z]+$`)
-
+func ValidateUserData(action string, email string, name string) error {
+	checkLetters := regexp.MustCompile(`^[a-zA-Z ]*$`)
 	name = strings.ReplaceAll(name, "\"", "")
 	email = strings.ReplaceAll(email, "\"", "")
 
 	switch strings.ToLower(action) {
 
-	case "update":
+	case "create":
 		if email == "" {
 			return errors.New("e-mail is required")
 		}
@@ -42,7 +41,6 @@ func (u *User) ValidateUserData(action string, email string, name string) error 
 		if !checkLetters.MatchString(name) {
 			return errors.New("invalid name")
 		}
-		return nil
 	default:
 		if email == "" {
 			return errors.New("e-mail is required")
@@ -53,15 +51,13 @@ func (u *User) ValidateUserData(action string, email string, name string) error 
 		if !checkLetters.MatchString(name) {
 			return errors.New("invalid name")
 		}
-		return nil
 	}
-
+	return nil
 }
 
 func (u *User) SaveUserDb(db *gorm.DB) (*User, error) {
-	var err error
 
-	err = db.Debug().Create(&u).Error
+	err := db.Debug().Create(&u).Error
 	if err != nil {
 		return &User{}, err
 	}
