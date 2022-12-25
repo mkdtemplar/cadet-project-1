@@ -10,7 +10,7 @@ func (s *Server) notFound(w http.ResponseWriter) {
 	responses.ERROR(w, http.StatusInternalServerError, errors.New("path not found"))
 	return
 }
-func (s *Server) ServeEndpoints(w http.ResponseWriter, r *http.Request) {
+func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	switch {
 	case r.Method == http.MethodDelete && r.URL.Path == "/userdelete":

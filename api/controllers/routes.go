@@ -17,6 +17,6 @@ func (s *Server) InitializeRoutes() {
 	s.Router.Handle("/hello", samlSp.RequireAccount(app))
 	s.Router.Handle("/saml/acs", samlSp)
 
-	s.Router.HandleFunc("/", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(s.ServeEndpoints)))
+	s.Router.HandleFunc("/", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(s.ServeEndPoints)))
 
 }
