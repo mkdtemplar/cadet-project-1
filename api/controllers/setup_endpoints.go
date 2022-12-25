@@ -22,7 +22,7 @@ func (s *Server) ServeEndpoints(w http.ResponseWriter, r *http.Request) {
 	case r.Method == http.MethodPost && r.URL.Path == "/userpref":
 		s.CreateUserPreferences(w, r)
 		return
-	case r.Method == http.MethodGet && r.URL.Path == "/userpref/":
+	case r.Method == http.MethodGet && r.URL.Path == "/userpref":
 		s.GetUserPreference(w, r)
 		return
 	case r.Method == http.MethodGet && r.URL.Path == "/userprefports":
