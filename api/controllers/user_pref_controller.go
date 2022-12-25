@@ -7,18 +7,8 @@ import (
 	"errors"
 	"io"
 	"net/http"
-	"regexp"
 	"strconv"
-	"strings"
 )
-
-func trimSpaces(param string) string {
-	re := regexp.MustCompile(`\s+`)
-	out := re.ReplaceAllString(param, " ")
-	out = strings.TrimSpace(out)
-
-	return out
-}
 
 func (s *Server) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
@@ -84,24 +74,32 @@ func (s *Server) GetUserPreference(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) GetUserPorts(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		params := r.URL.Query().Get("country")
-		params = trimSpaces(params)
-		strings.Replace(params, " ", "%20", -1)
+		params := r.URL.Query().Get("id")
+
+		paramsID, err := strconv.ParseUint(params, 10, 32)
+		if err != nil {
+
+			responses.ERROR(w, http.StatusUnprocessableEntity, err)
+			return
+		}
 
 		userPref := models.UserPreferences{}
-
-		userPreferences, err := userPref.FindUserPrefPorts(s.DB, params)
-
+		userPreferences, err := userPref.FindUserPreferences(s.DB, uint32(paramsID))
 		if err != nil {
 			responses.ERROR(w, http.StatusInternalServerError, err)
 			return
 		}
 
-		responses.JSON(w, http.StatusOK, userPreferences)
+		userPorts, err := userPreferences.FindUserPrefPorts(s.DB, userPreferences.Country)
+		if err != nil {
+			responses.ERROR(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		responses.JSON(w, http.StatusOK, userPorts)
 	} else {
 		responses.ERROR(w, http.StatusBadRequest, errors.New("invalid http method"))
 	}
-
 }
 
 func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
