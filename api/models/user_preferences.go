@@ -101,7 +101,7 @@ func (up *UserPreferences) FindUserPrefPorts(db *gorm.DB, country string) (*User
 
 func (up *UserPreferences) FindCountry(db *gorm.DB, country string) (*string, error) {
 
-	err := db.Debug().Model(&UserPreferences{}).Where("country = ?", country).Take(&up.Country).Error
+	err := db.Debug().Model(&UserPreferences{}).Where("country = ?", country).Take(&up).Error
 	if err != nil {
 		return nil, err
 	}
