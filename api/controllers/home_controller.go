@@ -35,7 +35,7 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 
 	models.Cookie.Expires = expiresAt
 	models.Cookie.Path = "/"
-	http.SetCookie(w, models.Cookie)
+	http.SetCookie(w, &models.Cookie)
 
 	err = user.CheckUser(s.DB, userEmail)
 	if err != nil {
