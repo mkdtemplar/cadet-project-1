@@ -11,7 +11,7 @@ type Session struct {
 	Expiry time.Time
 }
 
-var Cookie http.Cookie
+var Cookie *http.Cookie
 
 func (s *Session) IsExpired() bool {
 	return s.Expiry.Before(time.Now())

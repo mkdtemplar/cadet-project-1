@@ -3,12 +3,8 @@ module cadet-project
 go 1.19
 
 require (
-	github.com/badoux/checkmail v1.2.1
 	github.com/crewjam/saml v0.4.8
-	github.com/flowchartsman/swaggerui v0.0.0-20221017034628-909ed4f3701b
-	github.com/gorilla/mux v1.8.0
 	github.com/jinzhu/gorm v1.9.16
-	github.com/pkg/errors v0.9.1
 	github.com/spf13/viper v1.14.0
 )
 
@@ -27,6 +23,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/russellhaering/goxmldsig v1.1.1 // indirect
 	github.com/spf13/afero v1.9.3 // indirect
 	github.com/spf13/cast v1.5.0 // indirect

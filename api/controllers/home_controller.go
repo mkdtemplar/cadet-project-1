@@ -21,37 +21,33 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 
 	if userEmail == "" {
 		responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("user email not provided"))
-
+		return
 	}
+
 	user := models.User{
 		Email: userEmail,
 		Name:  userName,
 	}
-	user.PrepareUserData()
-	err = user.ValidateUserData("")
-	if err != nil {
-		responses.ERROR(w, 401, errors.New("invalid E-mail format"))
-	}
+
 	tokenValue := models.ExtractToken(r)
 	expiresAt := time.Now().Add(300 * time.Second)
 
 	models.Sessions[tokenValue] = models.Session{Expiry: expiresAt}
 
-	models.Cookie = models.CreateCookieToAllEndPoints(tokenValue, expiresAt)
+	models.Cookie.Expires = expiresAt
+	models.Cookie.Path = "/"
+	http.SetCookie(w, models.Cookie)
 
 	err = user.CheckUser(s.DB, userEmail)
 	if err != nil {
-		userCreated, err := user.SaveUserDb(s.DB)
+		_, err = user.SaveUserDb(s.DB)
 		if err != nil {
 			responses.ERROR(w, http.StatusUnprocessableEntity, err)
+			return
 		}
-
-		w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.RequestURI, userCreated.ID))
-
-		responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %v  with E-mail: %v is authorized and created in database", userName, userEmail))
+		responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %s  with E-mail: %s is authorized and created in database", userName, userEmail))
 	} else {
-		w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.RequestURI, user.ID))
-		responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %v  with E-mail: %v is already in database and authorized", userName, userEmail))
+		responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %s  with E-mail: %s is already in database and authorized", userName, userEmail))
 	}
 
 }

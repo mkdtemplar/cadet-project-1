@@ -1,21 +1,3 @@
-// Cadet project API:
-//
-//	title: This an init project for REST API
-//	version: 1.0.0
-//	contact: Ivan Markovski
-//	email: <ivan.markovski@scalefocus.com>
-//
-// Schemes: http,https
-// Host: localhost:8080
-// BasePath: /
-//
-// Consumes:
-//   - application/json
-//
-// Produces:
-//   - application/json
-//
-// swagger: meta
 package main
 
 import (
@@ -27,5 +9,5 @@ func main() {
 
 	configurations.InitConfig("configurations")
 	configurations.InitDbConfig("configurations")
-	server.Run(":8080")
+	server.Run()
 }

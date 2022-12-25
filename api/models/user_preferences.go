@@ -3,7 +3,7 @@ package models
 import (
 	"errors"
 	"html"
-	"log"
+	"regexp"
 	"strings"
 
 	"github.com/jinzhu/gorm"
@@ -16,17 +16,20 @@ type UserPreferences struct {
 	Ports   []ShipsRoutes `json:"ports"`
 }
 
-func (up *UserPreferences) PrepareUserPref() {
-	up.ID = 0
-	up.Country = html.EscapeString(strings.TrimSpace(up.Country))
+func (up *UserPreferences) ConstructUserPrefObject(country string, userid uint32) {
+	country = html.EscapeString(strings.TrimSpace(country))
+	userid = up.UserId
 }
 
-func (up *UserPreferences) ValidateUserPref() error {
-	if up.Country == "" {
+func (up *UserPreferences) ValidateUserPref(country string, userid uint32) error {
+	checkLetters := regexp.MustCompile(`^[a-zA-Z]+$`)
+	checkNumber := regexp.MustCompile(`\d+`)
+
+	if country == "" || checkLetters.MatchString(country) == false {
 		return errors.New("country cannot be empty")
 	}
 
-	if up.UserId < 1 {
+	if up.UserId < 1 || checkNumber.MatchString(string(userid)) {
 		return errors.New("user id is required")
 	}
 
@@ -44,18 +47,7 @@ func (up *UserPreferences) SaveUserPreferences(db *gorm.DB) (*UserPreferences, e
 	return up, nil
 }
 
-func (up *UserPreferences) FindAllUserPref(db *gorm.DB) (*[]UserPreferences, error) {
-	var err error
-	var userPref []UserPreferences
-	err = db.Debug().Model(&UserPreferences{}).Limit(100).Find(&userPref).Error
-	if err != nil {
-		return &[]UserPreferences{}, err
-	}
-
-	return &userPref, nil
-}
-
-func (up *UserPreferences) FindOneUserPref(db *gorm.DB, id uint32) (*UserPreferences, error) {
+func (up *UserPreferences) FindUserPreferences(db *gorm.DB, id uint32) (*UserPreferences, error) {
 	var err error
 	err = db.Debug().Model(&UserPreferences{}).Where("id = ?", id).Take(&up).Error
 	if err != nil {
@@ -72,13 +64,13 @@ func (up *UserPreferences) UpdateUserPref(db *gorm.DB) (*UserPreferences, error)
 	err = db.Debug().Model(&UserPreferences{}).Where("id = ?", up.ID).Updates(UserPreferences{Country: up.Country}).Error
 	if err != nil {
 
-		log.Printf("User preferences no exists %v %v", &UserPreferences{}, err)
+		err.Error()
 	}
 
 	return up, nil
 }
 
-func (up *UserPreferences) DeleteUserPref(db *gorm.DB, userid uint32) (int64, error) {
+func (up *UserPreferences) DeleteUserPreferences(db *gorm.DB, userid uint32) (int64, error) {
 
 	db = db.Debug().Model(&UserPreferences{}).Where("id = ?", userid).Take(&UserPreferences{}).Delete(&UserPreferences{})
 
@@ -105,4 +97,13 @@ func (up *UserPreferences) FindUserPrefPorts(db *gorm.DB, country string) (*User
 	up.Ports = ports
 
 	return up, nil
+}
+
+func (up *UserPreferences) FindCountry(db *gorm.DB, country string) (*string, error) {
+
+	err := db.Debug().Model(&UserPreferences{}).Where("country = ?", country).Take(&up.Country).Error
+	if err != nil {
+		return nil, err
+	}
+	return &up.Country, nil
 }

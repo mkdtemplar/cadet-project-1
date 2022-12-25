@@ -6,14 +6,13 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 type Server struct {
 	DB     *gorm.DB
-	Router *mux.Router
+	Router *http.ServeMux
 }
 
 func (s *Server) InitializeDB(Dbdriver, DbUser, DbPassword, DbPort, DbHost, DbName string) {
@@ -31,8 +30,9 @@ func (s *Server) InitializeDB(Dbdriver, DbUser, DbPassword, DbPort, DbHost, DbNa
 		fmt.Printf("We are connected to the %s database: %s\n", Dbdriver, DbName)
 	}
 
-	s.Router = mux.NewRouter()
+	s.Router = http.NewServeMux()
 	s.InitializeRoutes()
+
 }
 
 func (s *Server) Run(addr string) {

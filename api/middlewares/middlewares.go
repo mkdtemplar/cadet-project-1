@@ -9,17 +9,14 @@ import (
 
 func SetMiddlewareJSON(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cookie, err := r.Cookie("token")
+		var err error
+		models.Cookie, err = r.Cookie("token")
 		if err != nil {
 			responses.ERROR(w, http.StatusUnauthorized, errors.New("cookie not found your not authorized"))
 			return
 		}
-		if cookie.Name == "token" {
-			cookie.MaxAge = 300
-		}
-		http.SetCookie(w, cookie)
+		http.SetCookie(w, models.Cookie)
 		w.Header().Set("Content-Type", "application/json")
-		http.Redirect(w, r, "/swagger", 200)
 		next(w, r)
 
 	}
@@ -27,7 +24,7 @@ func SetMiddlewareJSON(next http.HandlerFunc) http.HandlerFunc {
 
 func SetMiddlewareAuthentication(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		err := models.TokenValid(w, r)
+		err := models.ValidateToken(w, r)
 
 		if err != nil {
 			responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized token"))

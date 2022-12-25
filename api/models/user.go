@@ -5,10 +5,10 @@ import (
 	"errors"
 	"html"
 	"net/http"
+	"net/mail"
+	"regexp"
 	"strings"
-	"time"
 
-	"github.com/badoux/checkmail"
 	"github.com/jinzhu/gorm"
 )
 
@@ -18,27 +18,40 @@ type User struct {
 	Name  string `gorm:"size:100" json:"name"`
 }
 
-func (u *User) PrepareUserData() {
-	u.ID = 0
-	u.Email = html.EscapeString(strings.TrimSpace(u.Email))
+func (u *User) PrepareUserData(email string, name string) {
+
+	email = html.EscapeString(strings.TrimSpace(email))
+	name = html.EscapeString(strings.TrimSpace(name))
 }
 
-func (u *User) ValidateUserData(action string) error {
+func (u *User) ValidateUserData(action string, email string, name string) error {
+	checkLetters := regexp.MustCompile(`^[a-zA-Z]+$`)
+
+	name = strings.ReplaceAll(name, "\"", "")
+	email = strings.ReplaceAll(email, "\"", "")
+
 	switch strings.ToLower(action) {
+
 	case "update":
-		if u.Email == "" {
+		if email == "" {
 			return errors.New("e-mail is required")
 		}
-		if err := checkmail.ValidateFormat(u.Email); err != nil {
+		if _, err := mail.ParseAddress(email); err != nil {
 			return errors.New("invalid E-mail format")
+		}
+		if !checkLetters.MatchString(name) {
+			return errors.New("invalid name")
 		}
 		return nil
 	default:
-		if u.Email == "" {
+		if email == "" {
 			return errors.New("e-mail is required")
 		}
-		if err := checkmail.ValidateFormat(u.Email); err != nil {
+		if _, err := mail.ParseAddress(email); err != nil {
 			return errors.New("invalid E-mail format")
+		}
+		if !checkLetters.MatchString(name) {
+			return errors.New("invalid name")
 		}
 		return nil
 	}
@@ -89,20 +102,7 @@ func ExtractToken(r *http.Request) string {
 	return tokenName.Value
 }
 
-func CreateCookieToAllEndPoints(tokenValue string, exp time.Time) http.Cookie {
-
-	cookie := http.Cookie{
-		Name:     "session_token",
-		Value:    tokenValue,
-		HttpOnly: false,
-		Path:     "/",
-		Expires:  exp,
-	}
-
-	return cookie
-}
-
-func TokenValid(w http.ResponseWriter, r *http.Request) error {
+func ValidateToken(w http.ResponseWriter, r *http.Request) error {
 	cookie, err := r.Cookie("token")
 	if err != nil {
 		return err
