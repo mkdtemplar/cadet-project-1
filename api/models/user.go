@@ -21,7 +21,9 @@ type User struct {
 func (u *User) PrepareUserData(email string, name string) {
 
 	email = html.EscapeString(strings.TrimSpace(email))
+	email = u.Email
 	name = html.EscapeString(strings.TrimSpace(name))
+	name = u.Name
 }
 
 func ValidateUserData(action string, email string, name string) error {

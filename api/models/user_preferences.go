@@ -4,6 +4,7 @@ import (
 	"errors"
 	"html"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/jinzhu/gorm"
@@ -18,6 +19,7 @@ type UserPreferences struct {
 
 func (up *UserPreferences) ConstructUserPrefObject(country string, userid uint32) {
 	country = html.EscapeString(strings.TrimSpace(country))
+	country = up.Country
 	userid = up.UserId
 }
 
@@ -29,8 +31,8 @@ func (up *UserPreferences) ValidateUserPref(country string, userid uint32) error
 		return errors.New("country cannot be empty")
 	}
 
-	if up.UserId < 1 || checkNumber.MatchString(string(userid)) {
-		return errors.New("user id is required")
+	if up.UserId < 1 || checkNumber.MatchString(strconv.Itoa(int(userid))) {
+		return errors.New("user id is required or wrong data format user_id must be integer")
 	}
 
 	return nil
