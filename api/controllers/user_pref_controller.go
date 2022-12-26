@@ -55,7 +55,7 @@ func (s *Server) GetUserPreference(w http.ResponseWriter, r *http.Request) {
 		paramsID, err := strconv.ParseUint(params, 10, 32)
 		if err != nil {
 
-			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in user_id format must be integer"))
+			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be integer"))
 			return
 		}
 
@@ -79,7 +79,7 @@ func (s *Server) GetUserPorts(w http.ResponseWriter, r *http.Request) {
 		paramsID, err := strconv.ParseUint(params, 10, 32)
 		if err != nil {
 
-			responses.ERROR(w, http.StatusUnprocessableEntity, err)
+			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be integer"))
 			return
 		}
 
@@ -107,7 +107,7 @@ func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 		paramsID, err := strconv.ParseUint(r.URL.Query().Get("id"), 10, 32)
 		if err != nil {
 
-			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in user_id format must be integer"))
+			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be integer"))
 			return
 		}
 
@@ -159,7 +159,7 @@ func (s *Server) DeleteUserPref(w http.ResponseWriter, r *http.Request) {
 		paramsID, err := strconv.ParseUint(r.URL.Query().Get("id"), 10, 32)
 		if err != nil {
 
-			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in user_id format must be integer"))
+			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be integer"))
 			return
 		}
 
