@@ -31,7 +31,7 @@ func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 	case r.Method == http.MethodDelete && r.URL.Path == "/userpref":
 		s.DeleteUserPref(w, r)
 		return
-	case r.Method == http.MethodPut && r.URL.Path == "/userpref":
+	case r.Method == http.MethodPatch && r.URL.Path == "/userpref":
 		s.UpdateUserPreferences(w, r)
 	default:
 		s.notFound(w)

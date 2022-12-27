@@ -23,18 +23,39 @@ func (up *UserPreferences) ConstructUserPrefObject(country string, userid uint32
 	userid = up.UserId
 }
 
-func (up *UserPreferences) ValidateUserPref(country string, userid uint32) error {
+func (up *UserPreferences) ValidateUserPref(action string) error {
 	checkLetters := regexp.MustCompile(`^[a-zA-Z ]+$`)
 	checkNumber := regexp.MustCompile(`\d+`)
 
-	if country == "" || checkLetters.MatchString(country) == false {
-		return errors.New("country cannot be empty")
+	switch strings.ToLower(action) {
+	case "create":
+		if up.Country == "" {
+			return errors.New("country cannot be empty")
+		}
+		if checkLetters.MatchString(up.Country) == false {
+			return errors.New("country string wrong format")
+		}
+		if up.UserId < 1 || checkNumber.MatchString(strconv.Itoa(int(up.UserId))) {
+			return errors.New("user id is required or wrong data format user_id must be integer")
+		}
+	case "update":
+		if up.Country == "" {
+			return errors.New("country cannot be empty")
+		}
+		if checkLetters.MatchString(up.Country) == false {
+			return errors.New("country string wrong format")
+		}
+	default:
+		if up.Country == "" {
+			return errors.New("country cannot be empty")
+		}
+		if checkLetters.MatchString(up.Country) == false {
+			return errors.New("country string wrong format")
+		}
+		if up.UserId < 1 || checkNumber.MatchString(strconv.Itoa(int(up.UserId))) {
+			return errors.New("user id is required or wrong data format user_id must be integer")
+		}
 	}
-
-	if up.UserId < 1 || checkNumber.MatchString(strconv.Itoa(int(userid))) {
-		return errors.New("user id is required or wrong data format user_id must be integer")
-	}
-
 	return nil
 }
 
@@ -51,7 +72,7 @@ func (up *UserPreferences) SaveUserPreferences(db *gorm.DB) (*UserPreferences, e
 
 func (up *UserPreferences) FindUserPreferences(db *gorm.DB, id uint32) (*UserPreferences, error) {
 	var err error
-	err = db.Debug().Model(&UserPreferences{}).Where("id = ?", id).Take(&up).Error
+	err = db.Debug().Model(&UserPreferences{}).Where("user_id = ?", id).Take(&up).Error
 	if err != nil {
 		return &UserPreferences{}, err
 	}
@@ -59,11 +80,11 @@ func (up *UserPreferences) FindUserPreferences(db *gorm.DB, id uint32) (*UserPre
 	return up, nil
 }
 
-func (up *UserPreferences) UpdateUserPref(db *gorm.DB) (*UserPreferences, error) {
+func (up *UserPreferences) UpdateUserPref(db *gorm.DB, id uint32) (*UserPreferences, error) {
 
 	var err error
 
-	err = db.Debug().Model(&UserPreferences{}).Where("id = ?", up.ID).Updates(UserPreferences{Country: up.Country}).Error
+	err = db.Debug().Model(&UserPreferences{}).Where("user_id = ?", id).Update(UserPreferences{Country: up.Country}).Error
 	if err != nil {
 
 		err.Error()
@@ -74,7 +95,7 @@ func (up *UserPreferences) UpdateUserPref(db *gorm.DB) (*UserPreferences, error)
 
 func (up *UserPreferences) DeleteUserPreferences(db *gorm.DB, userid uint32) (int64, error) {
 
-	db = db.Debug().Model(&UserPreferences{}).Where("id = ?", userid).Take(&UserPreferences{}).Delete(&UserPreferences{})
+	db = db.Debug().Model(&UserPreferences{}).Where("user_id = ?", userid).Take(&UserPreferences{}).Delete(&UserPreferences{})
 
 	if db.Error != nil {
 		if gorm.IsRecordNotFoundError(db.Error) {

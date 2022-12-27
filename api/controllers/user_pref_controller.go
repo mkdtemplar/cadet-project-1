@@ -28,7 +28,7 @@ func (s *Server) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = userPref.ValidateUserPref(userPref.Country, userPref.UserId)
+		err = userPref.ValidateUserPref("create")
 		if err != nil {
 			responses.ERROR(w, http.StatusUnprocessableEntity, err)
 			return
@@ -50,12 +50,12 @@ func (s *Server) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) GetUserPreference(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		params := r.URL.Query().Get("id")
+		params := r.URL.Query().Get("user_id")
 
 		paramsID, err := strconv.ParseUint(params, 10, 32)
 		if err != nil {
 
-			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be integer"))
+			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in user_id format must be integer"))
 			return
 		}
 
@@ -74,12 +74,12 @@ func (s *Server) GetUserPreference(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) GetUserPorts(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		params := r.URL.Query().Get("id")
+		params := r.URL.Query().Get("user_id")
 
 		paramsID, err := strconv.ParseUint(params, 10, 32)
 		if err != nil {
 
-			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be integer"))
+			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in user_id format must be integer"))
 			return
 		}
 
@@ -103,16 +103,16 @@ func (s *Server) GetUserPorts(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPut {
-		paramsID, err := strconv.ParseUint(r.URL.Query().Get("id"), 10, 32)
+	if r.Method == http.MethodPatch {
+		paramsID, err := strconv.ParseUint(r.URL.Query().Get("user_id"), 10, 32)
 		if err != nil {
 
-			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be integer"))
+			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in user_id format must be integer"))
 			return
 		}
 
 		userPref := models.UserPreferences{}
-		err = s.DB.Debug().Model(models.UserPreferences{}).Where("id = ?", paramsID).Take(&userPref).Error
+		err = s.DB.Debug().Model(models.UserPreferences{}).Where("user_id = ?", paramsID).Take(&userPref).Error
 
 		if err != nil {
 			responses.ERROR(w, http.StatusNotFound, errors.New("user preferences not found"))
@@ -133,15 +133,16 @@ func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 			responses.ERROR(w, http.StatusUnprocessableEntity, err)
 			return
 		}
-		userPrefUpdate.ID = userPref.ID
 
-		err = userPrefUpdate.ValidateUserPref(userPrefUpdate.Country, userPrefUpdate.UserId)
+		err = userPrefUpdate.ValidateUserPref("update")
 		if err != nil {
 			responses.ERROR(w, http.StatusUnprocessableEntity, err)
 			return
 		}
 
-		userPrefUpdated, err := userPrefUpdate.UpdateUserPref(s.DB)
+		userPrefUpdate.UserId = userPref.UserId
+
+		userPrefUpdated, err := userPrefUpdate.UpdateUserPref(s.DB, uint32(paramsID))
 
 		if err != nil {
 
@@ -156,16 +157,16 @@ func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) DeleteUserPref(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodDelete {
-		paramsID, err := strconv.ParseUint(r.URL.Query().Get("id"), 10, 32)
+		paramsID, err := strconv.ParseUint(r.URL.Query().Get("user_id"), 10, 32)
 		if err != nil {
 
-			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be integer"))
+			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in user_id format must be integer"))
 			return
 		}
 
 		userPref := models.UserPreferences{}
 
-		err = s.DB.Debug().Model(models.UserPreferences{}).Where("id = ?", paramsID).Take(&userPref).Error
+		err = s.DB.Debug().Model(models.UserPreferences{}).Where("user_id = ?", paramsID).Take(&userPref).Error
 		if err != nil {
 
 			responses.ERROR(w, http.StatusNotFound, err)
