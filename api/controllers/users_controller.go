@@ -3,6 +3,7 @@ package controllers
 import (
 	"cadet-project/models"
 	"cadet-project/responses"
+	"cadet-project/validation"
 	"encoding/json"
 	"errors"
 	"io"
@@ -24,7 +25,7 @@ func (s *Server) CreateUserInDb(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = models.ValidateUserData("create", user.Email, user.Name)
+		err = validation.ValidateUserData("create", user.Email, user.Name)
 		if err != nil {
 			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("invalid user email format"))
 			return

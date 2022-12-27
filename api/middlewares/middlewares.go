@@ -1,8 +1,8 @@
 package middlewares
 
 import (
-	"cadet-project/models"
 	"cadet-project/responses"
+	"cadet-project/validation"
 	"errors"
 	"net/http"
 )
@@ -24,7 +24,7 @@ func SetMiddlewareJSON(next http.HandlerFunc) http.HandlerFunc {
 
 func SetMiddlewareAuthentication(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		err := models.ValidateToken(w, r)
+		err := validation.ValidateToken(w, r)
 
 		if err != nil {
 			responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized token"))

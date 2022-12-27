@@ -5,7 +5,6 @@ import (
 	"cadet-project/responses"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -28,7 +27,7 @@ func (s *Server) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
 			responses.ERROR(w, http.StatusUnprocessableEntity, err)
 			return
 		}
-		fmt.Println(userPref.UserId)
+
 		err = userPref.ValidateUserPref("create")
 		if err != nil {
 			responses.ERROR(w, http.StatusUnprocessableEntity, err)
@@ -138,7 +137,7 @@ func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 
 		err = userPrefUpdate.ValidateUserPref("update")
 		if err != nil {
-			responses.ERROR(w, http.StatusUnprocessableEntity, err)
+			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("data format validation failed"))
 			return
 		}
 

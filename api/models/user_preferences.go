@@ -17,12 +17,6 @@ type UserPreferences struct {
 	Ports   []ShipsRoutes `json:"ports"`
 }
 
-func (up *UserPreferences) ConstructUserPrefObject(country string, userid uint32) {
-	country = html.EscapeString(strings.TrimSpace(country))
-	country = up.Country
-	userid = up.UserId
-}
-
 func (up *UserPreferences) ValidateUserPref(action string) error {
 	checkLetters := regexp.MustCompile(`^[a-zA-Z ]+$`)
 	checkNumber := regexp.MustCompile(`^[0-9]+$`)
@@ -57,6 +51,11 @@ func (up *UserPreferences) ValidateUserPref(action string) error {
 		}
 	}
 	return nil
+}
+func (up *UserPreferences) ConstructUserPrefObject(country string, userid uint32) {
+	country = html.EscapeString(strings.TrimSpace(country))
+	country = up.Country
+	userid = up.UserId
 }
 
 func (up *UserPreferences) SaveUserPreferences(db *gorm.DB) (*UserPreferences, error) {

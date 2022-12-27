@@ -4,6 +4,7 @@ import (
 	"cadet-project/configurations"
 	"cadet-project/models"
 	"cadet-project/responses"
+	"cadet-project/validation"
 	"errors"
 	"fmt"
 	"net/http"
@@ -18,7 +19,7 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 	userEmail := samlsp.AttributeFromContext(r.Context(), configurations.Config.Email)
 
 	userName := samlsp.AttributeFromContext(r.Context(), configurations.Config.DisplayName)
-	err = models.ValidateUserData("create", userEmail, userName)
+	err = validation.ValidateUserData("create", userEmail, userName)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("invalid user email format"))
 		return
@@ -28,7 +29,7 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 		Name:  userName,
 	}
 
-	tokenValue := models.ExtractToken(r)
+	tokenValue := validation.ExtractToken(r)
 	expiresAt := time.Now().Add(300 * time.Second)
 
 	models.Sessions[tokenValue] = models.Session{Expiry: expiresAt}
