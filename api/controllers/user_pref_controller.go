@@ -5,6 +5,7 @@ import (
 	"cadet-project/responses"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -27,12 +28,13 @@ func (s *Server) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
 			responses.ERROR(w, http.StatusUnprocessableEntity, err)
 			return
 		}
-
+		fmt.Println(userPref.UserId)
 		err = userPref.ValidateUserPref("create")
 		if err != nil {
 			responses.ERROR(w, http.StatusUnprocessableEntity, err)
 			return
 		}
+
 		userPref.ConstructUserPrefObject(userPref.Country, userPref.UserId)
 
 		userPrefCreated, err := userPref.SaveUserPreferences(s.DB)

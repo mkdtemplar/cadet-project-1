@@ -25,7 +25,7 @@ func (up *UserPreferences) ConstructUserPrefObject(country string, userid uint32
 
 func (up *UserPreferences) ValidateUserPref(action string) error {
 	checkLetters := regexp.MustCompile(`^[a-zA-Z ]+$`)
-	checkNumber := regexp.MustCompile(`\d+`)
+	checkNumber := regexp.MustCompile(`^[0-9]+$`)
 
 	switch strings.ToLower(action) {
 	case "create":
@@ -35,7 +35,7 @@ func (up *UserPreferences) ValidateUserPref(action string) error {
 		if checkLetters.MatchString(up.Country) == false {
 			return errors.New("country string wrong format")
 		}
-		if up.UserId < 1 || checkNumber.MatchString(strconv.Itoa(int(up.UserId))) {
+		if up.UserId < 1 || checkNumber.MatchString(strconv.Itoa(int(up.UserId))) == false {
 			return errors.New("user id is required or wrong data format user_id must be integer")
 		}
 	case "update":
@@ -52,7 +52,7 @@ func (up *UserPreferences) ValidateUserPref(action string) error {
 		if checkLetters.MatchString(up.Country) == false {
 			return errors.New("country string wrong format")
 		}
-		if up.UserId < 1 || checkNumber.MatchString(strconv.Itoa(int(up.UserId))) {
+		if up.UserId < 1 || checkNumber.MatchString(strconv.Itoa(int(up.UserId))) == false {
 			return errors.New("user id is required or wrong data format user_id must be integer")
 		}
 	}
