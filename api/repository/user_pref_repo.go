@@ -44,12 +44,12 @@ func (u *PG) UpdateUserPref(ctx context.Context, userid uint32, country string) 
 
 }
 
-func (u *PG) DeleteUserPreferences(ctx context.Context, usrpref *models.UserPreferences) (int64, error) {
+func (u *PG) DeleteUserPreferences(ctx context.Context, id uint32) (int64, error) {
 	var err error
-	userPref := &models.UserPreferences{UserId: usrpref.UserId}
+
 	tx := u.DB.Begin()
 
-	delTx := tx.WithContext(ctx).Model(&userPref).Where("user_id = ?", usrpref.UserId).Delete(userPref)
+	delTx := tx.WithContext(ctx).Model(&models.UserPreferences{}).Delete(&models.User{}, id)
 
 	if err = delTx.Error; err != nil {
 		return 0, err

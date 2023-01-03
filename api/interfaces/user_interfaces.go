@@ -7,7 +7,7 @@ import (
 
 type IUserRepository interface {
 	PrepareUserData(email string, name string)
-	SaveUserDb(ctx context.Context, usr *models.User) error
+	SaveUserDb(ctx context.Context, create *models.User) error
 	DeleteUserDb(ctx context.Context, uid uint64) (int64, error)
-	CheckUser(ctx context.Context, user *models.User) (*models.User, error)
+	GetUser(ctx context.Context, user *models.User) (*models.User, error)
 }

@@ -50,7 +50,7 @@ func (u *PG) DeleteUserDb(ctx context.Context, uid uint64) (int64, error) {
 	return tx.RowsAffected, nil
 }
 
-func (u *PG) CheckUser(ctx context.Context, in *models.User) (*models.User, error) {
+func (u *PG) GetUser(ctx context.Context, in *models.User) (*models.User, error) {
 	user := &models.User{}
 
 	err := u.DB.Debug().WithContext(ctx).Take(user, "email = ?", in.Email).Error

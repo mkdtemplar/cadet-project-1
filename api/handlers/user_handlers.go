@@ -50,7 +50,7 @@ func (h *UserHandler) Home(w http.ResponseWriter, r *http.Request) {
 	models.Cookie.Path = "/"
 	http.SetCookie(w, &models.Cookie)
 
-	_, err = h.user.CheckUser(r.Context(), &user)
+	_, err = h.user.GetUser(r.Context(), &user)
 	if err != nil {
 		err = h.user.SaveUserDb(r.Context(), &user)
 		if err != nil {
