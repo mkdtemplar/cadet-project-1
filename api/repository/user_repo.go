@@ -3,11 +3,13 @@ package repository
 import (
 	"cadet-project/interfaces"
 	"cadet-project/models"
+	"cadet-project/repository/generate_id"
 	"context"
 	"errors"
 	"html"
 	"strings"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -30,11 +32,11 @@ func (u *PG) SaveUserDb(ctx context.Context, usr *models.User) error {
 	if usr == nil {
 		return errors.New("user details empty")
 	}
-
-	return u.DB.Debug().WithContext(ctx).Create(&usr).Error
+	usr.ID = generate_id.GenerateID()
+	return u.DB.WithContext(ctx).Create(&usr).Error
 }
 
-func (u *PG) DeleteUserDb(ctx context.Context, uid uint64) (int64, error) {
+func (u *PG) DeleteUserDb(ctx context.Context, uid uuid.UUID) (int64, error) {
 	var err error
 
 	tx := u.DB.Begin()
@@ -53,6 +55,6 @@ func (u *PG) DeleteUserDb(ctx context.Context, uid uint64) (int64, error) {
 func (u *PG) GetUser(ctx context.Context, in *models.User) (*models.User, error) {
 	user := &models.User{}
 
-	err := u.DB.Debug().WithContext(ctx).Take(user, "email = ?", in.Email).Error
+	err := u.DB.WithContext(ctx).Take(user, "email = ?", in.Email).Error
 	return user, err
 }

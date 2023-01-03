@@ -3,13 +3,15 @@ package handlers
 import (
 	"cadet-project/interfaces"
 	"cadet-project/models"
+	"cadet-project/repository/generate_id"
 	"cadet-project/responses"
 	"cadet-project/validation"
 	"encoding/json"
 	"errors"
 	"io"
 	"net/http"
-	"strconv"
+
+	"github.com/google/uuid"
 )
 
 type UserPrefHandler struct {
@@ -44,6 +46,7 @@ func (u *UserPrefHandler) CreateUserPreferences(w http.ResponseWriter, r *http.R
 			return
 		}
 		userPrefCreated := models.UserPreferences{
+			ID:      generate_id.GenerateID(),
 			Country: userPref.Country,
 			UserId:  userPref.UserId,
 		}
@@ -63,16 +66,15 @@ func (u *UserPrefHandler) CreateUserPreferences(w http.ResponseWriter, r *http.R
 
 func (u *UserPrefHandler) GetUserPreference(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		params := r.URL.Query().Get("user_id")
-
-		paramsID, err := strconv.ParseUint(params, 10, 32)
+		queryString := r.URL.Query().Get("user_id")
+		paramsID, err := uuid.Parse(queryString)
 		if err != nil {
 
 			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in user_id format must be integer"))
 			return
 		}
 
-		userPreferences, err := u.userPreferences.FindUserPreferences(r.Context(), uint32(paramsID))
+		userPreferences, err := u.userPreferences.FindUserPreferences(r.Context(), paramsID)
 
 		if err != nil {
 			responses.ERROR(w, http.StatusInternalServerError, err)
@@ -86,16 +88,15 @@ func (u *UserPrefHandler) GetUserPreference(w http.ResponseWriter, r *http.Reque
 
 func (u *UserPrefHandler) GetUserPorts(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		params := r.URL.Query().Get("user_id")
-
-		paramsID, err := strconv.ParseUint(params, 10, 32)
+		queryString := r.URL.Query().Get("user_id")
+		paramsID, err := uuid.Parse(queryString)
 		if err != nil {
 
 			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in user_id format must be integer"))
 			return
 		}
 
-		userPreferences, err := u.userPreferences.FindUserPreferences(r.Context(), uint32(paramsID))
+		userPreferences, err := u.userPreferences.FindUserPreferences(r.Context(), paramsID)
 		if err != nil {
 			responses.ERROR(w, http.StatusInternalServerError, err)
 			return
@@ -115,14 +116,15 @@ func (u *UserPrefHandler) GetUserPorts(w http.ResponseWriter, r *http.Request) {
 
 func (u *UserPrefHandler) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPatch {
-		paramsID, err := strconv.ParseUint(r.URL.Query().Get("user_id"), 10, 32)
+		queryString := r.URL.Query().Get("user_id")
+		paramsID, err := uuid.Parse(queryString)
 		if err != nil {
 
 			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in user_id format must be integer"))
 			return
 		}
 
-		userPrefFind, err := u.userPreferences.FindUserPreferences(r.Context(), uint32(paramsID))
+		userPrefFind, err := u.userPreferences.FindUserPreferences(r.Context(), paramsID)
 		if err != nil {
 			responses.ERROR(w, http.StatusNotFound, errors.New("user preferences not found"))
 			return
@@ -154,7 +156,7 @@ func (u *UserPrefHandler) UpdateUserPreferences(w http.ResponseWriter, r *http.R
 		userPrefUpdate.ID = userPrefFind.ID
 		validation.ConstructUserPrefObject(userPrefUpdate.Country)
 
-		_, err = u.userPreferences.UpdateUserPref(r.Context(), uint32(paramsID), userPrefUpdate.Country)
+		_, err = u.userPreferences.UpdateUserPref(r.Context(), paramsID, userPrefUpdate.Country)
 
 		if err != nil {
 
@@ -169,14 +171,15 @@ func (u *UserPrefHandler) UpdateUserPreferences(w http.ResponseWriter, r *http.R
 
 func (u *UserPrefHandler) DeleteUserPref(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodDelete {
-		paramsID, err := strconv.ParseUint(r.URL.Query().Get("user_id"), 10, 32)
+		queryString := r.URL.Query().Get("user_id")
+		paramsID, err := uuid.Parse(queryString)
 		if err != nil {
 
 			responses.ERROR(w, http.StatusUnprocessableEntity, err)
 			return
 		}
 
-		if _, err = u.userPreferences.DeleteUserPreferences(r.Context(), &models.UserPreferences{UserId: uint32(paramsID)}); err != nil {
+		if _, err = u.userPreferences.DeleteUserPreferences(r.Context(), paramsID); err != nil {
 			responses.ERROR(w, http.StatusInternalServerError, err)
 			return
 		}

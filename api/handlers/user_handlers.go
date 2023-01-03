@@ -4,6 +4,7 @@ import (
 	"cadet-project/configurations"
 	"cadet-project/interfaces"
 	"cadet-project/models"
+	"cadet-project/repository/generate_id"
 	"cadet-project/responses"
 	"cadet-project/validation"
 	"encoding/json"
@@ -11,10 +12,10 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/crewjam/saml/samlsp"
+	"github.com/google/uuid"
 )
 
 type UserHandler struct {
@@ -37,6 +38,7 @@ func (h *UserHandler) Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user := models.User{
+		ID:    generate_id.GenerateID(),
 		Email: userEmail,
 		Name:  userName,
 	}
@@ -96,7 +98,8 @@ func (h *UserHandler) CreateUserInDb(w http.ResponseWriter, r *http.Request) {
 
 func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodDelete {
-		paramsID, err := strconv.ParseUint(r.URL.Query().Get("id"), 10, 32)
+		queryString := r.URL.Query().Get("id")
+		paramsID, err := uuid.Parse(queryString)
 		if err != nil {
 
 			responses.ERROR(w, http.StatusUnprocessableEntity, err)

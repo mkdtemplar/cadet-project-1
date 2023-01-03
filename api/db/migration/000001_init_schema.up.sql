@@ -1,14 +1,14 @@
 create table if not exists users
 (
-    userid    bigserial primary key,
+    id    uuid primary key,
     email text unique,
     name  varchar(100)
 );
 create table if not exists user_preferences
 (
-    userid      bigserial constraint user_preferences_pk primary key,
+    userid      uuid constraint user_preferences_pk primary key,
     country varchar(100),
-    user_id integer not null constraint user_preferences_users_null_fk references public.users ON DELETE CASCADE
+    user_id uuid not null constraint user_preferences_users_null_fk references public.users ON DELETE CASCADE
 );
 create table if not exists ships_routes
 (
