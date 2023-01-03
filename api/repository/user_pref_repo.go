@@ -1,8 +1,8 @@
 package repository
 
 import (
+	"cadet-project/interfaces"
 	"cadet-project/models"
-	"cadet-project/repository/interfaces"
 	"context"
 	"errors"
 
@@ -10,44 +10,44 @@ import (
 )
 
 func NewUserPrefRepo(db *gorm.DB) interfaces.IUserPreferences {
-	return &PG{db: db}
+	return &PG{DB: db}
 }
 
 func (u *PG) SaveUserPreferences(ctx context.Context, in *models.UserPreferences) error {
 	if in == nil {
-		return errors.New("user details empty")
+		return errors.New("User details empty")
 	}
 
-	return u.db.Debug().WithContext(ctx).Create(&in).Error
+	return u.DB.Debug().WithContext(ctx).Create(&in).Error
 }
 
 func (u *PG) FindUserPreferences(ctx context.Context, id uint32) (*models.UserPreferences, error) {
 	var err error
-	err = u.db.Debug().WithContext(ctx).Model(&models.UserPreferences{}).Where("user_id = ?", id).Take(&u.userpref).Error
+	err = u.DB.Debug().WithContext(ctx).Model(&models.UserPreferences{}).Where("user_id = ?", id).Take(&u.UserPreferences).Error
 	if err != nil {
 		return &models.UserPreferences{}, err
 	}
 
-	return u.userpref, nil
+	return u.UserPreferences, nil
 }
 
 func (u *PG) UpdateUserPref(ctx context.Context, userid uint32, country string) (*models.UserPreferences, error) {
 	var err error
 
-	err = u.db.Debug().WithContext(ctx).Model(&models.UserPreferences{}).Where("user_id = ?", userid).Update("country", country).Error
+	err = u.DB.Debug().WithContext(ctx).Model(&models.UserPreferences{}).Where("user_id = ?", userid).Update("country", country).Error
 	if err != nil {
 
 		err.Error()
 	}
 
-	return u.userpref, nil
+	return u.UserPreferences, nil
 
 }
 
 func (u *PG) DeleteUserPreferences(ctx context.Context, usrpref *models.UserPreferences) (int64, error) {
 	var err error
 	userPref := &models.UserPreferences{UserId: usrpref.UserId}
-	tx := u.db.Begin()
+	tx := u.DB.Begin()
 
 	delTx := tx.WithContext(ctx).Model(&userPref).Where("user_id = ?", usrpref.UserId).Delete(userPref)
 
@@ -63,13 +63,13 @@ func (u *PG) DeleteUserPreferences(ctx context.Context, usrpref *models.UserPref
 func (u *PG) FindUserPrefPorts(ctx context.Context, in *models.UserPreferences) (*models.UserPreferencesPorts, error) {
 	var err error
 	userPref := &models.UserPreferences{}
-	if err = u.db.WithContext(ctx).Joins("join ships_routes ON ships_routes.country = user_preferences.country").Find(userPref).Error; err != nil {
+	if err = u.DB.WithContext(ctx).Joins("join ships_routes ON ships_routes.country = user_preferences.country").Find(userPref).Error; err != nil {
 		return nil, err
 	}
 
 	var ports []models.ShipsRoutes
 
-	if err := u.db.WithContext(ctx).Where("country = ?", in.Country).Model(&models.ShipsRoutes{}).Find(&ports).Error; err != nil {
+	if err := u.DB.WithContext(ctx).Where("country = ?", in.Country).Model(&models.ShipsRoutes{}).Find(&ports).Error; err != nil {
 		return &models.UserPreferencesPorts{}, err
 	}
 	userPrefPorts := &models.UserPreferencesPorts{

@@ -1,8 +1,8 @@
 package handlers
 
 import (
+	"cadet-project/interfaces"
 	"cadet-project/models"
-	"cadet-project/repository/interfaces"
 	"cadet-project/responses"
 	"cadet-project/validation"
 	"encoding/json"
@@ -10,24 +10,13 @@ import (
 	"io"
 	"net/http"
 	"strconv"
-
-	"gorm.io/gorm"
 )
-
-type IUserPrefHandlers interface {
-	CreateUserPreferences(w http.ResponseWriter, r *http.Request)
-	GetUserPreference(w http.ResponseWriter, r *http.Request)
-	GetUserPorts(w http.ResponseWriter, r *http.Request)
-	UpdateUserPreferences(w http.ResponseWriter, r *http.Request)
-	DeleteUserPref(w http.ResponseWriter, r *http.Request)
-}
 
 type UserPrefHandler struct {
 	userPreferences interfaces.IUserPreferences
-	db              *gorm.DB
 }
 
-func NewUserPrefHandler(usr interfaces.IUserPreferences) IUserPrefHandlers {
+func NewUserPrefHandler(usr interfaces.IUserPreferences) interfaces.IUserPrefHandlers {
 	return &UserPrefHandler{userPreferences: usr}
 }
 

@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"cadet-project/configurations"
+	"cadet-project/interfaces"
 	"cadet-project/models"
-	"cadet-project/repository/interfaces"
 	"cadet-project/responses"
 	"cadet-project/validation"
 	"encoding/json"
@@ -17,17 +17,11 @@ import (
 	"github.com/crewjam/saml/samlsp"
 )
 
-type IUserHandlers interface {
-	CreateUserInDb(w http.ResponseWriter, r *http.Request)
-	DeleteUser(w http.ResponseWriter, r *http.Request)
-	Home(w http.ResponseWriter, r *http.Request)
-}
-
 type UserHandler struct {
 	user interfaces.IUserRepository
 }
 
-func NewUserHandler(usr interfaces.IUserRepository) IUserHandlers {
+func NewUserHandler(usr interfaces.IUserRepository) interfaces.IUserHandlers {
 	return &UserHandler{user: usr}
 }
 
