@@ -7,10 +7,11 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"github.com/crewjam/saml/samlsp"
 	"log"
 	"net/http"
 	"net/url"
+
+	"github.com/crewjam/saml/samlsp"
 )
 
 func AuthorizationRequest() *samlsp.Middleware {

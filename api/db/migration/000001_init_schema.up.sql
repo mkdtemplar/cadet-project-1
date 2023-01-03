@@ -1,12 +1,12 @@
 create table if not exists users
 (
-    id    bigserial primary key,
+    userid    bigserial primary key,
     email text unique,
     name  varchar(100)
 );
 create table if not exists user_preferences
 (
-    id      bigserial constraint user_preferences_pk primary key,
+    userid      bigserial constraint user_preferences_pk primary key,
     country varchar(100),
     user_id integer not null constraint user_preferences_users_null_fk references public.users ON DELETE CASCADE
 );

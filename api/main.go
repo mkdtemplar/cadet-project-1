@@ -6,7 +6,6 @@ import (
 )
 
 func main() {
-
 	configurations.InitConfig("configurations")
 	configurations.InitDbConfig("configurations")
 	server.Run()

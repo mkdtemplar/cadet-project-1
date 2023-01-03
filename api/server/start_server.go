@@ -2,10 +2,10 @@ package server
 
 import (
 	"cadet-project/configurations"
-	"cadet-project/controllers"
+	"cadet-project/handlers"
 )
 
-var server = controllers.Server{}
+var server = handlers.Server{}
 
 func Run() {
 	configurations.InitDbConfig("configurations")

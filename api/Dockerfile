@@ -5,8 +5,8 @@ FROM golang:1.19-alpine
 LABEL maintainer="ShipsRoutes application"
 
 # Setup folders
-RUN mkdir cadet-project
-WORKDIR cadet-project
+RUN mkdir cadet-project-v2
+WORKDIR cadet-project-v2
 
 # Copy the source from the current directory to the working Directory inside the container
 COPY . .

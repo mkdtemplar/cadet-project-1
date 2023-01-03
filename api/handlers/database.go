@@ -1,18 +1,27 @@
-package controllers
+package handlers
 
 import (
-	_ "embed"
+	"cadet-project/models"
+	"cadet-project/repository"
+	"cadet-project/repository/interfaces"
 	"fmt"
 	"log"
 	"net/http"
 
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 type Server struct {
-	DB     *gorm.DB
-	Router *http.ServeMux
+	DB       *gorm.DB
+	Router   *http.ServeMux
+	User     *models.User
+	UserPref *models.UserPreferences
+	interfaces.IUserPreferences
+	interfaces.IUserRepository
+	repository.PG
+	IUserHandlers
+	IUserPrefHandlers
 }
 
 func (s *Server) InitializeDB(Dbdriver, DbUser, DbPassword, DbPort, DbHost, DbName string) {
@@ -21,7 +30,7 @@ func (s *Server) InitializeDB(Dbdriver, DbUser, DbPassword, DbPort, DbHost, DbNa
 
 	DBURL := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s", DbHost, DbPort, DbUser, DbName, DbPassword)
 
-	s.DB, err = gorm.Open(Dbdriver, DBURL)
+	s.DB, err = gorm.Open(postgres.Open(DBURL), &gorm.Config{})
 
 	if err != nil {
 		fmt.Printf("Cannot connect to %s database %s", Dbdriver, DbName)
