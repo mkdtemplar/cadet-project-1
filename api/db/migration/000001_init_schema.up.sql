@@ -1,14 +1,14 @@
-create table if not exists users
+create table if not exists public.users
 (
-    id    uuid primary key,
+    id    uuid not null primary key,
     email text unique,
     name  varchar(100)
 );
-create table if not exists user_preferences
+create table if not exists public.user_preferences
 (
-    userid      uuid constraint user_preferences_pk primary key,
+    id  uuid not null constraint user_preferences_pk primary key,
     country varchar(100),
-    user_id uuid not null constraint user_preferences_users_null_fk references public.users ON DELETE CASCADE
+    user_id uuid not null constraint user_preferences_users_null_fk references public.users on delete cascade
 );
 create table if not exists ships_routes
 (
