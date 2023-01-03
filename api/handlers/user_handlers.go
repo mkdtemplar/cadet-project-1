@@ -23,11 +23,15 @@ type IUserHandlers interface {
 	Home(w http.ResponseWriter, r *http.Request)
 }
 
-type Handler struct {
+type UserHandler struct {
 	user interfaces.IUserRepository
 }
 
-func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
+func NewUserHandler(usr interfaces.IUserRepository) IUserHandlers {
+	return &UserHandler{user: usr}
+}
+
+func (h *UserHandler) Home(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	userEmail := samlsp.AttributeFromContext(r.Context(), configurations.Config.Email)
@@ -65,7 +69,7 @@ func (h *Handler) Home(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) CreateUserInDb(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) CreateUserInDb(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
@@ -96,7 +100,7 @@ func (h *Handler) CreateUserInDb(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *Handler) DeleteUser(w http.ResponseWriter, r *http.Request) {
+func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodDelete {
 		paramsID, err := strconv.ParseUint(r.URL.Query().Get("id"), 10, 32)
 		if err != nil {
@@ -114,8 +118,4 @@ func (h *Handler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusBadRequest, errors.New("invalid http method"))
 		return
 	}
-}
-
-func NewUserHandler(usr interfaces.IUserRepository) IUserHandlers {
-	return &Handler{user: usr}
 }
