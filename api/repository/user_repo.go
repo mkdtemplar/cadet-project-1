@@ -28,7 +28,7 @@ func (u *PG) PrepareUserData(email string, name string) {
 
 func (u *PG) SaveUserDb(ctx context.Context, usr *models.User) error {
 	if usr == nil {
-		return errors.New("User details empty")
+		return errors.New("user details empty")
 	}
 
 	return u.DB.Debug().WithContext(ctx).Create(&usr).Error
