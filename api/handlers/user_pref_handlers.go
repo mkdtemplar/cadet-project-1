@@ -15,10 +15,10 @@ import (
 )
 
 type UserPrefHandler struct {
-	userPreferences interfaces.IUserPreferences
+	userPreferences interfaces.IUserPreferencesRepository
 }
 
-func NewUserPrefHandler(usr interfaces.IUserPreferences) interfaces.IUserPrefHandlers {
+func NewUserPrefHandler(usr interfaces.IUserPreferencesRepository) interfaces.IUserPrefHandlers {
 	return &UserPrefHandler{userPreferences: usr}
 }
 

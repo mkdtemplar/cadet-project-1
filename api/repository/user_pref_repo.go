@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewUserPrefRepo(db *gorm.DB) interfaces.IUserPreferences {
+func NewUserPrefRepo(db *gorm.DB) interfaces.IUserPreferencesRepository {
 	return &PG{DB: db}
 }
 

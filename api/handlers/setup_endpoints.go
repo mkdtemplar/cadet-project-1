@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"cadet-project/configurations"
-	"cadet-project/repository"
 	"cadet-project/responses"
 	"errors"
 	"net/http"
@@ -14,10 +13,9 @@ func (s *Server) notFound(w http.ResponseWriter) {
 }
 func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 	configurations.InitConfig("configurations")
-	var UserRepo = repository.NewUserRepo(s.DB)
-	var UserHandlers = NewUserHandler(UserRepo)
-	var UserPrefRepo = repository.NewUserPrefRepo(s.DB)
-	var UserPrefHandlers = NewUserPrefHandler(UserPrefRepo)
+	var UserHandlers = s.UserHandlerFunc()
+
+	var UserPrefHandlers = s.UserPrefHandlerFunc()
 
 	w.Header().Set("content-type", "application/json")
 	switch {

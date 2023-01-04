@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type IUserPreferences interface {
+type IUserPreferencesRepository interface {
 	SaveUserPreferences(ctx context.Context, usrpref *models.UserPreferences) error
 	FindUserPreferences(ctx context.Context, id uuid.UUID) (*models.UserPreferences, error)
 	UpdateUserPref(ctx context.Context, id uuid.UUID, country string) (*models.UserPreferences, error)
