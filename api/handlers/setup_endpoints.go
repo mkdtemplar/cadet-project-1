@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"cadet-project/configurations"
 	"cadet-project/repository"
 	"cadet-project/responses"
 	"errors"
@@ -12,32 +13,33 @@ func (s *Server) notFound(w http.ResponseWriter) {
 	return
 }
 func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
-	usrRepo := repository.NewUserRepo(s.DB)
-	usrHandlers := NewUserHandler(usrRepo)
-	userPrefRepo := repository.NewUserPrefRepo(s.DB)
-	userPrefHandlers := NewUserPrefHandler(userPrefRepo)
+	configurations.InitConfig("configurations")
+	var UserRepo = repository.NewUserRepo(s.DB)
+	var UserHandlers = NewUserHandler(UserRepo)
+	var UserPrefRepo = repository.NewUserPrefRepo(s.DB)
+	var UserPrefHandlers = NewUserPrefHandler(UserPrefRepo)
 
 	w.Header().Set("content-type", "application/json")
 	switch {
 	case r.Method == http.MethodDelete && r.URL.Path == "/userdelete":
-		usrHandlers.DeleteUser(w, r)
+		UserHandlers.DeleteUser(w, r)
 		return
 	case r.Method == http.MethodPost && r.URL.Path == "/usercreate":
-		usrHandlers.CreateUserInDb(w, r)
+		UserHandlers.CreateUserInDb(w, r)
 		return
 	case r.Method == http.MethodPost && r.URL.Path == "/userpref":
-		userPrefHandlers.CreateUserPreferences(w, r)
+		UserPrefHandlers.CreateUserPreferences(w, r)
 	case r.Method == http.MethodGet && r.URL.Path == "/userpref":
-		userPrefHandlers.GetUserPreference(w, r)
+		UserPrefHandlers.GetUserPreference(w, r)
 		return
 	case r.Method == http.MethodGet && r.URL.Path == "/userprefports":
-		userPrefHandlers.GetUserPorts(w, r)
+		UserPrefHandlers.GetUserPorts(w, r)
 		return
 	case r.Method == http.MethodDelete && r.URL.Path == "/userpref":
-		userPrefHandlers.DeleteUserPref(w, r)
+		UserPrefHandlers.DeleteUserPref(w, r)
 		return
 	case r.Method == http.MethodPatch && r.URL.Path == "/userpref":
-		userPrefHandlers.UpdateUserPreferences(w, r)
+		UserPrefHandlers.UpdateUserPreferences(w, r)
 	default:
 		s.notFound(w)
 		return
