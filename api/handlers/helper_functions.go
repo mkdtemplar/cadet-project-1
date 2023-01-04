@@ -6,8 +6,7 @@ import (
 )
 
 func (s *Server) UserRepoFunc() interfaces.IUserRepository {
-	var repo = repository.NewUserRepo(s.DB)
-	return repo
+	return repository.NewUserRepo(s.DB)
 }
 
 func (s *Server) UserHandlerFunc() interfaces.IUserHandlers {
