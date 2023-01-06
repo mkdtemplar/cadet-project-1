@@ -51,7 +51,7 @@ func (u *PG) DeleteUserPreferences(ctx context.Context, id uuid.UUID) (int64, er
 
 	tx := u.DB.Begin()
 
-	delTx := tx.WithContext(ctx).Model(&models.UserPreferences{}).Delete(&models.User{}, id)
+	delTx := tx.WithContext(ctx).Model(&models.UserPreferences{}).Where("user_id = ?", id).Delete(&models.User{}, id)
 
 	if err = delTx.Error; err != nil {
 		return 0, err
@@ -59,7 +59,7 @@ func (u *PG) DeleteUserPreferences(ctx context.Context, id uuid.UUID) (int64, er
 		tx.Commit()
 	}
 
-	return tx.RowsAffected, nil
+	return delTx.RowsAffected, nil
 }
 
 func (u *PG) FindUserPrefPorts(ctx context.Context, in *models.UserPreferences) (*models.UserPreferencesPorts, error) {

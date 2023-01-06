@@ -16,8 +16,6 @@ type Server struct {
 	repository.PG
 	interfaces.IUserRepository
 	interfaces.IUserPreferencesRepository
-	interfaces.IUserHandlers
-	interfaces.IUserPrefHandlers
 }
 
 func NewServerUserPref(IUserPreferencesRepository interfaces.IUserPreferencesRepository) *Server {
