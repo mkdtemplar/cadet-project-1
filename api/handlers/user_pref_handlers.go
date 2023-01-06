@@ -78,6 +78,7 @@ func (s *Server) GetUserPreference(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) GetUserPorts(w http.ResponseWriter, r *http.Request) {
+
 	if r.Method == http.MethodGet {
 		queryString := r.URL.Query().Get("user_id")
 		paramsID, err := uuid.Parse(queryString)
@@ -128,7 +129,7 @@ func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		userPrefUpdate := models.UserPreferences{}
+		var userPrefUpdate models.UserPreferences
 
 		err = json.Unmarshal(body, &userPrefUpdate)
 
@@ -154,6 +155,7 @@ func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 			responses.ERROR(w, http.StatusInternalServerError, err)
 			return
 		}
+
 		responses.JSON(w, http.StatusOK, userPrefUpdate)
 	} else {
 		responses.ERROR(w, http.StatusBadRequest, errors.New("invalid http method"))

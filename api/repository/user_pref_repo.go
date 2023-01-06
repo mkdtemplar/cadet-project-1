@@ -25,12 +25,15 @@ func (u *PG) SaveUserPreferences(ctx context.Context, in *models.UserPreferences
 
 func (u *PG) FindUserPreferences(ctx context.Context, id uuid.UUID) (*models.UserPreferences, error) {
 	var err error
-	err = u.DB.WithContext(ctx).Model(&models.UserPreferences{}).Where("user_id = ?", id).Take(&u.UserPreferences).Error
+
+	userPref := &models.UserPreferences{}
+
+	err = u.DB.WithContext(ctx).Model(&models.UserPreferences{}).Where("user_id = ?", id).Take(userPref).Error
 	if err != nil {
-		return &models.UserPreferences{}, err
+		return nil, nil
 	}
 
-	return u.UserPreferences, nil
+	return userPref, nil
 }
 
 func (u *PG) UpdateUserPref(ctx context.Context, userid uuid.UUID, country string) (*models.UserPreferences, error) {
