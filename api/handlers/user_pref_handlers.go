@@ -57,11 +57,11 @@ func (s *Server) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) GetUserPreference(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		queryString := r.URL.Query().Get("user_id")
+		queryString := r.URL.Query().Get("id")
 		paramsID, err := uuid.Parse(queryString)
 		if err != nil {
 
-			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in user_id format must be integer"))
+			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be integer"))
 			return
 		}
 
@@ -80,11 +80,11 @@ func (s *Server) GetUserPreference(w http.ResponseWriter, r *http.Request) {
 func (s *Server) GetUserPorts(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodGet {
-		queryString := r.URL.Query().Get("user_id")
+		queryString := r.URL.Query().Get("id")
 		paramsID, err := uuid.Parse(queryString)
 		if err != nil {
 
-			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in user_id format must be integer"))
+			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be integer"))
 			return
 		}
 
@@ -108,11 +108,11 @@ func (s *Server) GetUserPorts(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPatch {
-		queryString := r.URL.Query().Get("user_id")
+		queryString := r.URL.Query().Get("id")
 		paramsID, err := uuid.Parse(queryString)
 		if err != nil {
 
-			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in user_id format must be integer"))
+			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be integer"))
 			return
 		}
 
@@ -164,7 +164,7 @@ func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) DeleteUserPref(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodDelete {
-		queryString := r.URL.Query().Get("user_id")
+		queryString := r.URL.Query().Get("id")
 		paramsID, err := uuid.Parse(queryString)
 		if err != nil {
 

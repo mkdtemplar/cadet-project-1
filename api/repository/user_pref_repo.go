@@ -28,7 +28,7 @@ func (u *PG) FindUserPreferences(ctx context.Context, id uuid.UUID) (*models.Use
 
 	userPref := &models.UserPreferences{}
 
-	err = u.DB.WithContext(ctx).Model(&models.UserPreferences{}).Where("user_id = ?", id).Take(userPref).Error
+	err = u.DB.WithContext(ctx).Model(&models.UserPreferences{}).Where("id = ?", id).Take(userPref).Error
 	if err != nil {
 		return nil, nil
 	}
@@ -39,7 +39,7 @@ func (u *PG) FindUserPreferences(ctx context.Context, id uuid.UUID) (*models.Use
 func (u *PG) UpdateUserPref(ctx context.Context, userid uuid.UUID, country string) (*models.UserPreferences, error) {
 	var err error
 
-	err = u.DB.WithContext(ctx).Model(&models.UserPreferences{}).Where("user_id = ?", userid).Update("country", country).Error
+	err = u.DB.WithContext(ctx).Model(&models.UserPreferences{}).Where("id = ?", userid).Update("country", country).Error
 	if err != nil {
 		err.Error()
 		return nil, err
@@ -54,7 +54,7 @@ func (u *PG) DeleteUserPreferences(ctx context.Context, id uuid.UUID) (int64, er
 
 	tx := u.DB.Begin()
 
-	delTx := tx.WithContext(ctx).Model(&models.UserPreferences{}).Where("user_id = ?", id).Delete(&models.User{}, id)
+	delTx := tx.WithContext(ctx).Model(&models.UserPreferences{}).Where("id = ?", id).Delete(&models.UserPreferences{})
 
 	if err = delTx.Error; err != nil {
 		return 0, err
