@@ -9,16 +9,12 @@ func (s *Server) UserRepoFunc() interfaces.IUserRepository {
 	return repository.NewUserRepo(s.DB)
 }
 
-func (s *Server) UserHandlerFunc() interfaces.IUserHandlers {
-	userRepo := s.UserRepoFunc()
-	return NewUserHandler(userRepo)
-}
-
-func (s *Server) UserPrefRepoFunc() interfaces.IUserPreferencesRepository {
+func (s *Server) UserPrefRepo() interfaces.IUserPreferencesRepository {
 	return repository.NewUserPrefRepo(s.DB)
 }
 
-func (s *Server) UserPrefHandlerFunc() interfaces.IUserPrefHandlers {
-	userPrefRepo := s.UserPrefRepoFunc()
-	return NewUserPrefHandler(userPrefRepo)
+func (s *Server) HandlersConstructor() (interfaces.IUserHandlers, interfaces.IUserPrefHandlers) {
+	userRepo := s.UserRepoFunc()
+	userPrefRepo := s.UserPrefRepo()
+	return NewServerUser(userRepo), NewServerUserPref(userPrefRepo)
 }

@@ -13,31 +13,30 @@ func (s *Server) notFound(w http.ResponseWriter) {
 }
 func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 	configurations.InitConfig("configurations")
-	var UserHandlers = s.UserHandlerFunc()
 
-	var UserPrefHandlers = s.UserPrefHandlerFunc()
+	userConstructor, userPrefConstructor := s.HandlersConstructor()
 
 	w.Header().Set("content-type", "application/json")
 	switch {
 	case r.Method == http.MethodDelete && r.URL.Path == "/userdelete":
-		UserHandlers.DeleteUser(w, r)
+		userConstructor.DeleteUser(w, r)
 		return
 	case r.Method == http.MethodPost && r.URL.Path == "/usercreate":
-		UserHandlers.CreateUserInDb(w, r)
+		userConstructor.CreateUserInDb(w, r)
 		return
 	case r.Method == http.MethodPost && r.URL.Path == "/userpref":
-		UserPrefHandlers.CreateUserPreferences(w, r)
+		userPrefConstructor.CreateUserPreferences(w, r)
 	case r.Method == http.MethodGet && r.URL.Path == "/userpref":
-		UserPrefHandlers.GetUserPreference(w, r)
+		userPrefConstructor.GetUserPreference(w, r)
 		return
 	case r.Method == http.MethodGet && r.URL.Path == "/userprefports":
-		UserPrefHandlers.GetUserPorts(w, r)
+		userPrefConstructor.GetUserPorts(w, r)
 		return
 	case r.Method == http.MethodDelete && r.URL.Path == "/userpref":
-		UserPrefHandlers.DeleteUserPref(w, r)
+		userPrefConstructor.DeleteUserPref(w, r)
 		return
 	case r.Method == http.MethodPatch && r.URL.Path == "/userpref":
-		UserPrefHandlers.UpdateUserPreferences(w, r)
+		userPrefConstructor.UpdateUserPreferences(w, r)
 	default:
 		s.notFound(w)
 		return

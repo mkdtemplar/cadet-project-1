@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"cadet-project/interfaces"
 	"cadet-project/repository"
 	"fmt"
 	"log"
@@ -13,6 +14,18 @@ import (
 type Server struct {
 	Router *http.ServeMux
 	repository.PG
+	interfaces.IUserRepository
+	interfaces.IUserPreferencesRepository
+	interfaces.IUserHandlers
+	interfaces.IUserPrefHandlers
+}
+
+func NewServerUserPref(IUserPreferencesRepository interfaces.IUserPreferencesRepository) *Server {
+	return &Server{IUserPreferencesRepository: IUserPreferencesRepository}
+}
+
+func NewServerUser(IUserRepository interfaces.IUserRepository) *Server {
+	return &Server{IUserRepository: IUserRepository}
 }
 
 func (s *Server) InitializeDB(Dbdriver, DbUser, DbPassword, DbPort, DbHost, DbName string) {

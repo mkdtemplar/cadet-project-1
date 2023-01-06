@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"cadet-project/configurations"
-	"cadet-project/interfaces"
+
 	"cadet-project/models"
 	"cadet-project/repository/generate_id"
 	"cadet-project/responses"
@@ -18,15 +18,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type UserHandler struct {
-	user interfaces.IUserRepository
-}
-
-func NewUserHandler(usr interfaces.IUserRepository) interfaces.IUserHandlers {
-	return &UserHandler{user: usr}
-}
-
-func (h *UserHandler) Home(w http.ResponseWriter, r *http.Request) {
+func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	userEmail := samlsp.AttributeFromContext(r.Context(), configurations.Config.Email)
@@ -44,7 +36,7 @@ func (h *UserHandler) Home(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tokenValue := validation.ExtractToken(r)
-	expiresAt := time.Now().Add(300 * time.Second)
+	expiresAt := time.Now().Add(900 * time.Second)
 
 	models.Sessions[tokenValue] = models.Session{Expiry: expiresAt}
 
@@ -52,9 +44,9 @@ func (h *UserHandler) Home(w http.ResponseWriter, r *http.Request) {
 	models.Cookie.Path = "/"
 	http.SetCookie(w, &models.Cookie)
 
-	_, err = h.user.GetUser(r.Context(), &user)
+	_, err = s.IUserRepository.GetUser(r.Context(), &user)
 	if err != nil {
-		err = h.user.SaveUserDb(r.Context(), &user)
+		err = s.IUserRepository.SaveUserDb(r.Context(), &user)
 		if err != nil {
 			responses.ERROR(w, http.StatusUnprocessableEntity, err)
 			return
@@ -65,7 +57,7 @@ func (h *UserHandler) Home(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *UserHandler) CreateUserInDb(w http.ResponseWriter, r *http.Request) {
+func (s *Server) CreateUserInDb(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
@@ -84,8 +76,8 @@ func (h *UserHandler) CreateUserInDb(w http.ResponseWriter, r *http.Request) {
 			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("invalid user email format"))
 			return
 		}
-		h.user.PrepareUserData(user.Email, user.Name)
-		if err = h.user.SaveUserDb(r.Context(), &user); err != nil {
+		s.IUserRepository.PrepareUserData(user.Email, user.Name)
+		if err = s.IUserRepository.SaveUserDb(r.Context(), &user); err != nil {
 			responses.ERROR(w, http.StatusInternalServerError, err)
 			return
 		}
@@ -96,7 +88,7 @@ func (h *UserHandler) CreateUserInDb(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
+func (s *Server) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodDelete {
 		queryString := r.URL.Query().Get("id")
 		paramsID, err := uuid.Parse(queryString)
@@ -106,7 +98,7 @@ func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		if _, err = h.user.DeleteUserDb(r.Context(), paramsID); err != nil {
+		if _, err = s.IUserRepository.DeleteUserDb(r.Context(), paramsID); err != nil {
 			responses.ERROR(w, http.StatusInternalServerError, err)
 			return
 		}

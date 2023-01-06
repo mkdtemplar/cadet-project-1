@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"cadet-project/interfaces"
 	"cadet-project/models"
 	"cadet-project/repository/generate_id"
 	"cadet-project/responses"
@@ -14,15 +13,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type UserPrefHandler struct {
-	userPreferences interfaces.IUserPreferencesRepository
-}
-
-func NewUserPrefHandler(usr interfaces.IUserPreferencesRepository) interfaces.IUserPrefHandlers {
-	return &UserPrefHandler{userPreferences: usr}
-}
-
-func (u *UserPrefHandler) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
+func (s *Server) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		body, err := io.ReadAll(r.Body)
 
@@ -52,7 +43,7 @@ func (u *UserPrefHandler) CreateUserPreferences(w http.ResponseWriter, r *http.R
 		}
 		validation.ConstructUserPrefObject(userPref.Country)
 
-		err = u.userPreferences.SaveUserPreferences(r.Context(), &userPrefCreated)
+		err = s.IUserPreferencesRepository.SaveUserPreferences(r.Context(), &userPrefCreated)
 		if err != nil {
 			responses.ERROR(w, http.StatusUnprocessableEntity, err)
 			return
@@ -64,7 +55,7 @@ func (u *UserPrefHandler) CreateUserPreferences(w http.ResponseWriter, r *http.R
 	}
 }
 
-func (u *UserPrefHandler) GetUserPreference(w http.ResponseWriter, r *http.Request) {
+func (s *Server) GetUserPreference(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		queryString := r.URL.Query().Get("user_id")
 		paramsID, err := uuid.Parse(queryString)
@@ -74,7 +65,7 @@ func (u *UserPrefHandler) GetUserPreference(w http.ResponseWriter, r *http.Reque
 			return
 		}
 
-		userPreferences, err := u.userPreferences.FindUserPreferences(r.Context(), paramsID)
+		userPreferences, err := s.IUserPreferencesRepository.FindUserPreferences(r.Context(), paramsID)
 
 		if err != nil {
 			responses.ERROR(w, http.StatusInternalServerError, err)
@@ -86,7 +77,7 @@ func (u *UserPrefHandler) GetUserPreference(w http.ResponseWriter, r *http.Reque
 	}
 }
 
-func (u *UserPrefHandler) GetUserPorts(w http.ResponseWriter, r *http.Request) {
+func (s *Server) GetUserPorts(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		queryString := r.URL.Query().Get("user_id")
 		paramsID, err := uuid.Parse(queryString)
@@ -96,13 +87,13 @@ func (u *UserPrefHandler) GetUserPorts(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		userPreferences, err := u.userPreferences.FindUserPreferences(r.Context(), paramsID)
+		userPreferences, err := s.IUserPreferencesRepository.FindUserPreferences(r.Context(), paramsID)
 		if err != nil {
 			responses.ERROR(w, http.StatusInternalServerError, err)
 			return
 		}
 
-		userPrefPorts, err := u.userPreferences.FindUserPrefPorts(r.Context(), userPreferences)
+		userPrefPorts, err := s.IUserPreferencesRepository.FindUserPrefPorts(r.Context(), userPreferences)
 
 		if err != nil {
 			responses.ERROR(w, http.StatusInternalServerError, err)
@@ -114,7 +105,7 @@ func (u *UserPrefHandler) GetUserPorts(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (u *UserPrefHandler) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
+func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPatch {
 		queryString := r.URL.Query().Get("user_id")
 		paramsID, err := uuid.Parse(queryString)
@@ -124,7 +115,7 @@ func (u *UserPrefHandler) UpdateUserPreferences(w http.ResponseWriter, r *http.R
 			return
 		}
 
-		userPrefFind, err := u.userPreferences.FindUserPreferences(r.Context(), paramsID)
+		userPrefFind, err := s.IUserPreferencesRepository.FindUserPreferences(r.Context(), paramsID)
 		if err != nil {
 			responses.ERROR(w, http.StatusNotFound, errors.New("user preferences not found"))
 			return
@@ -156,7 +147,7 @@ func (u *UserPrefHandler) UpdateUserPreferences(w http.ResponseWriter, r *http.R
 		userPrefUpdate.ID = userPrefFind.ID
 		validation.ConstructUserPrefObject(userPrefUpdate.Country)
 
-		_, err = u.userPreferences.UpdateUserPref(r.Context(), paramsID, userPrefUpdate.Country)
+		_, err = s.IUserPreferencesRepository.UpdateUserPref(r.Context(), paramsID, userPrefUpdate.Country)
 
 		if err != nil {
 
@@ -169,7 +160,7 @@ func (u *UserPrefHandler) UpdateUserPreferences(w http.ResponseWriter, r *http.R
 	}
 }
 
-func (u *UserPrefHandler) DeleteUserPref(w http.ResponseWriter, r *http.Request) {
+func (s *Server) DeleteUserPref(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodDelete {
 		queryString := r.URL.Query().Get("user_id")
 		paramsID, err := uuid.Parse(queryString)
@@ -179,7 +170,7 @@ func (u *UserPrefHandler) DeleteUserPref(w http.ResponseWriter, r *http.Request)
 			return
 		}
 
-		if _, err = u.userPreferences.DeleteUserPreferences(r.Context(), paramsID); err != nil {
+		if _, err = s.IUserPreferencesRepository.DeleteUserPreferences(r.Context(), paramsID); err != nil {
 			responses.ERROR(w, http.StatusInternalServerError, err)
 			return
 		}
