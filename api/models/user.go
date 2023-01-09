@@ -48,9 +48,25 @@ func (u *User) DeleteUserDb(db *gorm.DB, uid uint64) (int64, error) {
 }
 
 func (u *User) CheckUser(db *gorm.DB, mail string) error {
-	//var err error
-
 	err := db.Debug().Model(&User{}).Where("email = ?", mail).Find(&u).Error
 	return err
+}
 
+func TokenValid(w http.ResponseWriter, r *http.Request) error {
+	cookie, err := r.Cookie("token")
+	if err != nil {
+		return err
+	}
+	sessionToken := cookie.Value
+	userSession, exists := Sessions[sessionToken]
+	if !exists {
+		responses.ERROR(w, http.StatusBadRequest, errors.New("token not present in session"))
+		return errors.New("invalid token")
+	}
+
+	if userSession.IsExpired() {
+		delete(Sessions, sessionToken)
+		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
+		return errors.New("unauthorized")
+	}
 }
