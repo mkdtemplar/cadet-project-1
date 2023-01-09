@@ -13,5 +13,5 @@ func Run() {
 		configurations.ConfigDB.DBPassword, configurations.ConfigDB.DBPort, configurations.ConfigDB.DBHost,
 		configurations.ConfigDB.DBName)
 
-	server.Run(":8080")
+	server.Run(configurations.Config.ApiPort)
 }

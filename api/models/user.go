@@ -1,14 +1,10 @@
 package models
 
 import (
-	"cadet-project/responses"
-	"errors"
-	"github.com/badoux/checkmail"
-	"github.com/jinzhu/gorm"
 	"html"
-	"net/http"
 	"strings"
-	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 type User struct {
@@ -17,37 +13,17 @@ type User struct {
 	Name  string `gorm:"size:100" json:"name"`
 }
 
-func (u *User) PrepareUserData() {
-	u.ID = 0
-	u.Email = html.EscapeString(strings.TrimSpace(u.Email))
-}
+func (u *User) PrepareUserData(email string, name string) {
 
-func (u *User) ValidateUserData(action string) error {
-	switch strings.ToLower(action) {
-	case "update":
-		if u.Email == "" {
-			return errors.New("e-mail is required")
-		}
-		if err := checkmail.ValidateFormat(u.Email); err != nil {
-			return errors.New("invalid E-mail format")
-		}
-		return nil
-	default:
-		if u.Email == "" {
-			return errors.New("e-mail is required")
-		}
-		if err := checkmail.ValidateFormat(u.Email); err != nil {
-			return errors.New("invalid E-mail format")
-		}
-		return nil
-	}
-
+	email = html.EscapeString(strings.TrimSpace(email))
+	email = u.Email
+	name = html.EscapeString(strings.TrimSpace(name))
+	name = u.Name
 }
 
 func (u *User) SaveUserDb(db *gorm.DB) (*User, error) {
-	var err error
 
-	err = db.Debug().Create(&u).Error
+	err := db.Debug().Create(&u).Error
 	if err != nil {
 		return &User{}, err
 	}
@@ -71,26 +47,9 @@ func (u *User) DeleteUserDb(db *gorm.DB, uid uint64) (int64, error) {
 	return tx.RowsAffected, nil
 }
 
-func ExtractToken(r *http.Request) string {
-	tokenName, err := r.Cookie("token")
-
-	if err != nil {
-		return ""
-	}
-	return tokenName.Value
-}
-
-func CreateCookieToAllEndPoints(tokenValue string, exp time.Time) http.Cookie {
-
-	cookie := http.Cookie{
-		Name:     "session_token",
-		Value:    tokenValue,
-		HttpOnly: false,
-		Path:     "/",
-		Expires:  exp,
-	}
-
-	return cookie
+func (u *User) CheckUser(db *gorm.DB, mail string) error {
+	err := db.Debug().Model(&User{}).Where("email = ?", mail).Find(&u).Error
+	return err
 }
 
 func TokenValid(w http.ResponseWriter, r *http.Request) error {
@@ -110,6 +69,4 @@ func TokenValid(w http.ResponseWriter, r *http.Request) error {
 		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
 		return errors.New("unauthorized")
 	}
-
-	return nil
 }

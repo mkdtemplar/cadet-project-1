@@ -1,72 +1,71 @@
 package controllers
 
 import (
-	"cadet-project/formaterrors"
 	"cadet-project/models"
 	"cadet-project/responses"
+	"cadet-project/validation"
 	"encoding/json"
 	"errors"
-	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 )
 
 func (s *Server) CreateUserInDb(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		}
 
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-	}
+		user := models.User{}
+		err = json.Unmarshal(body, &user)
+		if err != nil {
+			responses.ERROR(w, http.StatusUnprocessableEntity, err)
+			return
+		}
 
-	user := models.User{}
-	err = json.Unmarshal(body, &user)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		err = validation.ValidateUserData("create", user.Email, user.Name)
+		if err != nil {
+			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("invalid user email format"))
+			return
+		}
+
+		user.PrepareUserData(user.Email, user.Name)
+		userCreated, err := user.SaveUserDb(s.DB)
+
+		if err != nil {
+			responses.ERROR(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		responses.JSON(w, http.StatusCreated, userCreated)
+	} else {
+		responses.ERROR(w, http.StatusBadRequest, errors.New("invalid http method"))
 		return
 	}
 
-	user.PrepareUserData()
-	err = user.ValidateUserData("")
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("invalid user email format"))
-	}
-
-	userCreated, err := user.SaveUserDb(s.DB)
-
-	if err != nil {
-
-		formattedError := formaterrors.FormatError(err.Error())
-
-		responses.ERROR(w, http.StatusInternalServerError, formattedError)
-		return
-	}
-	w.Header().Set("Location", fmt.Sprintf("%s%s/%d", r.Host, r.RequestURI, userCreated.ID))
-	responses.JSON(w, http.StatusCreated, userCreated)
 }
 
 func (s *Server) DeleteUser(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodDelete {
+		paramsID, err := strconv.ParseUint(r.URL.Query().Get("id"), 10, 32)
+		if err != nil {
 
-	paramsID, err := strconv.ParseUint(r.URL.Query().Get("id"), 10, 32)
-	if err != nil {
-		formattedError := formaterrors.FormatError(err.Error())
-		responses.ERROR(w, http.StatusUnprocessableEntity, formattedError)
-		return
+			responses.ERROR(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+
+		user := models.User{}
+
+		_, err = user.DeleteUserDb(s.DB, paramsID)
+		if err != nil {
+			responses.ERROR(w, http.StatusInternalServerError, err)
+			return
+		}
+		responses.JSON(w, http.StatusNoContent, "")
+	} else {
+		responses.ERROR(w, http.StatusBadRequest, errors.New("invalid http method"))
 	}
 
-	user := models.User{}
-
-	_, err = user.DeleteUserDb(s.DB, paramsID)
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	w.Header().Set("Entity", fmt.Sprintf("%d", paramsID))
-	responses.JSON(w, http.StatusNoContent, "")
-
-}
-
-func (s *Server) SetCookieHandler(w http.ResponseWriter, r *http.Request) {
-
-	http.SetCookie(w, &models.Cookie)
 }

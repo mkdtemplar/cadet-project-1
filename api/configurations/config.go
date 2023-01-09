@@ -1,10 +1,11 @@
 package configurations
 
 import (
-	"github.com/spf13/viper"
 	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/spf13/viper"
 )
 
 type AppConfig struct {
@@ -16,6 +17,7 @@ type AppConfig struct {
 	RootUrl     string `mapstructure:"ROOT_URL"`
 	Email       string `mapstructure:"EMAIL"`
 	DisplayName string `mapstructure:"DISPLAY_NAME"`
+	ApiPort     string `mapstructure:"API_PORT"`
 }
 
 var Config AppConfig
