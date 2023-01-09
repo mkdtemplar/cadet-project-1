@@ -29,9 +29,14 @@ func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 	case r.Method == http.MethodGet && r.URL.Path == "/userpref":
 		userPrefConstructor.GetUserPreference(w, r)
 		return
+	case r.Method == http.MethodGet && r.URL.Path == "/listuserpref":
+		userPrefConstructor.GetAllUserPreferences(w, r)
+
 	case r.Method == http.MethodGet && r.URL.Path == "/userprefports":
 		userPrefConstructor.GetUserPorts(w, r)
 		return
+	case r.Method == http.MethodGet && r.URL.Path == "/listuserprefports":
+		userPrefConstructor.GetAllUserPorts(w, r)
 	case r.Method == http.MethodDelete && r.URL.Path == "/userpref":
 		userPrefConstructor.DeleteUserPref(w, r)
 		return

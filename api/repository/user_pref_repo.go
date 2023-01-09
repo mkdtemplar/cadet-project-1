@@ -15,6 +15,17 @@ func NewUserPrefRepo(db *gorm.DB) interfaces.IUserPreferencesRepository {
 	return &PG{DB: db}
 }
 
+func (u *PG) GetAllUserPreferences(ctx context.Context, userId uuid.UUID) ([]*models.UserPreferences, error) {
+	var userPrefList []*models.UserPreferences
+
+	err := u.DB.WithContext(ctx).Model(&models.UserPreferences{}).Where("user_id = ?", userId).Find(&userPrefList).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return userPrefList, nil
+}
+
 func (u *PG) SaveUserPreferences(ctx context.Context, in *models.UserPreferences) error {
 	if in == nil {
 		return errors.New("user details empty")
@@ -30,7 +41,7 @@ func (u *PG) FindUserPreferences(ctx context.Context, id uuid.UUID) (*models.Use
 
 	err = u.DB.WithContext(ctx).Model(&models.UserPreferences{}).Where("id = ?", id).Take(userPref).Error
 	if err != nil {
-		return nil, nil
+		return &models.UserPreferences{}, nil
 	}
 
 	return userPref, nil
@@ -81,6 +92,30 @@ func (u *PG) FindUserPrefPorts(ctx context.Context, in *models.UserPreferences) 
 		Country: userPref.Country,
 		UserId:  userPref.UserId,
 		Ports:   ports,
+	}
+
+	return userPrefPorts, nil
+}
+
+func (u *PG) FindAllUserPrefPorts(ctx context.Context, usrpref []*models.UserPreferences) ([]*models.UserPreferencesPorts, error) {
+	var userPrefList []models.UserPreferences
+
+	if err := u.DB.WithContext(ctx).Joins("join ships_routes ON ships_routes.country = user_preferences.country").Find(&userPrefList).Error; err != nil {
+		return nil, err
+	}
+
+	var userPrefPorts []*models.UserPreferencesPorts
+
+	for i := 0; i < len(userPrefList); i++ {
+		var ports []models.ShipsRoutes
+		if err := u.DB.WithContext(ctx).Where("country = ?", usrpref[i].Country).Model(&models.ShipsRoutes{}).Find(&ports).Error; err != nil {
+			return nil, err
+		}
+		userPrefPorts[i].Ports = ports
+		userPrefPorts = append(userPrefPorts, &models.UserPreferencesPorts{
+			Country: userPrefList[i].Country,
+			UserId:  userPrefList[i].UserId,
+		})
 	}
 
 	return userPrefPorts, nil

@@ -77,6 +77,27 @@ func (s *Server) GetUserPreference(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (s *Server) GetAllUserPreferences(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		queryString := r.URL.Query().Get("user_id")
+		paramsID, err := uuid.Parse(queryString)
+		if err != nil {
+
+			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be integer"))
+			return
+		}
+
+		userPrefList, err := s.IUserPreferencesRepository.GetAllUserPreferences(r.Context(), paramsID)
+		if err != nil {
+			responses.ERROR(w, http.StatusInternalServerError, err)
+			return
+		}
+		responses.JSON(w, http.StatusOK, userPrefList)
+	} else {
+		responses.ERROR(w, http.StatusBadRequest, errors.New("invalid http method"))
+	}
+}
+
 func (s *Server) GetUserPorts(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodGet {
@@ -104,6 +125,34 @@ func (s *Server) GetUserPorts(w http.ResponseWriter, r *http.Request) {
 	} else {
 		responses.ERROR(w, http.StatusBadRequest, errors.New("invalid http method"))
 	}
+}
+
+func (s *Server) GetAllUserPorts(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		queryString := r.URL.Query().Get("user_id")
+		paramsID, err := uuid.Parse(queryString)
+		if err != nil {
+
+			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in user_id format must be integer"))
+			return
+		}
+
+		userPref, err := s.IUserPreferencesRepository.GetAllUserPreferences(r.Context(), paramsID)
+		if err != nil {
+			responses.ERROR(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		userPrefPorts, err := s.IUserPreferencesRepository.FindAllUserPrefPorts(r.Context(), userPref)
+		if err != nil {
+			responses.ERROR(w, http.StatusInternalServerError, err)
+			return
+		}
+		responses.JSON(w, http.StatusOK, userPrefPorts)
+	} else {
+		responses.ERROR(w, http.StatusBadRequest, errors.New("invalid http method"))
+	}
+
 }
 
 func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
