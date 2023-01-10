@@ -31,17 +31,17 @@ func (s *Server) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = validation.ValidateUserPref("create", userPref.Country, userPref.UserId)
+		err = validation.ValidateUserPref("create", userPref.UserCountry, userPref.UserId)
 		if err != nil {
 			responses.ERROR(w, http.StatusUnprocessableEntity, err)
 			return
 		}
 		userPrefCreated := models.UserPreferences{
-			ID:      generate_id.GenerateID(),
-			Country: userPref.Country,
-			UserId:  userPref.UserId,
+			ID:          generate_id.GenerateID(),
+			UserCountry: userPref.UserCountry,
+			UserId:      userPref.UserId,
 		}
-		validation.ConstructUserPrefObject(userPref.Country)
+		validation.ConstructUserPrefObject(userPref.UserCountry)
 
 		err = s.IUserPreferencesRepository.SaveUserPreferences(r.Context(), &userPrefCreated)
 		if err != nil {
@@ -55,17 +55,20 @@ func (s *Server) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Server) GetUserPreference(w http.ResponseWriter, r *http.Request) {
+func (s *Server) GetUserPreference(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
 	if r.Method == http.MethodGet {
-		queryString := r.URL.Query().Get("id")
-		paramsID, err := uuid.Parse(queryString)
-		if err != nil {
+		/*
+			queryString := r.URL.Query().Get("id")
+			paramsID, err := uuid.Parse(queryString)
+			if err != nil {
 
-			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be integer"))
-			return
-		}
+				responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be integer"))
+				return
+			}
 
-		userPreferences, err := s.IUserPreferencesRepository.FindUserPreferences(r.Context(), paramsID)
+		*/
+
+		userPreferences, err := s.IUserPreferencesRepository.FindUserPreferences(r.Context(), id)
 
 		if err != nil {
 			responses.ERROR(w, http.StatusInternalServerError, err)
@@ -127,35 +130,8 @@ func (s *Server) GetUserPorts(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Server) GetAllUserPorts(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-		queryString := r.URL.Query().Get("user_id")
-		paramsID, err := uuid.Parse(queryString)
-		if err != nil {
-
-			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in user_id format must be integer"))
-			return
-		}
-
-		userPref, err := s.IUserPreferencesRepository.GetAllUserPreferences(r.Context(), paramsID)
-		if err != nil {
-			responses.ERROR(w, http.StatusInternalServerError, err)
-			return
-		}
-
-		userPrefPorts, err := s.IUserPreferencesRepository.FindAllUserPrefPorts(r.Context(), userPref)
-		if err != nil {
-			responses.ERROR(w, http.StatusInternalServerError, err)
-			return
-		}
-		responses.JSON(w, http.StatusOK, userPrefPorts)
-	} else {
-		responses.ERROR(w, http.StatusBadRequest, errors.New("invalid http method"))
-	}
-
-}
-
 func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
+
 	if r.Method == http.MethodPatch {
 		queryString := r.URL.Query().Get("id")
 		paramsID, err := uuid.Parse(queryString)
@@ -187,7 +163,7 @@ func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		err = validation.ValidateUserPref("update", userPrefUpdate.Country, userPrefUpdate.UserId)
+		err = validation.ValidateUserPref("update", userPrefUpdate.UserCountry, userPrefUpdate.UserId)
 		if err != nil {
 			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("data format validation failed"))
 			return
@@ -195,9 +171,9 @@ func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 
 		userPrefUpdate.UserId = userPrefFind.UserId
 		userPrefUpdate.ID = userPrefFind.ID
-		validation.ConstructUserPrefObject(userPrefUpdate.Country)
+		validation.ConstructUserPrefObject(userPrefUpdate.UserCountry)
 
-		_, err = s.IUserPreferencesRepository.UpdateUserPref(r.Context(), paramsID, userPrefUpdate.Country)
+		_, err = s.IUserPreferencesRepository.UpdateUserPref(r.Context(), paramsID, userPrefUpdate.UserCountry)
 
 		if err != nil {
 

@@ -22,7 +22,7 @@ func ValidateUserPref(action string, country string, userId uuid.UUID) error {
 			return errors.New("country string wrong format")
 		}
 		if userId == uuid.Nil || checkId.MatchString(userId.String()) == false {
-			return errors.New("user id is required or wrong data format user_id must be integer")
+			return errors.New("user id is required or wrong data format user_id must be uuid")
 		}
 	case "update":
 		if country == "" {
@@ -39,7 +39,7 @@ func ValidateUserPref(action string, country string, userId uuid.UUID) error {
 			return errors.New("country string wrong format")
 		}
 		if userId == uuid.Nil || checkId.MatchString(userId.String()) == false {
-			return errors.New("user id is required or wrong data format user_id must be integer")
+			return errors.New("user id is required or wrong data format user_id must be uuid")
 		}
 	}
 	return nil

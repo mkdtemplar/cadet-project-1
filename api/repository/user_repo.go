@@ -55,6 +55,6 @@ func (u *PG) DeleteUserDb(ctx context.Context, uid uuid.UUID) (int64, error) {
 func (u *PG) GetUser(ctx context.Context, in *models.User) (*models.User, error) {
 	user := &models.User{}
 
-	err := u.DB.WithContext(ctx).Take(user, "email = ?", in.Email).Error
+	err := u.DB.WithContext(ctx).Preload("UserPref").Take(user, "email = ?", in.Email).Error
 	return user, err
 }

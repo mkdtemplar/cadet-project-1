@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"cadet-project/interfaces"
+	"cadet-project/models"
 	"cadet-project/repository"
 	"fmt"
 	"log"
@@ -39,6 +40,14 @@ func (s *Server) InitializeDB(Dbdriver, DbUser, DbPassword, DbPort, DbHost, DbNa
 		log.Fatal("This is the error:", err)
 	} else {
 		fmt.Printf("We are connected to the %s database: %s\n", Dbdriver, DbName)
+	}
+
+	err = s.PG.DB.AutoMigrate(&models.User{}, &models.UserPreferences{})
+	if err != nil {
+		fmt.Printf("Cannot migrate to %s database %s", Dbdriver, DbName)
+		log.Fatal("This is the error:", err)
+	} else {
+		fmt.Printf("Migration succesfull to the %s database: %s\n", Dbdriver, DbName)
 	}
 
 	s.Router = http.NewServeMux()
