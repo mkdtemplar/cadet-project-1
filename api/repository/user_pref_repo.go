@@ -25,11 +25,16 @@ func (u *PG) GetAllUserPreferences(ctx context.Context, userId uuid.UUID) ([]*mo
 	return userPrefList, nil
 }
 
-func (u *PG) SaveUserPreferences(ctx context.Context, in *models.UserPreferences) error {
+func (u *PG) SaveUserPreferences(ctx context.Context, in *models.UserPreferences) (*models.UserPreferences, error) {
 	if in == nil {
-		return errors.New("user details empty")
+		return &models.UserPreferences{}, errors.New("user details empty")
 	}
-	return u.DB.WithContext(ctx).Create(&in).Error
+
+	err := u.DB.WithContext(ctx).Model(u.UserPreferences).Create(&in).Error
+	if err != nil {
+		return &models.UserPreferences{}, errors.New("user not created")
+	}
+	return in, nil
 }
 
 func (u *PG) FindUserPreferences(ctx context.Context, id uuid.UUID) (*models.UserPreferences, error) {

@@ -1,4 +1,4 @@
-package handlers
+package controllers
 
 import (
 	"cadet-project/configurations"
@@ -29,7 +29,7 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("invalid user email format"))
 		return
 	}
-	user := models.User{
+	user := &models.User{
 		ID:    generate_id.GenerateID(),
 		Email: userEmail,
 		Name:  userName,
@@ -44,9 +44,9 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 	models.Cookie.Path = "/"
 	http.SetCookie(w, &models.Cookie)
 
-	_, err = s.IUserRepository.GetUser(r.Context(), &user)
+	_, err = s.IUserRepository.GetUser(r.Context(), user)
 	if err != nil {
-		err = s.IUserRepository.SaveUserDb(r.Context(), &user)
+		_, err = s.IUserRepository.SaveUserDb(r.Context(), user)
 		if err != nil {
 			responses.ERROR(w, http.StatusUnprocessableEntity, err)
 			return
@@ -77,7 +77,7 @@ func (s *Server) CreateUserInDb(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		s.IUserRepository.PrepareUserData(user.Email, user.Name)
-		if err = s.IUserRepository.SaveUserDb(r.Context(), &user); err != nil {
+		if _, err = s.IUserRepository.SaveUserDb(r.Context(), &user); err != nil {
 			responses.ERROR(w, http.StatusInternalServerError, err)
 			return
 		}

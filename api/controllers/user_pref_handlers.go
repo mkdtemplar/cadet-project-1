@@ -1,4 +1,4 @@
-package handlers
+package controllers
 
 import (
 	"cadet-project/models"
@@ -43,7 +43,7 @@ func (s *Server) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
 		}
 		validation.ConstructUserPrefObject(userPref.UserCountry)
 
-		err = s.IUserPreferencesRepository.SaveUserPreferences(r.Context(), &userPrefCreated)
+		_, err = s.IUserPreferencesRepository.SaveUserPreferences(r.Context(), &userPrefCreated)
 		if err != nil {
 			responses.ERROR(w, http.StatusUnprocessableEntity, err)
 			return
@@ -55,20 +55,18 @@ func (s *Server) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Server) GetUserPreference(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
+func (s *Server) GetUserPreference(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		/*
-			queryString := r.URL.Query().Get("id")
-			paramsID, err := uuid.Parse(queryString)
-			if err != nil {
 
-				responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be integer"))
-				return
-			}
+		queryString := r.URL.Query().Get("id")
+		paramsID, err := uuid.Parse(queryString)
+		if err != nil {
 
-		*/
+			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be uuid"))
+			return
+		}
 
-		userPreferences, err := s.IUserPreferencesRepository.FindUserPreferences(r.Context(), id)
+		userPreferences, err := s.IUserPreferencesRepository.FindUserPreferences(r.Context(), paramsID)
 
 		if err != nil {
 			responses.ERROR(w, http.StatusInternalServerError, err)
@@ -86,7 +84,7 @@ func (s *Server) GetAllUserPreferences(w http.ResponseWriter, r *http.Request) {
 		paramsID, err := uuid.Parse(queryString)
 		if err != nil {
 
-			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be integer"))
+			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be uuid"))
 			return
 		}
 
@@ -108,7 +106,7 @@ func (s *Server) GetUserPorts(w http.ResponseWriter, r *http.Request) {
 		paramsID, err := uuid.Parse(queryString)
 		if err != nil {
 
-			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be integer"))
+			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be uuid"))
 			return
 		}
 
@@ -137,7 +135,7 @@ func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 		paramsID, err := uuid.Parse(queryString)
 		if err != nil {
 
-			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be integer"))
+			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be uuid"))
 			return
 		}
 

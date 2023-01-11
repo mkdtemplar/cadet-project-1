@@ -28,12 +28,18 @@ func (u *PG) PrepareUserData(email string, name string) {
 	name = html.EscapeString(strings.TrimSpace(name))
 }
 
-func (u *PG) SaveUserDb(ctx context.Context, usr *models.User) error {
+func (u *PG) SaveUserDb(ctx context.Context, usr *models.User) (*models.User, error) {
 	if usr == nil {
-		return errors.New("user details empty")
+		return &models.User{}, errors.New("user details empty")
 	}
 	usr.ID = generate_id.GenerateID()
-	return u.DB.WithContext(ctx).Create(&usr).Error
+	err := u.DB.WithContext(ctx).Model(u.User).Create(&usr).Error
+
+	if err != nil {
+		return &models.User{}, err
+	}
+
+	return usr, nil
 }
 
 func (u *PG) DeleteUserDb(ctx context.Context, uid uuid.UUID) (int64, error) {
