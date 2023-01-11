@@ -18,14 +18,8 @@ type Server struct {
 	interfaces.IUserRepository
 	interfaces.IUserPreferencesRepository
 	models.User
-}
-
-func NewServerUserPref(IUserPreferencesRepository interfaces.IUserPreferencesRepository) *Server {
-	return &Server{IUserPreferencesRepository: IUserPreferencesRepository}
-}
-
-func NewServerUser(IUserRepository interfaces.IUserRepository) *Server {
-	return &Server{IUserRepository: IUserRepository}
+	interfaces.IUserController
+	interfaces.IUserPrefController
 }
 
 func (s *Server) InitializeDB(Dbdriver, DbUser, DbPassword, DbPort, DbHost, DbName string) {

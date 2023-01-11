@@ -13,8 +13,8 @@ func (s *Server) UserPrefRepo() interfaces.IUserPreferencesRepository {
 	return repository.NewUserPrefRepo(s.DB)
 }
 
-func (s *Server) HandlersConstructor() (interfaces.IUserHandlers, interfaces.IUserPrefHandlers) {
+func (s *Server) ControllerConstructor() (interfaces.IUserController, interfaces.IUserPrefController) {
 	userRepo := s.UserRepoFunc()
 	userPrefRepo := s.UserPrefRepo()
-	return NewServerUser(userRepo), NewServerUserPref(userPrefRepo)
+	return NewUserController(userRepo), NewUserPrefController(userPrefRepo)
 }
