@@ -19,17 +19,6 @@ func getQueryID(w http.ResponseWriter, r *http.Request) uuid.UUID {
 	return paramsID
 }
 
-func getQueryUserId(w http.ResponseWriter, r *http.Request) uuid.UUID {
-	queryString := r.URL.Query().Get("user_id")
-	paramsID, err := uuid.Parse(queryString)
-	if err != nil {
-
-		responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be uuid"))
-		return uuid.Nil
-	}
-	return paramsID
-}
-
 func (s *Server) notFound(w http.ResponseWriter) {
 	responses.ERROR(w, http.StatusInternalServerError, errors.New("path not found"))
 	return
@@ -46,7 +35,7 @@ func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 
 	switch currentPath {
 	case configurations.Config.UserDelete:
-		userController.DeleteUser(w, r)
+		userController.DeleteUser(w, r, getQueryID(w, r))
 		return
 	case configurations.Config.UserCreate:
 		userController.CreateUserInDb(w, r)
@@ -68,8 +57,6 @@ func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 	case configurations.Config.UserPorts:
 		userPrefController.GetUserPorts(w, r)
 		return
-	case configurations.Config.ListUserPref:
-		userPrefController.GetAllUserPreferences(w, r, getQueryUserId(w, r))
 	default:
 		s.notFound(w)
 		return

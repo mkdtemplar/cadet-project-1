@@ -67,16 +67,6 @@ func (s *Server) GetUserPreference(w http.ResponseWriter, r *http.Request, id uu
 	responses.JSON(w, http.StatusOK, userPreferences)
 }
 
-func (s *Server) GetAllUserPreferences(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
-
-	userPrefList, err := s.IUserPreferencesRepository.GetAllUserPreferences(r.Context(), id)
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	responses.JSON(w, http.StatusOK, userPrefList)
-}
-
 func (s *Server) GetUserPorts(w http.ResponseWriter, r *http.Request) {
 
 	queryString := r.URL.Query().Get("id")

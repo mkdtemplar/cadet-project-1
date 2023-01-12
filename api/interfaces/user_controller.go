@@ -1,9 +1,13 @@
 package interfaces
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/google/uuid"
+)
 
 type IUserController interface {
-	CreateUserInDb(w http.ResponseWriter, r *http.Request)
-	DeleteUser(w http.ResponseWriter, r *http.Request)
 	Home(w http.ResponseWriter, r *http.Request)
+	CreateUserInDb(w http.ResponseWriter, r *http.Request)
+	DeleteUser(w http.ResponseWriter, r *http.Request, id uuid.UUID)
 }

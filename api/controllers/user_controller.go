@@ -3,6 +3,7 @@ package controllers
 import (
 	"cadet-project/configurations"
 	"cadet-project/interfaces"
+	"cadet-project/saml_handler"
 
 	"cadet-project/models"
 	"cadet-project/repository/generate_id"
@@ -15,7 +16,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/crewjam/saml/samlsp"
 	"github.com/google/uuid"
 )
 
@@ -26,14 +26,8 @@ func NewUserController(IUserRepository interfaces.IUserRepository) *Server {
 func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 	var err error
 
-	userEmail := samlsp.AttributeFromContext(r.Context(), configurations.Config.Email)
+	userEmail, userName := saml_handler.Credentials(w, r, configurations.Config.Email, configurations.Config.DisplayName)
 
-	userName := samlsp.AttributeFromContext(r.Context(), configurations.Config.DisplayName)
-	err = validation.ValidateUserData(userEmail, userName)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("invalid user email format"))
-		return
-	}
 	user := &models.User{
 		ID:    generate_id.GenerateID(),
 		Email: userEmail,
@@ -90,16 +84,9 @@ func (s *Server) CreateUserInDb(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (s *Server) DeleteUser(w http.ResponseWriter, r *http.Request) {
-	queryString := r.URL.Query().Get("id")
-	paramsID, err := uuid.Parse(queryString)
-	if err != nil {
+func (s *Server) DeleteUser(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
 
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	if _, err = s.IUserRepository.DeleteUserDb(r.Context(), paramsID); err != nil {
+	if _, err := s.IUserRepository.DeleteUserDb(r.Context(), id); err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
