@@ -44,16 +44,21 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &models.Cookie)
 
 	_, err = s.IUserRepository.GetUser(r.Context(), user)
-	if err != nil {
-		_, err = s.IUserRepository.SaveUserDb(r.Context(), user)
-		if err != nil {
-			responses.ERROR(w, http.StatusUnprocessableEntity, err)
-			return
-		}
-		responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %s  with E-mail: %s is authorized and created in database", userName, userEmail))
-	} else {
+	if err == nil {
 		responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %s  with E-mail: %s is already in database and authorized", userName, userEmail))
+		return
 	}
+
+	userNew, err := s.IUserRepository.SaveUserDb(r.Context(), user)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	userEmail = userNew.Email
+	userName = userNew.Name
+	responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %s  with E-mail: %s is authorized and created in database", userEmail, userName))
+
 }
 
 func (s *Server) CreateUserInDb(w http.ResponseWriter, r *http.Request) {
