@@ -5,19 +5,7 @@ import (
 	"cadet-project/responses"
 	"errors"
 	"net/http"
-
-	"github.com/google/uuid"
 )
-
-func getQueryID(w http.ResponseWriter, r *http.Request) uuid.UUID {
-	queryString := r.URL.Query().Get("id")
-	paramsID, err := uuid.Parse(queryString)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be uuid"))
-		return uuid.Nil
-	}
-	return paramsID
-}
 
 func (s *Server) notFound(w http.ResponseWriter) {
 	responses.ERROR(w, http.StatusInternalServerError, errors.New("path not found"))
@@ -35,7 +23,7 @@ func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 
 	switch currentPath {
 	case configurations.Config.UserDelete:
-		userController.DeleteUser(w, r, getQueryID(w, r))
+		userController.DeleteUser(w, r, GetQueryID(w, r))
 		return
 	case configurations.Config.UserCreate:
 		userController.TestCreate1()
@@ -45,17 +33,17 @@ func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 			userPrefController.CreateUserPreferences(w, r)
 		}
 		if r.Method == http.MethodGet {
-			userPrefController.GetUserPreference(w, r, getQueryID(w, r))
+			userPrefController.GetUserPreference(w, r, GetQueryID(w, r))
 		}
 		if r.Method == http.MethodPatch {
-			userPrefController.UpdateUserPreferences(w, r)
+			userPrefController.UpdateUserPreferences(w, r, GetQueryUserID(w, r))
 		}
 		if r.Method == http.MethodDelete {
-			userPrefController.DeleteUserPref(w, r)
+			userPrefController.DeleteUserPref(w, r, GetQueryID(w, r))
 		}
 		return
 	case configurations.Config.UserPorts:
-		userPrefController.GetUserPorts(w, r)
+		userPrefController.GetUserPorts(w, r, GetQueryID(w, r))
 		return
 	default:
 		s.notFound(w)

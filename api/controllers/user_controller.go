@@ -9,10 +9,8 @@ import (
 	"cadet-project/repository/generate_id"
 	"cadet-project/responses"
 	"cadet-project/validation"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"time"
 
@@ -69,19 +67,9 @@ func (s *Server) TestCreate1() {
 
 func (s *Server) CreateUserInDb(w http.ResponseWriter, r *http.Request) {
 
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-	}
+	user := RequestBodyUser(w, r)
 
-	user := models.User{}
-	err = json.Unmarshal(body, &user)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
-	err = validation.ValidateUserData(user.Email, user.Name)
+	err := validation.ValidateUserData(user.Email, user.Name)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("invalid user email format"))
 		return

@@ -10,13 +10,18 @@ import (
 	"github.com/google/uuid"
 )
 
-func ValidateUserPref(country string, userId uuid.UUID) error {
+func ValidateCountry(country string) error {
+	checkLetters := regexp.MustCompile(`^[a-zA-Z ]+$`)
+	if checkLetters.MatchString(country) == false {
+		return errors.New("country string wrong format")
+	}
+
+	return nil
+}
+func ValidateUserPref(action string, country string, userId uuid.UUID) error {
 	checkLetters := regexp.MustCompile(`^[a-zA-Z ]+$`)
 	checkId := regexp.MustCompile(`^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[8|9|aA|bB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}$`)
 
-	if country == "" {
-		return errors.New("country cannot be empty")
-	}
 	if checkLetters.MatchString(country) == false {
 		return errors.New("country string wrong format")
 	}
@@ -35,7 +40,6 @@ func NewUserPrefObject(id uuid.UUID, country string, userId uuid.UUID) models.Us
 		ID:          id,
 		UserCountry: country,
 		UserId:      userId,
-		Ports:       nil,
 	}
 	return userPref
 }

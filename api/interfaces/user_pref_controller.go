@@ -9,7 +9,7 @@ import (
 type IUserPrefController interface {
 	CreateUserPreferences(w http.ResponseWriter, r *http.Request)
 	GetUserPreference(w http.ResponseWriter, r *http.Request, id uuid.UUID)
-	GetUserPorts(w http.ResponseWriter, r *http.Request)
-	UpdateUserPreferences(w http.ResponseWriter, r *http.Request)
-	DeleteUserPref(w http.ResponseWriter, r *http.Request)
+	GetUserPorts(w http.ResponseWriter, r *http.Request, id uuid.UUID)
+	UpdateUserPreferences(w http.ResponseWriter, r *http.Request, userid uuid.UUID)
+	DeleteUserPref(w http.ResponseWriter, r *http.Request, id uuid.UUID)
 }

@@ -53,7 +53,7 @@ func (u *PG) FindUserPreferences(ctx context.Context, id uuid.UUID) (*models.Use
 func (u *PG) UpdateUserPref(ctx context.Context, userid uuid.UUID, country string) (*models.UserPreferences, error) {
 	var err error
 
-	err = u.DB.WithContext(ctx).Model(&models.UserPreferences{}).Where("id = ?", userid).Update("country", country).Error
+	err = u.DB.WithContext(ctx).Model(&models.UserPreferences{}).Where("user_id = ?", userid).Update("user_country", country).Error
 	if err != nil {
 		err.Error()
 		return nil, err
