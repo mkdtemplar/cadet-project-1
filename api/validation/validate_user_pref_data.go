@@ -1,6 +1,7 @@
 package validation
 
 import (
+	"cadet-project/models"
 	"errors"
 	"html"
 	"regexp"
@@ -23,29 +24,18 @@ func ValidateUserPref(country string, userId uuid.UUID) error {
 		return errors.New("user id is required or wrong data format user_id must be uuid")
 	}
 
-	if country == "" {
-		return errors.New("country cannot be empty")
-	}
-
-	if checkLetters.MatchString(country) == false {
-		return errors.New("country string wrong format")
-	}
-
-	if country == "" {
-		return errors.New("country cannot be empty")
-	}
-
-	if checkLetters.MatchString(country) == false {
-		return errors.New("country string wrong format")
-	}
-
-	if userId == uuid.Nil || checkId.MatchString(userId.String()) == false {
-		return errors.New("user id is required or wrong data format user_id must be uuid")
-	}
 	return nil
 }
 
-func ConstructUserPrefObject(country string) {
+func NewUserPrefObject(id uuid.UUID, country string, userId uuid.UUID) models.UserPreferences {
+	userPref := models.UserPreferences{}
 	country = html.EscapeString(strings.TrimSpace(country))
 
+	userPref = models.UserPreferences{
+		ID:          id,
+		UserCountry: country,
+		UserId:      userId,
+		Ports:       nil,
+	}
+	return userPref
 }

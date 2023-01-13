@@ -38,7 +38,7 @@ func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 		userController.DeleteUser(w, r, getQueryID(w, r))
 		return
 	case configurations.Config.UserCreate:
-		userController.CreateUserInDb(w, r)
+		userController.TestCreate1()
 		return
 	case configurations.Config.UserPref:
 		if r.Method == http.MethodPost {

@@ -55,10 +55,16 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userEmail = userNew.Email
-	userName = userNew.Name
-	responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %s  with E-mail: %s is authorized and created in database", userEmail, userName))
+	responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %s  with E-mail: %s is authorized and created in database", userNew.Email, userNew.Name))
 
+}
+
+func (s *Server) TestCreate() {
+	s.TestCreateUser()
+}
+
+func (s *Server) TestCreate1() {
+	s.Name(s.IUserRepository.SaveUserDb)
 }
 
 func (s *Server) CreateUserInDb(w http.ResponseWriter, r *http.Request) {

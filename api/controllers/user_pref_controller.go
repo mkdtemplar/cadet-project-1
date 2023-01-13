@@ -40,20 +40,16 @@ func (s *Server) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	userPrefCreated := models.UserPreferences{
-		ID:          generate_id.GenerateID(),
-		UserCountry: userPref.UserCountry,
-		UserId:      userPref.UserId,
-	}
-	validation.ConstructUserPrefObject(userPref.UserCountry)
 
-	_, err = s.IUserPreferencesRepository.SaveUserPreferences(r.Context(), &userPrefCreated)
+	userPreferencesStore := validation.NewUserPrefObject(generate_id.GenerateID(), userPref.UserCountry, userPref.UserId)
+
+	_, err = s.IUserPreferencesRepository.SaveUserPreferences(r.Context(), &userPreferencesStore)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	responses.JSON(w, http.StatusCreated, userPrefCreated)
+	responses.JSON(w, http.StatusCreated, userPreferencesStore)
 }
 
 func (s *Server) GetUserPreference(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
@@ -130,9 +126,7 @@ func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userPrefUpdate.UserId = userPrefFind.UserId
-	userPrefUpdate.ID = userPrefFind.ID
-	validation.ConstructUserPrefObject(userPrefUpdate.UserCountry)
+	userPrefUpdate = validation.NewUserPrefObject(userPrefFind.ID, userPrefUpdate.UserCountry, userPrefFind.UserId)
 
 	_, err = s.IUserPreferencesRepository.UpdateUserPref(r.Context(), paramsID, userPrefUpdate.UserCountry)
 
