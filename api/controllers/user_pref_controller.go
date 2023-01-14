@@ -21,7 +21,7 @@ func (s *Server) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
 
 	err := repository.ValidateUserPref(userPref.UserCountry, userPref.UserId)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("user preferences validation failed"))
 		return
 	}
 

@@ -4,13 +4,11 @@ import (
 	"cadet-project/configurations"
 	"cadet-project/interfaces"
 	"cadet-project/middlewares_token_validation"
-	"cadet-project/repository"
-	"cadet-project/saml_handler"
-
 	"cadet-project/models"
+	"cadet-project/repository"
 	"cadet-project/repository/generate_id"
 	"cadet-project/responses"
-	"errors"
+	"cadet-project/saml_handler"
 	"fmt"
 	"net/http"
 	"time"
@@ -24,8 +22,15 @@ func NewUserController(IUserRepository interfaces.IUserRepository) *Server {
 
 func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 	var err error
-
+	v := repository.Validation{}
 	userEmail, userName := saml_handler.Credentials(w, r, configurations.Config.Email, configurations.Config.DisplayName)
+
+	checkCredentials := v.ValidateUserEmail(userEmail).ValidateUserName(userName)
+
+	if checkCredentials.Err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, checkCredentials.Err)
+		return
+	}
 
 	user := &models.User{
 		ID:    generate_id.GenerateID(),
@@ -59,16 +64,17 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) Create(w http.ResponseWriter, r *http.Request) {
-
+	v := repository.Validation{}
 	user := ParseUserRequestBody(w, r)
 
-	err := repository.ValidateUserData(user.Email, user.Name)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("invalid user email format"))
+	checkCredentials := v.ValidateUserEmail(user.Email).ValidateUserName(user.Name)
+
+	if checkCredentials.Err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, checkCredentials.Err)
 		return
 	}
 	s.IUserRepository.PrepareUserData(user.Email, user.Name)
-	if _, err = s.IUserRepository.Create(r.Context(), user); err != nil {
+	if _, err := s.IUserRepository.Create(r.Context(), user); err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}

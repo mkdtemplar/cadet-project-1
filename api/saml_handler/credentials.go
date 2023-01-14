@@ -1,8 +1,8 @@
 package saml_handler
 
 import (
+	"cadet-project/repository"
 	"cadet-project/responses"
-	"cadet-project/validation"
 	"errors"
 	"net/http"
 
@@ -10,7 +10,7 @@ import (
 )
 
 func Credentials(w http.ResponseWriter, r *http.Request, email string, name string) (string, string) {
-
+	v := repository.Validation{}
 	userEmail := samlsp.AttributeFromContext(r.Context(), email)
 
 	if userEmail == "" {
@@ -25,9 +25,9 @@ func Credentials(w http.ResponseWriter, r *http.Request, email string, name stri
 		return "", ""
 	}
 
-	err := validation.ValidateUserData(userEmail, userName)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("invalid user email format and/or name format"))
+	err := v.ValidateUserEmail(userEmail).ValidateUserName(userName)
+	if err.Err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err.Err)
 		return "", ""
 	}
 

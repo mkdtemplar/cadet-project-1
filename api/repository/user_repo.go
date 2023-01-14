@@ -21,22 +21,34 @@ type PG struct {
 	UserPreferences *models.UserPreferences
 }
 
-func ValidateUserData(email string, name string) error {
-	checkLetters := regexp.MustCompile(`^[a-zA-Z ]*$`)
-	name = strings.ReplaceAll(name, "\"", "")
+type Validation struct {
+	Err error
+}
+
+func (v *Validation) Error() string {
+	var err string
+	return err
+}
+
+func (v *Validation) ValidateUserEmail(email string) *Validation {
 	email = strings.ReplaceAll(email, "\"", "")
+	email = strings.ToLower(email)
+	email = html.EscapeString(strings.TrimSpace(email))
 
-	if email == "" {
-		return errors.New("e-mail is required")
-	}
 	if _, err := mail.ParseAddress(email); err != nil {
-		return errors.New("invalid E-mail format")
+		v.Err = errors.New("invalid E-mail format")
+		return v
 	}
-	if !checkLetters.MatchString(name) {
-		return errors.New("invalid name")
-	}
+	return v
+}
 
-	return nil
+func (v *Validation) ValidateUserName(name string) *Validation {
+	checkLetters := regexp.MustCompile(`^[a-zA-Z ]*$`)
+	if !checkLetters.MatchString(name) {
+		v.Err = errors.New("invalid name")
+		return v
+	}
+	return v
 }
 
 func NewUserRepo(db *gorm.DB) interfaces.IUserRepository {
@@ -44,8 +56,8 @@ func NewUserRepo(db *gorm.DB) interfaces.IUserRepository {
 }
 
 func (u *PG) PrepareUserData(email string, name string) {
-	u.User.Email = html.EscapeString(strings.TrimSpace(email))
-	u.User.Name = html.EscapeString(strings.TrimSpace(name))
+	email = html.EscapeString(strings.TrimSpace(email))
+	name = html.EscapeString(strings.TrimSpace(name))
 }
 
 func (u *PG) Create(ctx context.Context, usr *models.User) (*models.User, error) {
