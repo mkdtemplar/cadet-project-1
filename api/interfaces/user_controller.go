@@ -8,8 +8,6 @@ import (
 
 type IUserController interface {
 	Home(w http.ResponseWriter, r *http.Request)
-	CreateUserInDb(w http.ResponseWriter, r *http.Request)
-	DeleteUser(w http.ResponseWriter, r *http.Request, id uuid.UUID)
-	TestCreate()
-	TestCreate1()
+	Create(w http.ResponseWriter, r *http.Request)
+	Delete(w http.ResponseWriter, r *http.Request, id uuid.UUID)
 }

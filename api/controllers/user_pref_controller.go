@@ -2,9 +2,10 @@ package controllers
 
 import (
 	"cadet-project/interfaces"
+	"cadet-project/models"
+	"cadet-project/repository"
 	"cadet-project/repository/generate_id"
 	"cadet-project/responses"
-	"cadet-project/validation"
 	"errors"
 	"net/http"
 
@@ -16,15 +17,15 @@ func NewUserPrefController(IUserPreferencesRepository interfaces.IUserPreference
 }
 
 func (s *Server) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
-	userPref := RequestBodyUserPref(w, r)
+	userPref := ParseUserPrefRequestBody(w, r)
 
-	err := validation.ValidateUserPref("create", userPref.UserCountry, userPref.UserId)
+	err := repository.ValidateUserPref(userPref.UserCountry, userPref.UserId)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
-	userPreferencesStore := validation.NewUserPrefObject(generate_id.GenerateID(), userPref.UserCountry, userPref.UserId)
+	userPreferencesStore := repository.NewUserPrefObject(generate_id.GenerateID(), userPref.UserCountry, userPref.UserId)
 
 	_, err = s.IUserPreferencesRepository.SaveUserPreferences(r.Context(), &userPreferencesStore)
 	if err != nil {
@@ -63,26 +64,24 @@ func (s *Server) GetUserPorts(w http.ResponseWriter, r *http.Request, id uuid.UU
 	responses.JSON(w, http.StatusOK, userPrefPorts)
 }
 
-func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request, userid uuid.UUID) {
+func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
+	var err error
+	userPrefFind := &models.UserPreferences{}
+	userPrefFind, err = s.IUserPreferencesRepository.FindUserPreferences(r.Context(), id)
 
-	userPrefFind, err := s.IUserPreferencesRepository.FindUserPreferences(r.Context(), userid)
 	if err != nil {
 		responses.ERROR(w, http.StatusNotFound, errors.New("user preferences not found"))
-		return
 	}
 
-	userPrefUpdate := RequestBodyUserPref(w, r)
+	userPrefUpdate := ParseUserPrefRequestBody(w, r)
 
-	err = validation.ValidateCountry(userPrefUpdate.UserCountry)
+	err = repository.ValidateCountry(userPrefUpdate.UserCountry)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("data format validation failed"))
 		return
 	}
 
-	userPrefUpdate.ID = userPrefFind.ID
-	userPrefUpdate.UserId = userPrefFind.UserId
-
-	_, err = s.IUserPreferencesRepository.UpdateUserPref(r.Context(), userid, userPrefUpdate.UserCountry)
+	userPrefFind, err = s.IUserPreferencesRepository.UpdateUserPref(r.Context(), id, userPrefUpdate.UserCountry)
 
 	if err != nil {
 
@@ -90,7 +89,8 @@ func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request, u
 		return
 	}
 
-	responses.JSON(w, http.StatusOK, userPrefUpdate)
+	userPrefFind, err = s.IUserPreferencesRepository.FindUserPreferences(r.Context(), id)
+	responses.JSON(w, http.StatusOK, userPrefFind)
 }
 
 func (s *Server) DeleteUserPref(w http.ResponseWriter, r *http.Request, id uuid.UUID) {

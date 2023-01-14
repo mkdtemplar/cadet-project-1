@@ -11,33 +11,33 @@ import (
 	"github.com/google/uuid"
 )
 
-func RequestBodyUser(w http.ResponseWriter, r *http.Request) models.User {
+func ParseUserRequestBody(w http.ResponseWriter, r *http.Request) *models.User {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 	}
 
-	user := models.User{}
+	user := &models.User{}
 	err = json.Unmarshal(body, &user)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return models.User{}
+		return &models.User{}
 	}
 
 	return user
 }
 
-func RequestBodyUserPref(w http.ResponseWriter, r *http.Request) models.UserPreferences {
+func ParseUserPrefRequestBody(w http.ResponseWriter, r *http.Request) *models.UserPreferences {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 	}
 
-	userPref := models.UserPreferences{}
+	userPref := &models.UserPreferences{}
 	err = json.Unmarshal(body, &userPref)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return models.UserPreferences{}
+		return &models.UserPreferences{}
 	}
 
 	return userPref

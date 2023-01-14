@@ -15,7 +15,7 @@ func (s *Server) notFound(w http.ResponseWriter) {
 func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 	configurations.InitConfig("configurations")
 
-	userController, userPrefController := s.ControllerConstructor()
+	userController, userPrefController := s.ControllersConstructor()
 
 	w.Header().Set("content-type", "application/json")
 
@@ -23,10 +23,10 @@ func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 
 	switch currentPath {
 	case configurations.Config.UserDelete:
-		userController.DeleteUser(w, r, GetQueryID(w, r))
+		userController.Delete(w, r, GetQueryID(w, r))
 		return
 	case configurations.Config.UserCreate:
-		userController.TestCreate1()
+		userController.Create(w, r)
 		return
 	case configurations.Config.UserPref:
 		if r.Method == http.MethodPost {
@@ -36,7 +36,7 @@ func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 			userPrefController.GetUserPreference(w, r, GetQueryID(w, r))
 		}
 		if r.Method == http.MethodPatch {
-			userPrefController.UpdateUserPreferences(w, r, GetQueryUserID(w, r))
+			userPrefController.UpdateUserPreferences(w, r, GetQueryID(w, r))
 		}
 		if r.Method == http.MethodDelete {
 			userPrefController.DeleteUserPref(w, r, GetQueryID(w, r))

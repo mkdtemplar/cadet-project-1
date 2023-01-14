@@ -7,6 +7,8 @@ import (
 	"context"
 	"errors"
 	"html"
+	"net/mail"
+	"regexp"
 	"strings"
 
 	"github.com/google/uuid"
@@ -19,16 +21,34 @@ type PG struct {
 	UserPreferences *models.UserPreferences
 }
 
+func ValidateUserData(email string, name string) error {
+	checkLetters := regexp.MustCompile(`^[a-zA-Z ]*$`)
+	name = strings.ReplaceAll(name, "\"", "")
+	email = strings.ReplaceAll(email, "\"", "")
+
+	if email == "" {
+		return errors.New("e-mail is required")
+	}
+	if _, err := mail.ParseAddress(email); err != nil {
+		return errors.New("invalid E-mail format")
+	}
+	if !checkLetters.MatchString(name) {
+		return errors.New("invalid name")
+	}
+
+	return nil
+}
+
 func NewUserRepo(db *gorm.DB) interfaces.IUserRepository {
 	return &PG{DB: db}
 }
 
 func (u *PG) PrepareUserData(email string, name string) {
-	email = html.EscapeString(strings.TrimSpace(email))
-	name = html.EscapeString(strings.TrimSpace(name))
+	u.User.Email = html.EscapeString(strings.TrimSpace(email))
+	u.User.Name = html.EscapeString(strings.TrimSpace(name))
 }
 
-func (u *PG) SaveUserDb(ctx context.Context, usr *models.User) (*models.User, error) {
+func (u *PG) Create(ctx context.Context, usr *models.User) (*models.User, error) {
 	if usr == nil {
 		return &models.User{}, errors.New("user details empty")
 	}
@@ -42,7 +62,7 @@ func (u *PG) SaveUserDb(ctx context.Context, usr *models.User) (*models.User, er
 	return usr, nil
 }
 
-func (u *PG) DeleteUserDb(ctx context.Context, uid uuid.UUID) (int64, error) {
+func (u *PG) Delete(ctx context.Context, uid uuid.UUID) (int64, error) {
 	var err error
 
 	tx := u.DB.Begin()
@@ -58,7 +78,7 @@ func (u *PG) DeleteUserDb(ctx context.Context, uid uuid.UUID) (int64, error) {
 	return tx.RowsAffected, nil
 }
 
-func (u *PG) GetUser(ctx context.Context, in *models.User) (*models.User, error) {
+func (u *PG) Get(ctx context.Context, in *models.User) (*models.User, error) {
 	user := &models.User{}
 
 	err := u.DB.WithContext(ctx).Preload("UserPref").Take(user, "email = ?", in.Email).Error

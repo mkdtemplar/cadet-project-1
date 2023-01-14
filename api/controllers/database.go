@@ -18,6 +18,7 @@ type Server struct {
 	interfaces.IUserRepository
 	interfaces.IUserPreferencesRepository
 	models.User
+	models.UserPreferences
 	interfaces.IUserController
 	interfaces.IUserPrefController
 }

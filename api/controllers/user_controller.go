@@ -3,12 +3,13 @@ package controllers
 import (
 	"cadet-project/configurations"
 	"cadet-project/interfaces"
+	"cadet-project/middlewares_token_validation"
+	"cadet-project/repository"
 	"cadet-project/saml_handler"
 
 	"cadet-project/models"
 	"cadet-project/repository/generate_id"
 	"cadet-project/responses"
-	"cadet-project/validation"
 	"errors"
 	"fmt"
 	"net/http"
@@ -32,7 +33,7 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 		Name:  userName,
 	}
 
-	tokenValue := validation.ExtractToken(r)
+	tokenValue := middlewares_token_validation.ExtractToken(r)
 	expiresAt := time.Now().Add(900 * time.Second)
 
 	models.Sessions[tokenValue] = models.Session{Expiry: expiresAt}
@@ -41,13 +42,13 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 	models.Cookie.Path = "/"
 	http.SetCookie(w, &models.Cookie)
 
-	_, err = s.IUserRepository.GetUser(r.Context(), user)
+	_, err = s.IUserRepository.Get(r.Context(), user)
 	if err == nil {
 		responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %s  with E-mail: %s is already in database and authorized", userName, userEmail))
 		return
 	}
 
-	userNew, err := s.IUserRepository.SaveUserDb(r.Context(), user)
+	userNew, err := s.IUserRepository.Create(r.Context(), user)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
@@ -57,25 +58,17 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (s *Server) TestCreate() {
-	s.TestCreateUser()
-}
+func (s *Server) Create(w http.ResponseWriter, r *http.Request) {
 
-func (s *Server) TestCreate1() {
-	s.Name(s.IUserRepository.SaveUserDb)
-}
+	user := ParseUserRequestBody(w, r)
 
-func (s *Server) CreateUserInDb(w http.ResponseWriter, r *http.Request) {
-
-	user := RequestBodyUser(w, r)
-
-	err := validation.ValidateUserData(user.Email, user.Name)
+	err := repository.ValidateUserData(user.Email, user.Name)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("invalid user email format"))
 		return
 	}
 	s.IUserRepository.PrepareUserData(user.Email, user.Name)
-	if _, err = s.IUserRepository.SaveUserDb(r.Context(), &user); err != nil {
+	if _, err = s.IUserRepository.Create(r.Context(), user); err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
@@ -83,9 +76,9 @@ func (s *Server) CreateUserInDb(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (s *Server) DeleteUser(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
+func (s *Server) Delete(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
 
-	if _, err := s.IUserRepository.DeleteUserDb(r.Context(), id); err != nil {
+	if _, err := s.IUserRepository.Delete(r.Context(), id); err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
