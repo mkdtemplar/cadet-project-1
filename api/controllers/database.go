@@ -17,10 +17,13 @@ type Server struct {
 	repository.PG
 	interfaces.IUserRepository
 	interfaces.IUserPreferencesRepository
+	interfaces.IShipPortsRepository
 	models.User
 	models.UserPreferences
+	models.ShipPorts
 	interfaces.IUserController
 	interfaces.IUserPrefController
+	interfaces.IShipController
 }
 
 func (s *Server) InitializeDB(Dbdriver, DbUser, DbPassword, DbPort, DbHost, DbName string) {

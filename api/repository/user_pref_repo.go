@@ -13,26 +13,22 @@ import (
 	"gorm.io/gorm"
 )
 
-func ValidateCountry(country string) error {
+func (v *Validation) ValidateUserPrefCountry(country string) *Validation {
 	checkLetters := regexp.MustCompile(`^[a-zA-Z ]+$`)
 	if checkLetters.MatchString(country) == false {
-		return errors.New("country string wrong format")
+		v.Err = errors.New("country string wrong format")
+		return v
 	}
-
-	return nil
+	return v
 }
-func ValidateUserPref(country string, userId uuid.UUID) error {
-	checkLetters := regexp.MustCompile(`^[a-zA-Z ]+$`)
+
+func (v *Validation) ValidateUserId(userId uuid.UUID) *Validation {
 	checkId := regexp.MustCompile(`^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[8|9|aA|bB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}$`)
-
-	if checkLetters.MatchString(country) == false {
-		return errors.New("country string wrong format")
-	}
 	if userId == uuid.Nil || checkId.MatchString(userId.String()) == false {
-		return errors.New("user id is required or wrong data format user_id must be uuid")
+		v.Err = errors.New("user id is required or wrong data format user_id must be uuid")
+		return v
 	}
-
-	return nil
+	return v
 }
 
 func NewUserPrefObject(id uuid.UUID, country string, userId uuid.UUID) models.UserPreferences {
@@ -115,22 +111,4 @@ func (u *PG) DeleteUserPreferences(ctx context.Context, id uuid.UUID) (int64, er
 	}
 
 	return delTx.RowsAffected, nil
-}
-
-func (u *PG) FindUserPrefPorts(ctx context.Context, in *models.UserPreferences) (*models.UserPreferences, error) {
-	var err error
-	userPref := &models.UserPreferences{}
-	if err = u.DB.WithContext(ctx).Joins("join ship_ports ON ship_ports.country = user_preferences.user_country").Find(userPref).Error; err != nil {
-		return nil, err
-	}
-
-	var ports []models.ShipPorts
-
-	if err := u.DB.WithContext(ctx).Where("country = ?", in.UserCountry).Model(&models.ShipPorts{}).Find(&ports).Error; err != nil {
-		return &models.UserPreferences{}, err
-	}
-
-	userPref.Ports = ports
-
-	return userPref, nil
 }

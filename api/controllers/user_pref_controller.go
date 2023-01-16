@@ -17,17 +17,18 @@ func NewUserPrefController(IUserPreferencesRepository interfaces.IUserPreference
 }
 
 func (s *Server) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
+	v := repository.Validation{}
 	userPref := ParseUserPrefRequestBody(w, r)
 
-	err := repository.ValidateUserPref(userPref.UserCountry, userPref.UserId)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("user preferences validation failed"))
+	validateUserPefData := v.ValidateUserPrefCountry(userPref.UserCountry).ValidateUserId(userPref.UserId)
+	if validateUserPefData.Err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, validateUserPefData.Err)
 		return
 	}
 
 	userPreferencesStore := repository.NewUserPrefObject(generate_id.GenerateID(), userPref.UserCountry, userPref.UserId)
 
-	_, err = s.IUserPreferencesRepository.SaveUserPreferences(r.Context(), &userPreferencesStore)
+	_, err := s.IUserPreferencesRepository.SaveUserPreferences(r.Context(), &userPreferencesStore)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
@@ -47,25 +48,9 @@ func (s *Server) GetUserPreference(w http.ResponseWriter, r *http.Request, id uu
 	responses.JSON(w, http.StatusOK, userPreferences)
 }
 
-func (s *Server) GetUserPorts(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
-
-	userPreferences, err := s.IUserPreferencesRepository.FindUserPreferences(r.Context(), id)
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-
-	userPrefPorts, err := s.IUserPreferencesRepository.FindUserPrefPorts(r.Context(), userPreferences)
-
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	responses.JSON(w, http.StatusOK, userPrefPorts)
-}
-
 func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
 	var err error
+	v := repository.Validation{}
 	userPrefFind := &models.UserPreferences{}
 	userPrefFind, err = s.IUserPreferencesRepository.FindUserPreferences(r.Context(), id)
 
@@ -75,9 +60,9 @@ func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request, i
 
 	userPrefUpdate := ParseUserPrefRequestBody(w, r)
 
-	err = repository.ValidateCountry(userPrefUpdate.UserCountry)
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("data format validation failed"))
+	validateCountry := v.ValidateUserPrefCountry(userPrefUpdate.UserCountry)
+	if validateCountry.Err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, validateCountry.Err)
 		return
 	}
 

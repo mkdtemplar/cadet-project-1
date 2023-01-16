@@ -13,8 +13,13 @@ func (s *Server) UserPrefRepoConstructor() interfaces.IUserPreferencesRepository
 	return repository.NewUserPrefRepo(s.DB)
 }
 
-func (s *Server) ControllersConstructor() (interfaces.IUserController, interfaces.IUserPrefController) {
+func (s *Server) ShipPortsConstructor() interfaces.IShipPortsRepository {
+	return repository.NewShipPortsRepo(s.DB)
+}
+
+func (s *Server) ControllersConstructor() (interfaces.IUserController, interfaces.IUserPrefController, interfaces.IShipController) {
 	userRepo := s.UserRepoConstructor()
 	userPrefRepo := s.UserPrefRepoConstructor()
-	return NewUserController(userRepo), NewUserPrefController(userPrefRepo)
+	shipPortsRepo := s.ShipPortsConstructor()
+	return NewUserController(userRepo), NewUserPrefController(userPrefRepo), NewShipPortsController(shipPortsRepo)
 }

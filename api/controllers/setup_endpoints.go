@@ -15,7 +15,7 @@ func (s *Server) notFound(w http.ResponseWriter) {
 func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 	configurations.InitConfig("configurations")
 
-	userController, userPrefController := s.ControllersConstructor()
+	userController, userPrefController, shipPortsController := s.ControllersConstructor()
 
 	w.Header().Set("content-type", "application/json")
 
@@ -43,7 +43,7 @@ func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	case configurations.Config.UserPorts:
-		userPrefController.GetUserPorts(w, r, GetQueryID(w, r))
+		shipPortsController.GetUserPorts(w, r, GetQueryID(w, r))
 		return
 	default:
 		s.notFound(w)

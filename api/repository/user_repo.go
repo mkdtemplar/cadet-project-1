@@ -19,6 +19,7 @@ type PG struct {
 	DB              *gorm.DB
 	User            *models.User
 	UserPreferences *models.UserPreferences
+	ShipPorts       *models.ShipPorts
 }
 
 type Validation struct {
