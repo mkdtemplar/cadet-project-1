@@ -3,22 +3,21 @@ package controllers
 import (
 	"cadet-project/repository"
 	"cadet-project/responses"
-	"errors"
 	"net/http"
 )
 
 func (s *Server) TestCreateUser() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := ParseUserRequestBody(w, r)
-
-		err := repository.ValidateUserData(user.Email, user.Name)
-		if err != nil {
-			responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("invalid user email format"))
+		v := repository.Validation{}
+		err := v.ValidateUserEmail(user.Email).ValidateUserName(user.Name)
+		if err.Err != nil {
+			responses.ERROR(w, http.StatusUnprocessableEntity, err.Err)
 			return
 		}
 		s.IUserRepository.PrepareUserData(user.Email, user.Name)
-		if _, err = s.IUserRepository.Create(r.Context(), user); err != nil {
-			responses.ERROR(w, http.StatusInternalServerError, err)
+		if _, errRepo := s.IUserRepository.Create(r.Context(), user); err != nil {
+			responses.ERROR(w, http.StatusInternalServerError, errRepo)
 			return
 		}
 		responses.JSON(w, http.StatusCreated, user)
