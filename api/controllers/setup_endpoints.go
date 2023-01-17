@@ -12,10 +12,31 @@ func (s *Server) notFound(w http.ResponseWriter) {
 	return
 }
 
+func (s *Server) ServeUserPrefEndPoints(w http.ResponseWriter, r *http.Request) {
+	_, userPrefController, _ := s.ControllersConstructor()
+	switch {
+	case r.Method == http.MethodPost:
+		userPrefController.CreateUserPreferences(w, r)
+		return
+	case r.Method == http.MethodGet:
+		userPrefController.GetUserPreference(w, r, GetQueryID(w, r))
+		return
+	case r.Method == http.MethodPatch:
+		userPrefController.UpdateUserPreferences(w, r, GetQueryID(w, r))
+		return
+	case r.Method == http.MethodDelete:
+		userPrefController.DeleteUserPref(w, r, GetQueryID(w, r))
+		return
+	default:
+		s.notFound(w)
+		return
+	}
+}
+
 func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 	configurations.InitConfig("configurations")
 
-	userController, userPrefController, shipPortsController := s.ControllersConstructor()
+	userController, _, shipPortsController := s.ControllersConstructor()
 
 	w.Header().Set("content-type", "application/json")
 
@@ -29,18 +50,7 @@ func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 		userController.Create(w, r)
 		return
 	case configurations.Config.UserPref:
-		if r.Method == http.MethodPost {
-			userPrefController.CreateUserPreferences(w, r)
-		}
-		if r.Method == http.MethodGet {
-			userPrefController.GetUserPreference(w, r, GetQueryID(w, r))
-		}
-		if r.Method == http.MethodPatch {
-			userPrefController.UpdateUserPreferences(w, r, GetQueryID(w, r))
-		}
-		if r.Method == http.MethodDelete {
-			userPrefController.DeleteUserPref(w, r, GetQueryID(w, r))
-		}
+		s.ServeUserPrefEndPoints(w, r)
 		return
 	case configurations.Config.UserPorts:
 		shipPortsController.GetUserPorts(w, r, GetQueryID(w, r))
