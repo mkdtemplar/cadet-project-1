@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"cadet-project/configurations"
+	"cadet-project/controllers/helper"
 	"cadet-project/interfaces"
 	"cadet-project/middlewares_token_validation"
 	"cadet-project/models"
@@ -65,7 +66,7 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) Create(w http.ResponseWriter, r *http.Request) {
 	v := repository.Validation{}
-	user := ParseUserRequestBody(w, r)
+	user := helper.ParseUserRequestBody(w, r)
 
 	checkCredentials := v.ValidateUserEmail(user.Email).ValidateUserName(user.Name)
 

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"cadet-project/controllers/helper"
 	"cadet-project/repository"
 	"cadet-project/responses"
 	"net/http"
@@ -8,7 +9,7 @@ import (
 
 func (s *Server) TestCreateUser() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		user := ParseUserRequestBody(w, r)
+		user := helper.ParseUserRequestBody(w, r)
 		v := repository.Validation{}
 		err := v.ValidateUserEmail(user.Email).ValidateUserName(user.Name)
 		if err.Err != nil {

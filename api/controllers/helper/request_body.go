@@ -1,4 +1,4 @@
-package controllers
+package helper
 
 import (
 	"cadet-project/models"

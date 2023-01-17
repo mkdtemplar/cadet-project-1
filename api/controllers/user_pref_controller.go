@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"cadet-project/controllers/helper"
 	"cadet-project/interfaces"
 	"cadet-project/models"
 	"cadet-project/repository"
@@ -18,7 +19,7 @@ func NewUserPrefController(IUserPreferencesRepository interfaces.IUserPreference
 
 func (s *Server) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
 	v := repository.Validation{}
-	userPref := ParseUserPrefRequestBody(w, r)
+	userPref := helper.ParseUserPrefRequestBody(w, r)
 
 	validateUserPefData := v.ValidateUserPrefCountry(userPref.UserCountry).ValidateUserId(userPref.UserId)
 	if validateUserPefData.Err != nil {
@@ -58,7 +59,7 @@ func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request, i
 		responses.ERROR(w, http.StatusNotFound, errors.New("user preferences not found"))
 	}
 
-	userPrefUpdate := ParseUserPrefRequestBody(w, r)
+	userPrefUpdate := helper.ParseUserPrefRequestBody(w, r)
 
 	validateCountry := v.ValidateUserPrefCountry(userPrefUpdate.UserCountry)
 	if validateCountry.Err != nil {
