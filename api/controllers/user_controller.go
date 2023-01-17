@@ -74,7 +74,7 @@ func (s *Server) Create(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, checkCredentials.Err)
 		return
 	}
-	s.IUserRepository.PrepareUserData(user.Email, user.Name)
+
 	if _, err := s.IUserRepository.Create(r.Context(), user); err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return

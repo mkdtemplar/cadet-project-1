@@ -18,12 +18,12 @@ func ParseUserRequestBody(w http.ResponseWriter, r *http.Request) *models.User {
 	}
 
 	user := &models.User{}
-	err = json.Unmarshal(body, &user)
+	err = json.Unmarshal(body, user)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return &models.User{}
 	}
-
+	user.Clean()
 	return user
 }
 
