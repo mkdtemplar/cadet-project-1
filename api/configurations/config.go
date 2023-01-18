@@ -23,6 +23,7 @@ type AppConfig struct {
 	UserPref     string `mapstructure:"USER_PREF"`
 	UserPorts    string `mapstructure:"USER_PORTS"`
 	ListUserPref string `mapstructure:"LIST_USER_PREF"`
+	UserId       string `mapstructure:"USER_GET"`
 }
 
 var Config AppConfig

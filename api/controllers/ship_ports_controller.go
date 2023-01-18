@@ -14,7 +14,7 @@ func NewShipPortsController(IShipPortsRepository interfaces.IShipPortsRepository
 
 func (s *Server) GetUserPorts(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
 
-	userPreferences, err := s.IUserPreferencesRepository.FindUserPreferences(r.Context(), id)
+	userPreferences, err := s.IShipPortsRepository.FindPreferences(r.Context(), id)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return

@@ -57,6 +57,8 @@ func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 	case configurations.Config.UserPorts:
 		shipPortsController.GetUserPorts(w, r, helper.GetQueryID(w, r))
 		return
+	case configurations.Config.UserId:
+		userController.GetId(w, r, helper.GetQueryID(w, r))
 	default:
 		s.notFound(w)
 		return

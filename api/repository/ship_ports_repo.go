@@ -5,6 +5,7 @@ import (
 	"cadet-project/models"
 	"context"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -14,8 +15,8 @@ func NewShipPortsRepo(db *gorm.DB) interfaces.IShipPortsRepository {
 
 func (u *PG) FindUserPrefPorts(ctx context.Context, in *models.UserPreferences) (*models.UserPreferences, error) {
 	var err error
-	userPref := &models.UserPreferences{}
-	if err = u.DB.WithContext(ctx).Joins("join ship_ports ON ship_ports.country = user_preferences.user_country").Find(userPref).Error; err != nil {
+	userPref := models.UserPreferences{}
+	if err = u.DB.WithContext(ctx).Joins("join ship_ports ON ship_ports.country = user_preferences.user_country").Find(&userPref).Error; err != nil {
 		return nil, err
 	}
 
@@ -26,6 +27,20 @@ func (u *PG) FindUserPrefPorts(ctx context.Context, in *models.UserPreferences) 
 	}
 
 	userPref.Ports = ports
+	userPref.UserCountry = in.UserCountry
 
-	return userPref, nil
+	return &userPref, nil
+}
+
+func (u *PG) FindPreferences(ctx context.Context, id uuid.UUID) (*models.UserPreferences, error) {
+	var err error
+
+	userPref := models.UserPreferences{}
+
+	err = u.DB.WithContext(ctx).Model(&models.UserPreferences{}).Where("id = ?", id).Take(&userPref).Error
+	if err != nil {
+		return &models.UserPreferences{}, err
+	}
+
+	return &userPref, nil
 }

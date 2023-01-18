@@ -91,3 +91,13 @@ func (s *Server) Delete(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
 	}
 	responses.JSON(w, http.StatusNoContent, "")
 }
+
+func (s *Server) GetId(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
+	user, err := s.IUserRepository.GetById(r.Context(), id)
+
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, user)
+}

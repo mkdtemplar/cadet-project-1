@@ -1,6 +1,8 @@
 package models
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
 type UserPreferences struct {
 	ID          uuid.UUID   `gorm:"primary_key;type:uuid" json:"id"`
