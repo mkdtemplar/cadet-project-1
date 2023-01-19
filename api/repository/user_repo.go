@@ -92,21 +92,21 @@ func (u *PG) Delete(ctx context.Context, uid uuid.UUID) (int64, error) {
 }
 
 func (u *PG) Get(ctx context.Context, in *models.User) (*models.User, error) {
-	user := &models.User{}
+	user := models.User{}
 
-	err := u.DB.WithContext(ctx).Model(&models.User{}).Take(user, "email = ?", in.Email).Error
-	return user, err
+	err := u.DB.WithContext(ctx).Model(&models.User{}).Take(&user, "email = ?", in.Email).Error
+	return &user, err
 }
 
 func (u *PG) GetById(ctx context.Context, id uuid.UUID) (*models.User, error) {
 	var err error
 
-	user := &models.User{}
+	user := models.User{}
 
-	err = u.DB.WithContext(ctx).Model(&models.User{}).Where("id = ?", id).Find(&user).Error
+	err = u.DB.WithContext(ctx).Model(&models.User{}).Take(&user, "id = ?", id).Error
 	if err != nil {
 		return nil, err
 	}
 
-	return user, nil
+	return &user, nil
 }

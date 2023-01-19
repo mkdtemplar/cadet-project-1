@@ -39,8 +39,8 @@ func (u *PG) FindUserPorts(ctx context.Context, usr *models.User) (*models.User,
 	if err = u.DB.WithContext(ctx).Model(&models.User{}).Joins("join user_preferences ON user_preferences.user_id = users.id").Find(&user).Error; err != nil {
 		return nil, err
 	}
-	var userPref models.UserPreferences
-	if err = u.DB.WithContext(ctx).Where("user_id = ?", usr.ID).Model(&models.UserPreferences{}).Find(&userPref).Error; err != nil {
+	userPref := models.UserPreferences{}
+	if err = u.DB.WithContext(ctx).Model(&models.UserPreferences{}).Where("user_id = ?", usr.ID).Find(&userPref).Error; err != nil {
 		return nil, err
 	}
 
