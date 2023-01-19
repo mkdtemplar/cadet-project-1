@@ -17,8 +17,9 @@ import (
 	"github.com/google/uuid"
 )
 
-func NewUserController(IUserRepository interfaces.IUserRepository, IUserPreferencesRepository interfaces.IUserPreferencesRepository) *Server {
-	return &Server{IUserRepository: IUserRepository, IUserPreferencesRepository: IUserPreferencesRepository}
+func NewUserController(IUserRepository interfaces.IUserRepository, IUserPreferencesRepository interfaces.IUserPreferencesRepository,
+	IShipPortsRepository interfaces.IShipPortsRepository) *Server {
+	return &Server{IUserRepository: IUserRepository, IUserPreferencesRepository: IUserPreferencesRepository, IShipPortsRepository: IShipPortsRepository}
 }
 
 func (s *Server) GetPorts(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
@@ -29,7 +30,7 @@ func (s *Server) GetPorts(w http.ResponseWriter, r *http.Request, id uuid.UUID) 
 		return
 	}
 
-	userPorts, err := s.IUserRepository.FindUserPorts(r.Context(), user)
+	userPorts, err := s.IShipPortsRepository.FindUserPorts(r.Context(), user)
 
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
@@ -69,7 +70,7 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 	_, err = s.IUserRepository.Get(r.Context(), user)
 	if err == nil {
 
-		user, err = s.IUserRepository.FindUserPorts(r.Context(), user)
+		user, err = s.IShipPortsRepository.FindUserPorts(r.Context(), user)
 		if err != nil {
 			responses.ERROR(w, http.StatusNotFound, err)
 			return
