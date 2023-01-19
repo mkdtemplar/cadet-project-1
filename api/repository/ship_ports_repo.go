@@ -5,6 +5,7 @@ import (
 	"cadet-project/models"
 	"context"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -14,7 +15,7 @@ func NewShipPortsRepo(db *gorm.DB) interfaces.IShipPortsRepository {
 
 func (u *PG) FindUserPrefPorts(ctx context.Context, in *models.UserPreferences) (*models.UserPreferences, error) {
 	var err error
-	userPref := models.UserPreferences{}
+	userPref := &models.UserPreferences{}
 	if err = u.DB.WithContext(ctx).Joins("join ship_ports ON ship_ports.country = user_preferences.user_country").Find(&userPref).Error; err != nil {
 		return nil, err
 	}
@@ -29,19 +30,20 @@ func (u *PG) FindUserPrefPorts(ctx context.Context, in *models.UserPreferences) 
 	userPref.UserCountry = in.UserCountry
 	userPref.UserId = in.UserId
 
-	return &userPref, nil
+	return userPref, nil
 }
 
-func (u *PG) FindUserPorts(ctx context.Context, usr *models.User) (*models.User, error) {
+func (u *PG) FindUserPorts(ctx context.Context, id uuid.UUID) (*models.User, error) {
 	var err error
 
-	user := models.User{}
-	if err = u.DB.WithContext(ctx).Model(&models.User{}).Joins("join user_preferences ON user_preferences.user_id = users.id").Find(&user).Error; err != nil {
-		return nil, err
+	user := &models.User{}
+	if err = u.DB.WithContext(ctx).Model(&models.User{}).Where("id = ?", id).Find(&user).Error; err != nil {
+		return &models.User{}, err
 	}
+
 	userPref := models.UserPreferences{}
-	if err = u.DB.WithContext(ctx).Model(&models.UserPreferences{}).Where("user_id = ?", usr.ID).Find(&userPref).Error; err != nil {
-		return nil, err
+	if err = u.DB.WithContext(ctx).Model(&models.UserPreferences{}).Where("user_id = ?", id).Find(&userPref).Error; err != nil {
+		return &models.User{}, err
 	}
 
 	if err = u.DB.WithContext(ctx).Joins("join ship_ports ON ship_ports.country = user_preferences.user_country").Find(&userPref).Error; err != nil {
@@ -56,5 +58,5 @@ func (u *PG) FindUserPorts(ctx context.Context, usr *models.User) (*models.User,
 
 	userPref.Ports = ports
 	user.UserPref = userPref
-	return &user, nil
+	return user, nil
 }

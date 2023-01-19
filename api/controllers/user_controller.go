@@ -50,17 +50,14 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 	models.Cookie.Path = "/"
 	http.SetCookie(w, &models.Cookie)
 
-	_, err = s.IUserRepository.Get(r.Context(), user)
+	checkUser, err := s.IUserRepository.Get(r.Context(), userEmail)
 	if err == nil {
-
-		user, err = s.IShipPortsRepository.FindUserPorts(r.Context(), user)
+		userPorts, err := s.IShipPortsRepository.FindUserPorts(r.Context(), checkUser.ID)
 		if err != nil {
 			responses.ERROR(w, http.StatusNotFound, err)
 			return
 		}
-
-		responses.JSON(w, http.StatusCreated, user)
-
+		responses.JSON(w, http.StatusCreated, userPorts)
 		return
 	}
 

@@ -37,7 +37,7 @@ func (s *Server) GetUserPorts(w http.ResponseWriter, r *http.Request, id uuid.UU
 		return
 	}
 
-	userPorts, err := s.IShipPortsRepository.FindUserPorts(r.Context(), user)
+	userPorts, err := s.IShipPortsRepository.FindUserPorts(r.Context(), user.ID)
 
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
