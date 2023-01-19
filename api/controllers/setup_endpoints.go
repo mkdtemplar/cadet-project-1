@@ -38,7 +38,7 @@ func (s *Server) ServeUserPrefEndPoints(w http.ResponseWriter, r *http.Request) 
 func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 	configurations.InitConfig("configurations")
 
-	userController, _, shipPortsController := s.ControllersConstructor()
+	userController, _, _ := s.ControllersConstructor()
 
 	w.Header().Set("content-type", "application/json")
 
@@ -55,7 +55,8 @@ func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 		s.ServeUserPrefEndPoints(w, r)
 		return
 	case configurations.Config.UserPorts:
-		shipPortsController.GetUserPorts(w, r, helper.GetQueryID(w, r))
+		//shipPortsController.GetUserPorts(w, r, helper.GetQueryID(w, r))
+		userController.GetPorts(w, r, helper.GetQueryID(w, r))
 		return
 	case configurations.Config.UserId:
 		userController.GetId(w, r, helper.GetQueryID(w, r))

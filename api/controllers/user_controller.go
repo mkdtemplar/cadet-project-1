@@ -17,11 +17,29 @@ import (
 	"github.com/google/uuid"
 )
 
-func NewUserController(IUserRepository interfaces.IUserRepository) *Server {
-	return &Server{IUserRepository: IUserRepository}
+func NewUserController(IUserRepository interfaces.IUserRepository, IUserPreferencesRepository interfaces.IUserPreferencesRepository) *Server {
+	return &Server{IUserRepository: IUserRepository, IUserPreferencesRepository: IUserPreferencesRepository}
+}
+
+func (s *Server) GetPorts(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
+	user, err := s.IUserRepository.GetById(r.Context(), id)
+
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	userPorts, err := s.IUserRepository.FindUserPorts(r.Context(), user)
+
+	if err != nil {
+		responses.ERROR(w, http.StatusInternalServerError, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, userPorts)
 }
 
 func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "application/json")
 	var err error
 	v := repository.Validation{}
 	userEmail, userName := saml_handler.Credentials(w, r, configurations.Config.Email, configurations.Config.DisplayName)
@@ -50,7 +68,15 @@ func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 
 	_, err = s.IUserRepository.Get(r.Context(), user)
 	if err == nil {
-		responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %s  with E-mail: %s is already in database and authorized", userName, userEmail))
+
+		user, err = s.IUserRepository.FindUserPorts(r.Context(), user)
+		if err != nil {
+			responses.ERROR(w, http.StatusNotFound, err)
+			return
+		}
+
+		responses.JSON(w, http.StatusCreated, user)
+
 		return
 	}
 
