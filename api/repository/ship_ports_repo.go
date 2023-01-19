@@ -5,7 +5,6 @@ import (
 	"cadet-project/models"
 	"context"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -28,19 +27,7 @@ func (u *PG) FindUserPrefPorts(ctx context.Context, in *models.UserPreferences) 
 
 	userPref.Ports = ports
 	userPref.UserCountry = in.UserCountry
-
-	return &userPref, nil
-}
-
-func (u *PG) FindPreferences(ctx context.Context, id uuid.UUID) (*models.UserPreferences, error) {
-	var err error
-
-	userPref := models.UserPreferences{}
-
-	err = u.DB.WithContext(ctx).Model(&models.UserPreferences{}).Where("id = ?", id).Take(&userPref).Error
-	if err != nil {
-		return &models.UserPreferences{}, err
-	}
+	userPref.UserId = in.UserId
 
 	return &userPref, nil
 }

@@ -8,13 +8,13 @@ import (
 	"github.com/google/uuid"
 )
 
-func NewShipPortsController(IShipPortsRepository interfaces.IShipPortsRepository) *Server {
-	return &Server{IShipPortsRepository: IShipPortsRepository}
+func NewShipPortsController(IUserPreferencesRepository interfaces.IUserPreferencesRepository, IShipPortsRepository interfaces.IShipPortsRepository) *Server {
+	return &Server{IUserPreferencesRepository: IUserPreferencesRepository, IShipPortsRepository: IShipPortsRepository}
 }
 
 func (s *Server) GetUserPorts(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
 
-	userPreferences, err := s.IShipPortsRepository.FindPreferences(r.Context(), id)
+	userPreferences, err := s.IUserPreferencesRepository.FindUserPreferences(r.Context(), id)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
