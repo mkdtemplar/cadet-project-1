@@ -22,23 +22,6 @@ func NewUserController(IUserRepository interfaces.IUserRepository, IUserPreferen
 	return &Server{IUserRepository: IUserRepository, IUserPreferencesRepository: IUserPreferencesRepository, IShipPortsRepository: IShipPortsRepository}
 }
 
-func (s *Server) GetPorts(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
-	user, err := s.IUserRepository.GetById(r.Context(), id)
-
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-
-	userPorts, err := s.IShipPortsRepository.FindUserPorts(r.Context(), user)
-
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	responses.JSON(w, http.StatusOK, userPorts)
-}
-
 func (s *Server) Home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	var err error

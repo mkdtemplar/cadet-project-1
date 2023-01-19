@@ -9,21 +9,22 @@ import (
 )
 
 type AppConfig struct {
-	TenantID     string `mapstructure:"TENANT_ID"`
-	AppId        string `mapstructure:"APP_ID"`
-	MSUrl        string `mapstructure:"MS_URL"`
-	Crt          string `mapstructure:"CRT"`
-	Key          string `mapstructure:"KEY"`
-	RootUrl      string `mapstructure:"ROOT_URL"`
-	Email        string `mapstructure:"EMAIL"`
-	DisplayName  string `mapstructure:"DISPLAY_NAME"`
-	ApiPort      string `mapstructure:"API_PORT"`
-	UserDelete   string `mapstructure:"USER_DELETE"`
-	UserCreate   string `mapstructure:"USER_CREATE"`
-	UserPref     string `mapstructure:"USER_PREF"`
-	UserPorts    string `mapstructure:"USER_PORTS"`
-	ListUserPref string `mapstructure:"LIST_USER_PREF"`
-	UserId       string `mapstructure:"USER_GET"`
+	TenantID      string `mapstructure:"TENANT_ID"`
+	AppId         string `mapstructure:"APP_ID"`
+	MSUrl         string `mapstructure:"MS_URL"`
+	Crt           string `mapstructure:"CRT"`
+	Key           string `mapstructure:"KEY"`
+	RootUrl       string `mapstructure:"ROOT_URL"`
+	Email         string `mapstructure:"EMAIL"`
+	DisplayName   string `mapstructure:"DISPLAY_NAME"`
+	ApiPort       string `mapstructure:"API_PORT"`
+	UserDelete    string `mapstructure:"USER_DELETE"`
+	UserCreate    string `mapstructure:"USER_CREATE"`
+	UserPref      string `mapstructure:"USER_PREF"`
+	UserPorts     string `mapstructure:"USER_PORTS"`
+	ListUserPref  string `mapstructure:"LIST_USER_PREF"`
+	UserId        string `mapstructure:"USER_GET"`
+	UserPrefPorts string `mapstructure:"USER_PREF_PORTS"`
 }
 
 var Config AppConfig

@@ -21,5 +21,5 @@ func (s *Server) ControllersConstructor() (interfaces.IUserController, interface
 	userRepo := s.UserRepoConstructor()
 	userPrefRepo := s.UserPrefRepoConstructor()
 	shipPortsRepo := s.ShipPortsConstructor()
-	return NewUserController(userRepo, userPrefRepo, shipPortsRepo), NewUserPrefController(userPrefRepo), NewShipPortsController(userPrefRepo, shipPortsRepo)
+	return NewUserController(userRepo, userPrefRepo, shipPortsRepo), NewUserPrefController(userPrefRepo), NewShipPortsController(userRepo, userPrefRepo, shipPortsRepo)
 }
