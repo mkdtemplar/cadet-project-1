@@ -14,6 +14,6 @@ type User struct {
 }
 
 func (u *User) Clean() {
-	u.Email = utils.Clean(u.Email)
-	u.Name = utils.Clean(u.Name)
+	u.Email = utils.CleanUserData(u.Email)
+	u.Name = utils.CleanUserData(u.Name)
 }

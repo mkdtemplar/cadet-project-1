@@ -5,8 +5,8 @@ import (
 	"cadet-project/interfaces"
 	"cadet-project/middlewares_token_validation"
 	"cadet-project/models"
-	"cadet-project/repository"
 	"cadet-project/repository/generate_id"
+	"cadet-project/repository/validation"
 	"cadet-project/responses"
 	"cadet-project/saml_handler"
 	"fmt"
@@ -21,7 +21,7 @@ func NewLoginController(IUserRepository interfaces.IUserRepository, IUserPrefere
 func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	var err error
-	v := repository.Validation{}
+	v := validation.Validation{}
 	userEmail, userName := saml_handler.Credentials(w, r, configurations.Config.Email, configurations.Config.DisplayName)
 
 	checkCredentials := v.ValidateUserEmail(userEmail).ValidateUserName(userName)

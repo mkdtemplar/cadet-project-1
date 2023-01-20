@@ -6,30 +6,11 @@ import (
 	"context"
 	"errors"
 	"html"
-	"regexp"
 	"strings"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
-
-func (v *Validation) ValidateUserPrefCountry(country string) *Validation {
-	checkLetters := regexp.MustCompile(`^[a-zA-Z ]+$`)
-	if checkLetters.MatchString(country) == false {
-		v.Err = errors.New("country string wrong format")
-		return v
-	}
-	return v
-}
-
-func (v *Validation) ValidateUserId(userId uuid.UUID) *Validation {
-	checkId := regexp.MustCompile(`^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[8|9|aA|bB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}$`)
-	if userId == uuid.Nil || checkId.MatchString(userId.String()) == false {
-		v.Err = errors.New("user id is required or wrong data format user_id must be uuid")
-		return v
-	}
-	return v
-}
 
 func NewUserPrefObject(id uuid.UUID, country string, userId uuid.UUID) models.UserPreferences {
 	userPref := models.UserPreferences{}
@@ -63,7 +44,7 @@ func (u *PG) SaveUserPreferences(ctx context.Context, in *models.UserPreferences
 		return &models.UserPreferences{}, errors.New("user details empty")
 	}
 
-	err := u.DB.WithContext(ctx).Model(u.UserPreferences).Create(&in).Error
+	err := u.DB.WithContext(ctx).Model(models.UserPreferences{}).Create(&in).Error
 	if err != nil {
 		return &models.UserPreferences{}, errors.New("user not created")
 	}
@@ -85,15 +66,15 @@ func (u *PG) FindUserPreferences(ctx context.Context, id uuid.UUID) (*models.Use
 
 func (u *PG) UpdateUserPref(ctx context.Context, userid uuid.UUID, country string) (*models.UserPreferences, error) {
 	var err error
-
+	userPref := &models.UserPreferences{}
 	err = u.DB.WithContext(ctx).Model(&models.UserPreferences{}).
-		Where("id = ?", userid).Take(&models.UserPreferences{}).UpdateColumns(map[string]interface{}{"user_country": country}).Error
+		Where("id = ?", userid).Take(&userPref).UpdateColumns(map[string]interface{}{"user_country": country}).Error
 	if err != nil {
 		err.Error()
 		return nil, err
 	}
 
-	return u.UserPreferences, nil
+	return userPref, nil
 
 }
 

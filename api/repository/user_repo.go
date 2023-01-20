@@ -6,59 +6,17 @@ import (
 	"cadet-project/repository/generate_id"
 	"context"
 	"errors"
-	"html"
-	"net/mail"
-	"regexp"
-	"strings"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type PG struct {
-	DB              *gorm.DB
-	User            *models.User
-	UserPreferences *models.UserPreferences
-	ShipPorts       *models.ShipPorts
-}
-
-type Validation struct {
-	Err error
-}
-
-func (v *Validation) Error() string {
-	var err string
-	return err
-}
-
-func (v *Validation) ValidateUserEmail(email string) *Validation {
-	email = strings.ReplaceAll(email, "\"", "")
-	email = strings.ToLower(email)
-	email = html.EscapeString(strings.TrimSpace(email))
-
-	if _, err := mail.ParseAddress(email); err != nil {
-		v.Err = errors.New("invalid E-mail format")
-		return v
-	}
-	return v
-}
-
-func (v *Validation) ValidateUserName(name string) *Validation {
-	checkLetters := regexp.MustCompile(`^[a-zA-Z ]*$`)
-	if !checkLetters.MatchString(name) {
-		v.Err = errors.New("invalid name")
-		return v
-	}
-	return v
+	DB *gorm.DB
 }
 
 func NewUserRepo(db *gorm.DB) interfaces.IUserRepository {
 	return &PG{DB: db}
-}
-
-func (u *PG) PrepareUserData(email string, name string) {
-	email = html.EscapeString(strings.TrimSpace(email))
-	name = html.EscapeString(strings.TrimSpace(name))
 }
 
 func (u *PG) Create(ctx context.Context, usr *models.User) (*models.User, error) {
@@ -66,7 +24,7 @@ func (u *PG) Create(ctx context.Context, usr *models.User) (*models.User, error)
 		return &models.User{}, errors.New("user details empty")
 	}
 	usr.ID = generate_id.GenerateID()
-	err := u.DB.WithContext(ctx).Model(u.User).Create(&usr).Error
+	err := u.DB.WithContext(ctx).Model(models.User{}).Create(&usr).Error
 
 	if err != nil {
 		return &models.User{}, err

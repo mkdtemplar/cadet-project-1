@@ -6,6 +6,7 @@ import (
 	"cadet-project/models"
 	"cadet-project/repository"
 	"cadet-project/repository/generate_id"
+	"cadet-project/repository/validation"
 	"cadet-project/responses"
 	"errors"
 	"net/http"
@@ -18,7 +19,7 @@ func NewUserPrefController(IUserPreferencesRepository interfaces.IUserPreference
 }
 
 func (s *Server) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
-	v := repository.Validation{}
+	v := validation.Validation{}
 	userPref := helper.ParseUserPrefRequestBody(w, r)
 
 	validateUserPefData := v.ValidateUserPrefCountry(userPref.UserCountry).ValidateUserId(userPref.UserId)
@@ -51,7 +52,7 @@ func (s *Server) GetUserPreference(w http.ResponseWriter, r *http.Request, id uu
 
 func (s *Server) UpdateUserPreferences(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
 	var err error
-	v := repository.Validation{}
+	v := validation.Validation{}
 	userPrefFind := &models.UserPreferences{}
 	userPrefFind, err = s.IUserPreferencesRepository.FindUserPreferences(r.Context(), id)
 

@@ -1,7 +1,7 @@
 package saml_handler
 
 import (
-	"cadet-project/repository"
+	"cadet-project/repository/validation"
 	"cadet-project/responses"
 	"errors"
 	"net/http"
@@ -10,7 +10,7 @@ import (
 )
 
 func Credentials(w http.ResponseWriter, r *http.Request, email string, name string) (string, string) {
-	v := repository.Validation{}
+	v := validation.Validation{}
 	userEmail := samlsp.AttributeFromContext(r.Context(), email)
 
 	if userEmail == "" {

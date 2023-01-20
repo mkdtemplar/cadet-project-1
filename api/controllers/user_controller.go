@@ -3,7 +3,7 @@ package controllers
 import (
 	"cadet-project/controllers/helper"
 	"cadet-project/interfaces"
-	"cadet-project/repository"
+	"cadet-project/repository/validation"
 	"cadet-project/responses"
 	"net/http"
 
@@ -16,7 +16,7 @@ func NewUserController(IUserRepository interfaces.IUserRepository, IUserPreferen
 }
 
 func (s *Server) Create(w http.ResponseWriter, r *http.Request) {
-	v := repository.Validation{}
+	v := validation.Validation{}
 	user := helper.ParseUserRequestBody(w, r)
 
 	checkCredentials := v.ValidateUserEmail(user.Email).ValidateUserName(user.Name)

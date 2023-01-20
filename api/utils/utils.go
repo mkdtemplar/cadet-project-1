@@ -5,6 +5,6 @@ import (
 	"strings"
 )
 
-func Clean(str string) string {
+func CleanUserData(str string) string {
 	return strings.TrimSpace(html.EscapeString(str))
 }
