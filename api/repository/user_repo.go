@@ -91,7 +91,7 @@ func (u *PG) Delete(ctx context.Context, uid uuid.UUID) (int64, error) {
 	return tx.RowsAffected, nil
 }
 
-func (u *PG) Get(ctx context.Context, email string) (*models.User, error) {
+func (u *PG) GetUserEmail(ctx context.Context, email string) (*models.User, error) {
 	user := &models.User{}
 
 	err := u.DB.WithContext(ctx).Model(&models.User{}).Where("email= ?", email).Find(&user).Error

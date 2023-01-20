@@ -46,7 +46,7 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 	models.Cookie.Path = "/"
 	http.SetCookie(w, &models.Cookie)
 
-	checkUser, err := s.IUserRepository.Get(r.Context(), userEmail)
+	checkUser, err := s.IUserRepository.GetUserEmail(r.Context(), userEmail)
 	if err == nil {
 		userPorts, err := s.IShipPortsRepository.FindUserPorts(r.Context(), checkUser.ID)
 		if err != nil {
