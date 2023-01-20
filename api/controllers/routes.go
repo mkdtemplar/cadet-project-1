@@ -7,9 +7,9 @@ import (
 )
 
 func (s *Server) InitializeRoutes() {
-	userController, _, _ := s.ControllersConstructor()
+	loginController := s.LoginController()
 	samlSp := saml_handler.AuthorizationRequest()
-	app := http.HandlerFunc(userController.Home)
+	app := http.HandlerFunc(loginController.Login)
 	s.Router.Handle("/login", samlSp.RequireAccount(app))
 	s.Router.Handle("/saml/acs", samlSp)
 	s.Router.HandleFunc("/", middlewares_token_validation.SetMiddlewareJSON(middlewares_token_validation.SetMiddlewareAuthentication(s.ServeEndPoints)))

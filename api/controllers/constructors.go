@@ -23,3 +23,10 @@ func (s *Server) ControllersConstructor() (interfaces.IUserController, interface
 	shipPortsRepo := s.ShipPortsConstructor()
 	return NewUserController(userRepo, userPrefRepo, shipPortsRepo), NewUserPrefController(userPrefRepo), NewShipPortsController(userRepo, userPrefRepo, shipPortsRepo)
 }
+
+func (s *Server) LoginController() interfaces.ILoginController {
+	userRepo := s.UserRepoConstructor()
+	userPrefRepo := s.UserPrefRepoConstructor()
+	shipPortsRepo := s.ShipPortsConstructor()
+	return NewLoginController(userRepo, userPrefRepo, shipPortsRepo)
+}
