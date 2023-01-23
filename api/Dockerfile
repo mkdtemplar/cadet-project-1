@@ -5,12 +5,12 @@ FROM golang:1.19-alpine
 LABEL maintainer="ShipsRoutes application"
 
 # Setup folders
-RUN mkdir cadet-project-v2
-WORKDIR cadet-project-v2
+RUN mkdir cadet-project
+WORKDIR cadet-project
 
 # Copy the source from the current directory to the working Directory inside the container
 COPY . .
-COPY ./config/app.env .
+COPY pkg/config/app.env .
 
 
 # Download all the dependencies
