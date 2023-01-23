@@ -54,5 +54,5 @@ func loadDBConfig(path string) (config DbConfig, err error) {
 
 func (db *DbConfig) ConnectionString() string {
 	return fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s",
-		db.DBHostDocker, db.DBPort, db.DBUser, db.DBName, db.DBPassword)
+		db.DBHost, db.DBPort, db.DBUser, db.DBName, db.DBPassword)
 }
