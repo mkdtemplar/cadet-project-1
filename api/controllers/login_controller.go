@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"cadet-project/configurations"
+	"cadet-project/config"
 	"cadet-project/interfaces"
 	"cadet-project/middlewares_token_validation"
 	"cadet-project/models"
@@ -22,7 +22,7 @@ func (c *Controller) Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	var err error
 	v := validation.Validation{}
-	userEmail, userName := saml_handler.Credentials(w, r, configurations.Config.Email, configurations.Config.DisplayName)
+	userEmail, userName := saml_handler.Credentials(w, r, config.Config.Email, config.Config.DisplayName)
 
 	checkCredentials := v.ValidateUserEmail(userEmail).ValidateUserName(userName)
 

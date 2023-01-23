@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"cadet-project/configurations"
+	"cadet-project/config"
 	"fmt"
 	"log"
 	"net/http"
@@ -14,7 +14,7 @@ type Server struct {
 var C Controller
 
 func (s *Server) InitializeAPI() {
-	configurations.InitDbConfig("configurations")
+	config.InitDbConfig("configurations")
 	C.PG.InitDb()
 
 	s.Router = http.NewServeMux()

@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"cadet-project/configurations"
+	"cadet-project/config"
 	"fmt"
 	"log"
 
@@ -11,17 +11,17 @@ import (
 
 func (u *PG) InitDb() {
 	var err error
-	configurations.InitDbConfig("configurations")
+	config.InitDbConfig("configurations")
 
-	DbUrl := configurations.ConfigDB.ConnectionString()
+	DbUrl := config.ConfigDB.ConnectionString()
 
 	u.DB, err = gorm.Open(postgres.Open(DbUrl), &gorm.Config{})
 
 	if err != nil {
-		fmt.Printf("Cannot connect to %s database %s", configurations.ConfigDB.DBDriver, configurations.ConfigDB.DBName)
+		fmt.Printf("Cannot connect to %s database %s", config.ConfigDB.DBDriver, config.ConfigDB.DBName)
 		log.Fatal("This is the error:", err)
 	} else {
-		fmt.Printf("We are connected to the %s database: %s\n", configurations.ConfigDB.DBDriver, configurations.ConfigDB.DBName)
+		fmt.Printf("We are connected to the %s database: %s\n", config.ConfigDB.DBDriver, config.ConfigDB.DBName)
 	}
 
 }

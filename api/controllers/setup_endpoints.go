@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"cadet-project/configurations"
+	"cadet-project/config"
 	"cadet-project/controllers/helper"
 	"cadet-project/responses"
 	"errors"
@@ -36,7 +36,7 @@ func (s *Server) ServeUserPrefEndPoints(w http.ResponseWriter, r *http.Request) 
 }
 
 func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
-	configurations.InitConfig("configurations")
+	config.InitConfig("configurations")
 
 	userController, _, shipPortsController := C.ControllersConstructor()
 
@@ -45,21 +45,21 @@ func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 	currentPath := r.URL.Path
 
 	switch currentPath {
-	case configurations.Config.UserDelete:
+	case config.Config.UserDelete:
 		userController.Delete(w, r, helper.GetQueryID(w, r))
 		return
-	case configurations.Config.UserCreate:
+	case config.Config.UserCreate:
 		userController.Create(w, r)
 		return
-	case configurations.Config.UserPref:
+	case config.Config.UserPref:
 		s.ServeUserPrefEndPoints(w, r)
 		return
-	case configurations.Config.UserPorts:
+	case config.Config.UserPorts:
 		shipPortsController.GetUserPorts(w, r, helper.GetQueryID(w, r))
 		return
-	case configurations.Config.UserPrefPorts:
+	case config.Config.UserPrefPorts:
 		shipPortsController.GetUserPrefPorts(w, r, helper.GetQueryID(w, r))
-	case configurations.Config.UserId:
+	case config.Config.UserId:
 		userController.GetId(w, r, helper.GetQueryID(w, r))
 	default:
 		s.notFound(w)

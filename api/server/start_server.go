@@ -1,15 +1,15 @@
 package server
 
 import (
-	"cadet-project/configurations"
+	"cadet-project/config"
 	"cadet-project/controllers"
 )
 
 var server = controllers.Server{}
 
 func Run() {
-	configurations.InitDbConfig("configurations")
+	config.InitDbConfig("configurations")
 	server.InitializeAPI()
 
-	server.Run(configurations.Config.ApiPort)
+	server.Run(config.Config.ApiPort)
 }

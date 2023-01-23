@@ -1,7 +1,7 @@
 package saml_handler
 
 import (
-	"cadet-project/configurations"
+	"cadet-project/config"
 	"context"
 	"crypto/rsa"
 	"crypto/tls"
@@ -16,7 +16,7 @@ import (
 
 func AuthorizationRequest() *samlsp.Middleware {
 
-	keyPair, err := tls.LoadX509KeyPair(configurations.Config.Crt, configurations.Config.Key)
+	keyPair, err := tls.LoadX509KeyPair(config.Config.Crt, config.Config.Key)
 	if err != nil {
 		log.Println(err)
 	}
@@ -25,7 +25,7 @@ func AuthorizationRequest() *samlsp.Middleware {
 		log.Println(err)
 
 	}
-	microsoftURL := fmt.Sprintf(configurations.Config.MSUrl, configurations.Config.TenantID)
+	microsoftURL := fmt.Sprintf(config.Config.MSUrl, config.Config.TenantID)
 
 	idpMetadataURL, err := url.Parse(microsoftURL)
 	if err != nil {
@@ -39,14 +39,14 @@ func AuthorizationRequest() *samlsp.Middleware {
 
 	}
 
-	rootURL, err := url.Parse(configurations.Config.RootUrl)
+	rootURL, err := url.Parse(config.Config.RootUrl)
 	if err != nil {
 		log.Println(err)
 
 	}
 
 	samlSP, _ := samlsp.New(samlsp.Options{
-		EntityID:    "spn:" + configurations.Config.AppId,
+		EntityID:    "spn:" + config.Config.AppId,
 		URL:         *rootURL,
 		Key:         keyPair.PrivateKey.(*rsa.PrivateKey),
 		Certificate: keyPair.Leaf,
