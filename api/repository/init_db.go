@@ -13,10 +13,9 @@ func (u *PG) InitDb() {
 	var err error
 	configurations.InitDbConfig("configurations")
 
-	DBURL := fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s",
-		configurations.ConfigDB.DBHost, configurations.ConfigDB.DBPort, configurations.ConfigDB.DBUser, configurations.ConfigDB.DBName, configurations.ConfigDB.DBPassword)
+	DbUrl := configurations.ConfigDB.ConnectionString()
 
-	u.DB, err = gorm.Open(postgres.Open(DBURL), &gorm.Config{})
+	u.DB, err = gorm.Open(postgres.Open(DbUrl), &gorm.Config{})
 
 	if err != nil {
 		fmt.Printf("Cannot connect to %s database %s", configurations.ConfigDB.DBDriver, configurations.ConfigDB.DBName)

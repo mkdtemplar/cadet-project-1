@@ -1,10 +1,12 @@
 package configurations
 
 import (
-	"github.com/spf13/viper"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/spf13/viper"
 )
 
 type DbConfig struct {
@@ -48,4 +50,9 @@ func loadDBConfig(path string) (config DbConfig, err error) {
 
 	err = viper.Unmarshal(&config)
 	return
+}
+
+func (db *DbConfig) ConnectionString() string {
+	return fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s",
+		db.DBHost, db.DBPort, db.DBUser, db.DBName, db.DBPassword)
 }
