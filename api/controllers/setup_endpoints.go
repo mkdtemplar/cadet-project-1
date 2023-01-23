@@ -15,7 +15,7 @@ func (s *Server) notFound(w http.ResponseWriter) {
 
 func (s *Server) ServeUserPrefEndPoints(w http.ResponseWriter, r *http.Request) {
 
-	_, userPrefController, _ := s.ControllersConstructor()
+	_, userPrefController, _ := C.ControllersConstructor()
 	switch {
 	case r.Method == http.MethodPost:
 		userPrefController.CreateUserPreferences(w, r)
@@ -38,7 +38,7 @@ func (s *Server) ServeUserPrefEndPoints(w http.ResponseWriter, r *http.Request) 
 func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 	configurations.InitConfig("configurations")
 
-	userController, _, shipPortsController := s.ControllersConstructor()
+	userController, _, shipPortsController := C.ControllersConstructor()
 
 	w.Header().Set("content-type", "application/json")
 

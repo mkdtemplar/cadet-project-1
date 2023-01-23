@@ -8,19 +8,19 @@ import (
 	"github.com/google/uuid"
 )
 
-func NewShipPortsController(IUserRepository interfaces.IUserRepository, IUserPreferencesRepository interfaces.IUserPreferencesRepository, IShipPortsRepository interfaces.IShipPortsRepository) *Server {
-	return &Server{IUserRepository: IUserRepository, IUserPreferencesRepository: IUserPreferencesRepository, IShipPortsRepository: IShipPortsRepository}
+func NewShipPortsController(IUserRepository interfaces.IUserRepository, IUserPreferencesRepository interfaces.IUserPreferencesRepository, IShipPortsRepository interfaces.IShipPortsRepository) *Controller {
+	return &Controller{IUserRepository: IUserRepository, IUserPreferencesRepository: IUserPreferencesRepository, IShipPortsRepository: IShipPortsRepository}
 }
 
-func (s *Server) GetUserPrefPorts(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
+func (c *Controller) GetUserPrefPorts(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
 
-	userPreferences, err := s.IUserPreferencesRepository.FindUserPreferences(r.Context(), id)
+	userPreferences, err := c.IUserPreferencesRepository.FindUserPreferences(r.Context(), id)
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	userPrefPorts, err := s.IShipPortsRepository.FindUserPrefPorts(r.Context(), userPreferences)
+	userPrefPorts, err := c.IShipPortsRepository.FindUserPrefPorts(r.Context(), userPreferences)
 
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
@@ -29,15 +29,15 @@ func (s *Server) GetUserPrefPorts(w http.ResponseWriter, r *http.Request, id uui
 	responses.JSON(w, http.StatusOK, userPrefPorts)
 }
 
-func (s *Server) GetUserPorts(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
-	user, err := s.IUserRepository.GetById(r.Context(), id)
+func (c *Controller) GetUserPorts(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
+	user, err := c.IUserRepository.GetById(r.Context(), id)
 
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	userPorts, err := s.IShipPortsRepository.FindUserPorts(r.Context(), user.ID)
+	userPorts, err := c.IShipPortsRepository.FindUserPorts(r.Context(), user.ID)
 
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)

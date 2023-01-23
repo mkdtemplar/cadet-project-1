@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func (s *Server) TestCreateUser() func(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) TestCreateUser() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := helper.ParseUserRequestBody(w, r)
 		v := validation.Validation{}
@@ -16,7 +16,7 @@ func (s *Server) TestCreateUser() func(w http.ResponseWriter, r *http.Request) {
 			responses.ERROR(w, http.StatusUnprocessableEntity, err.Err)
 			return
 		}
-		if _, errRepo := s.IUserRepository.Create(r.Context(), user); err != nil {
+		if _, errRepo := c.IUserRepository.Create(r.Context(), user); err != nil {
 			responses.ERROR(w, http.StatusInternalServerError, errRepo)
 			return
 		}

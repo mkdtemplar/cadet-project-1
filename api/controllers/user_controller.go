@@ -11,11 +11,11 @@ import (
 )
 
 func NewUserController(IUserRepository interfaces.IUserRepository, IUserPreferencesRepository interfaces.IUserPreferencesRepository,
-	IShipPortsRepository interfaces.IShipPortsRepository) *Server {
-	return &Server{IUserRepository: IUserRepository, IUserPreferencesRepository: IUserPreferencesRepository, IShipPortsRepository: IShipPortsRepository}
+	IShipPortsRepository interfaces.IShipPortsRepository) *Controller {
+	return &Controller{IUserRepository: IUserRepository, IUserPreferencesRepository: IUserPreferencesRepository, IShipPortsRepository: IShipPortsRepository}
 }
 
-func (s *Server) Create(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) Create(w http.ResponseWriter, r *http.Request) {
 	v := validation.Validation{}
 	user := helper.ParseUserRequestBody(w, r)
 
@@ -26,7 +26,7 @@ func (s *Server) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if _, err := s.IUserRepository.Create(r.Context(), user); err != nil {
+	if _, err := c.IUserRepository.Create(r.Context(), user); err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
@@ -34,17 +34,17 @@ func (s *Server) Create(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (s *Server) Delete(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
+func (c *Controller) Delete(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
 
-	if _, err := s.IUserRepository.Delete(r.Context(), id); err != nil {
+	if _, err := c.IUserRepository.Delete(r.Context(), id); err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
 		return
 	}
 	responses.JSON(w, http.StatusNoContent, "")
 }
 
-func (s *Server) GetId(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
-	user, err := s.IUserRepository.GetById(r.Context(), id)
+func (c *Controller) GetId(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
+	user, err := c.IUserRepository.GetById(r.Context(), id)
 
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)

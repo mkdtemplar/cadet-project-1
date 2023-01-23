@@ -14,11 +14,11 @@ import (
 	"time"
 )
 
-func NewLoginController(IUserRepository interfaces.IUserRepository, IUserPreferencesRepository interfaces.IUserPreferencesRepository, IShipPortsRepository interfaces.IShipPortsRepository) *Server {
-	return &Server{IUserRepository: IUserRepository, IUserPreferencesRepository: IUserPreferencesRepository, IShipPortsRepository: IShipPortsRepository}
+func NewLoginController(IUserRepository interfaces.IUserRepository, IUserPreferencesRepository interfaces.IUserPreferencesRepository, IShipPortsRepository interfaces.IShipPortsRepository) *Controller {
+	return &Controller{IUserRepository: IUserRepository, IUserPreferencesRepository: IUserPreferencesRepository, IShipPortsRepository: IShipPortsRepository}
 }
 
-func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	var err error
 	v := validation.Validation{}
@@ -46,9 +46,9 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 	models.Cookie.Path = "/"
 	http.SetCookie(w, &models.Cookie)
 
-	checkUser, err := s.IUserRepository.GetUserEmail(r.Context(), userEmail)
+	checkUser, err := c.IUserRepository.GetUserEmail(r.Context(), userEmail)
 	if err == nil {
-		userPorts, err := s.IShipPortsRepository.FindUserPorts(r.Context(), checkUser.ID)
+		userPorts, err := c.IShipPortsRepository.FindUserPorts(r.Context(), checkUser.ID)
 		if err != nil {
 			responses.ERROR(w, http.StatusNotFound, err)
 			return
@@ -57,7 +57,7 @@ func (s *Server) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userNew, err := s.IUserRepository.Create(r.Context(), user)
+	userNew, err := c.IUserRepository.Create(r.Context(), user)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return

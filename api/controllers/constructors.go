@@ -5,28 +5,28 @@ import (
 	"cadet-project/repository"
 )
 
-func (s *Server) UserRepoConstructor() interfaces.IUserRepository {
-	return repository.NewUserRepo(s.DB)
+func (c *Controller) UserRepoConstructor() interfaces.IUserRepository {
+	return repository.NewUserRepo(c.DB)
 }
 
-func (s *Server) UserPrefRepoConstructor() interfaces.IUserPreferencesRepository {
-	return repository.NewUserPrefRepo(s.DB)
+func (c *Controller) UserPrefRepoConstructor() interfaces.IUserPreferencesRepository {
+	return repository.NewUserPrefRepo(c.DB)
 }
 
-func (s *Server) ShipPortsConstructor() interfaces.IShipPortsRepository {
-	return repository.NewShipPortsRepo(s.DB)
+func (c *Controller) ShipPortsConstructor() interfaces.IShipPortsRepository {
+	return repository.NewShipPortsRepo(c.DB)
 }
 
-func (s *Server) ControllersConstructor() (interfaces.IUserController, interfaces.IUserPrefController, interfaces.IShipController) {
-	userRepo := s.UserRepoConstructor()
-	userPrefRepo := s.UserPrefRepoConstructor()
-	shipPortsRepo := s.ShipPortsConstructor()
+func (c *Controller) ControllersConstructor() (interfaces.IUserController, interfaces.IUserPrefController, interfaces.IShipController) {
+	userRepo := c.UserRepoConstructor()
+	userPrefRepo := c.UserPrefRepoConstructor()
+	shipPortsRepo := c.ShipPortsConstructor()
 	return NewUserController(userRepo, userPrefRepo, shipPortsRepo), NewUserPrefController(userPrefRepo), NewShipPortsController(userRepo, userPrefRepo, shipPortsRepo)
 }
 
-func (s *Server) LoginController() interfaces.ILoginController {
-	userRepo := s.UserRepoConstructor()
-	userPrefRepo := s.UserPrefRepoConstructor()
-	shipPortsRepo := s.ShipPortsConstructor()
+func (c *Controller) LoginController() interfaces.ILoginController {
+	userRepo := c.UserRepoConstructor()
+	userPrefRepo := c.UserPrefRepoConstructor()
+	shipPortsRepo := c.ShipPortsConstructor()
 	return NewLoginController(userRepo, userPrefRepo, shipPortsRepo)
 }
