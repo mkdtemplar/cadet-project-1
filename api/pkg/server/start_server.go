@@ -8,7 +8,7 @@ var server = Server{}
 
 func Run() {
 	config.InitDbConfig("pkg/config")
-	server.InitializeAPI()
+	server.InitializeServer()
 
 	server.Run(config.Config.ApiPort)
 }

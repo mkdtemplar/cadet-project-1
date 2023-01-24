@@ -14,7 +14,7 @@ type Server struct {
 
 var C controllers.Controller
 
-func (s *Server) InitializeAPI() {
+func (s *Server) InitializeServer() {
 	config.InitDbConfig("pkg/config")
 	C.PG.InitDb()
 
