@@ -1,14 +1,14 @@
 package controllers
 
 import (
-	interfaces2 "cadet-project/pkg/interfaces"
+	"cadet-project/pkg/interfaces"
 	"cadet-project/pkg/responses"
 	"net/http"
 
 	"github.com/google/uuid"
 )
 
-func NewShipPortsController(IUserRepository interfaces2.IUserRepository, IUserPreferencesRepository interfaces2.IUserPreferencesRepository, IShipPortsRepository interfaces2.IShipPortsRepository) *Controller {
+func NewShipPortsController(IUserRepository interfaces.IUserRepository, IUserPreferencesRepository interfaces.IUserPreferencesRepository, IShipPortsRepository interfaces.IShipPortsRepository) *Controller {
 	return &Controller{IUserRepository: IUserRepository, IUserPreferencesRepository: IUserPreferencesRepository, IShipPortsRepository: IShipPortsRepository}
 }
 

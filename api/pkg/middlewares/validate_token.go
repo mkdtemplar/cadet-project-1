@@ -1,4 +1,4 @@
-package middlewares_token_validation
+package middlewares
 
 import (
 	"cadet-project/pkg/models"

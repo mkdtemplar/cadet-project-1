@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"cadet-project/pkg/config"
-	interfaces2 "cadet-project/pkg/interfaces"
-	"cadet-project/pkg/middlewares_token_validation"
-	models2 "cadet-project/pkg/models"
+	"cadet-project/pkg/interfaces"
+	"cadet-project/pkg/middlewares"
+	"cadet-project/pkg/models"
 	"cadet-project/pkg/repository/generate_id"
 	"cadet-project/pkg/repository/validation"
 	"cadet-project/pkg/responses"
@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func NewLoginController(IUserRepository interfaces2.IUserRepository, IUserPreferencesRepository interfaces2.IUserPreferencesRepository, IShipPortsRepository interfaces2.IShipPortsRepository) *Controller {
+func NewLoginController(IUserRepository interfaces.IUserRepository, IUserPreferencesRepository interfaces.IUserPreferencesRepository, IShipPortsRepository interfaces.IShipPortsRepository) *Controller {
 	return &Controller{IUserRepository: IUserRepository, IUserPreferencesRepository: IUserPreferencesRepository, IShipPortsRepository: IShipPortsRepository}
 }
 
@@ -31,20 +31,20 @@ func (c *Controller) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user := &models2.User{
+	user := &models.User{
 		ID:    generate_id.GenerateID(),
 		Email: userEmail,
 		Name:  userName,
 	}
 
-	tokenValue := middlewares_token_validation.ExtractToken(r)
+	tokenValue := middlewares.ExtractToken(r)
 	expiresAt := time.Now().Add(900 * time.Second)
 
-	models2.Sessions[tokenValue] = models2.Session{Expiry: expiresAt}
+	models.Sessions[tokenValue] = models.Session{Expiry: expiresAt}
 
-	models2.Cookie.Expires = expiresAt
-	models2.Cookie.Path = "/"
-	http.SetCookie(w, &models2.Cookie)
+	models.Cookie.Expires = expiresAt
+	models.Cookie.Path = "/"
+	http.SetCookie(w, &models.Cookie)
 
 	checkUser, err := c.IUserRepository.GetUserEmail(r.Context(), userEmail)
 	if err == nil {

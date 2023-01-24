@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS public.user_preferences
     user_id      uuid CONSTRAINT fk_users_user_pref REFERENCES public.users on DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS public.ships_ports
+CREATE TABLE IF NOT EXISTS public.ship_ports
 (
     _key      varchar(6),
     name      text,

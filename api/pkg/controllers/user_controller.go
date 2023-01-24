@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"cadet-project/pkg/controllers/helper"
-	interfaces2 "cadet-project/pkg/interfaces"
+	"cadet-project/pkg/interfaces"
 	"cadet-project/pkg/repository/validation"
 	"cadet-project/pkg/responses"
 	"net/http"
@@ -10,8 +10,8 @@ import (
 	"github.com/google/uuid"
 )
 
-func NewUserController(IUserRepository interfaces2.IUserRepository, IUserPreferencesRepository interfaces2.IUserPreferencesRepository,
-	IShipPortsRepository interfaces2.IShipPortsRepository) *Controller {
+func NewUserController(IUserRepository interfaces.IUserRepository, IUserPreferencesRepository interfaces.IUserPreferencesRepository,
+	IShipPortsRepository interfaces.IShipPortsRepository) *Controller {
 	return &Controller{IUserRepository: IUserRepository, IUserPreferencesRepository: IUserPreferencesRepository, IShipPortsRepository: IShipPortsRepository}
 }
 

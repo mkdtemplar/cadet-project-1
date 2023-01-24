@@ -1,7 +1,7 @@
-package controllers
+package server
 
 import (
-	"cadet-project/pkg/middlewares_token_validation"
+	"cadet-project/pkg/middlewares"
 	"cadet-project/pkg/saml_handler"
 	"net/http"
 )
@@ -12,6 +12,6 @@ func (s *Server) InitializeRoutes() {
 	app := http.HandlerFunc(loginController.Login)
 	s.Router.Handle("/login", samlSp.RequireAccount(app))
 	s.Router.Handle("/saml/acs", samlSp)
-	s.Router.HandleFunc("/", middlewares_token_validation.SetMiddlewareJSON(middlewares_token_validation.SetMiddlewareAuthentication(s.ServeEndPoints)))
+	s.Router.HandleFunc("/", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(s.ServeEndPoints)))
 
 }

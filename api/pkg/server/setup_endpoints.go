@@ -1,4 +1,4 @@
-package controllers
+package server
 
 import (
 	"cadet-project/pkg/config"

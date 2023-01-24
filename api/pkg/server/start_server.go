@@ -2,10 +2,9 @@ package server
 
 import (
 	"cadet-project/pkg/config"
-	"cadet-project/pkg/controllers"
 )
 
-var server = controllers.Server{}
+var server = Server{}
 
 func Run() {
 	config.InitDbConfig("pkg/config")
