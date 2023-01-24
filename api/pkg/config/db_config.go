@@ -19,7 +19,7 @@ type DbConfig struct {
 	DBHostDocker string `mapstructure:"DB_HOST_DOCKER"`
 }
 
-var ConfigDB DbConfig
+var ConfigureDB DbConfig
 
 func InitDbConfig(path string) {
 	currentDir, err := os.Getwd()
@@ -28,7 +28,7 @@ func InitDbConfig(path string) {
 	}
 	configDir := filepath.Join(currentDir, "pkg/config")
 	log.Println(configDir)
-	ConfigDB, err = loadDBConfig(path)
+	ConfigureDB, err = loadDBConfig(path)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,7 +52,7 @@ func loadDBConfig(path string) (config DbConfig, err error) {
 	return
 }
 
-func (db *DbConfig) ConnectionString() string {
+func (db DbConfig) ConnectionString() string {
 	return fmt.Sprintf("host=%s port=%s user=%s dbname=%s sslmode=disable password=%s",
 		db.DBHost, db.DBPort, db.DBUser, db.DBName, db.DBPassword)
 }

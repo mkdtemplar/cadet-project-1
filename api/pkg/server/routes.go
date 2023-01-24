@@ -7,7 +7,7 @@ import (
 )
 
 func (s *Server) InitializeRoutes() {
-	loginController := C.LoginController()
+	loginController := C.Controllers()
 	samlSp := saml_handler.AuthorizationRequest()
 	app := http.HandlerFunc(loginController.Login)
 	s.Router.Handle("/login", samlSp.RequireAccount(app))

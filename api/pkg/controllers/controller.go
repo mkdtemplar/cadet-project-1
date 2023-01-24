@@ -14,3 +14,7 @@ type Controller struct {
 	interfaces.IShipController
 	repository.PG
 }
+
+func NewController(IUserRepository interfaces.IUserRepository, IUserPreferencesRepository interfaces.IUserPreferencesRepository, IShipPortsRepository interfaces.IShipPortsRepository, IUserController interfaces.IUserController, IUserPrefController interfaces.IUserPrefController, IShipController interfaces.IShipController) *Controller {
+	return &Controller{IUserRepository: IUserRepository, IUserPreferencesRepository: IUserPreferencesRepository, IShipPortsRepository: IShipPortsRepository, IUserController: IUserController, IUserPrefController: IUserPrefController, IShipController: IShipController}
+}
