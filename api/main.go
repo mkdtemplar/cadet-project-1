@@ -1,13 +1,12 @@
 package main
 
 import (
-	"cadet-project/configurations"
-	"cadet-project/server"
+	"cadet-project/pkg/config"
+	"cadet-project/pkg/server"
 )
 
 func main() {
-
-	configurations.InitConfig("configurations")
-	configurations.InitDbConfig("configurations")
+	config.InitConfig("pkg/config")
+	config.InitDbConfig("pkg/config")
 	server.Run()
 }

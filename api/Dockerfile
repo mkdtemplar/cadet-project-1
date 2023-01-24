@@ -10,7 +10,7 @@ WORKDIR cadet-project
 
 # Copy the source from the current directory to the working Directory inside the container
 COPY . .
-COPY ./configurations/app.env .
+COPY pkg/config/app.env .
 
 
 # Download all the dependencies
