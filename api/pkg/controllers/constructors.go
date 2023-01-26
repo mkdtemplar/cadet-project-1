@@ -3,6 +3,7 @@ package controllers
 import (
 	"cadet-project/pkg/interfaces"
 	"cadet-project/pkg/repository"
+	"net/http"
 )
 
 func (c *Controller) UserRepoConstructor() interfaces.IUserRepository {
@@ -17,18 +18,9 @@ func (c *Controller) ShipPortsRepoConstructor() interfaces.IShipPortsRepository 
 	return repository.NewShipPortsRepo(c.DB)
 }
 
-func (c *Controller) ControllersConstructor() (interfaces.IUserController, interfaces.IUserPrefController, interfaces.IShipController) {
-	userRepo := c.UserRepoConstructor()
-	userPrefRepo := c.UserPrefRepoConstructor()
-	shipPortsRepo := c.ShipPortsRepoConstructor()
-	return NewUserController(userRepo, userPrefRepo, shipPortsRepo), NewUserPrefController(userPrefRepo), NewShipPortsController(userRepo, userPrefRepo, shipPortsRepo)
-}
-
 func (c *Controller) UserController() interfaces.IUserController {
 	userRepo := c.UserRepoConstructor()
-	userPrefRepo := c.UserPrefRepoConstructor()
-	shipPortsRepo := c.ShipPortsRepoConstructor()
-	return NewUserController(userRepo, userPrefRepo, shipPortsRepo)
+	return NewUserController(userRepo)
 }
 
 func (c *Controller) UserPrefController() interfaces.IUserPrefController {
@@ -43,6 +35,12 @@ func (c *Controller) ShipController() interfaces.IShipController {
 	return NewShipPortsController(userRepo, userPrefRepo, shipPortsRepo)
 }
 
+func (c *Controller) LoginController() *Controller {
+	userRepo := c.UserRepoConstructor()
+	shipPortsRepo := c.ShipPortsRepoConstructor()
+	return NewLoginController(userRepo, shipPortsRepo)
+}
+
 func (c *Controller) Controllers() *Controller {
 	userRepo := c.UserRepoConstructor()
 	userPrefRepo := c.UserPrefRepoConstructor()
@@ -51,4 +49,12 @@ func (c *Controller) Controllers() *Controller {
 	userPrefController := c.UserPrefController()
 	shipController := c.ShipController()
 	return NewController(userRepo, userPrefRepo, shipPortsRepo, userController, userPrefController, shipController)
+}
+
+func (c *Controller) ControllerTest() *Controller {
+	userRepo := c.UserRepoConstructor()
+	shipPortsRepo := c.ShipPortsRepoConstructor()
+	var rw http.ResponseWriter
+	var r *http.Request
+	return NewControllerForTest(userRepo, shipPortsRepo, rw, r)
 }

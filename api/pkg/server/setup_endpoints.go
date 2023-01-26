@@ -59,8 +59,10 @@ func (s *Server) ServeEndPoints(w http.ResponseWriter, r *http.Request) {
 		return
 	case config.Config.UserPrefPorts:
 		controllers.GetUserPrefPorts(w, r, helper.GetQueryID(w, r))
+		return
 	case config.Config.UserId:
 		controllers.GetId(w, r, helper.GetQueryID(w, r))
+		return
 	default:
 		s.notFound(w)
 		return

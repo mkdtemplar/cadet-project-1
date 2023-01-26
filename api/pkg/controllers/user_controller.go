@@ -10,9 +10,8 @@ import (
 	"github.com/google/uuid"
 )
 
-func NewUserController(IUserRepository interfaces.IUserRepository, IUserPreferencesRepository interfaces.IUserPreferencesRepository,
-	IShipPortsRepository interfaces.IShipPortsRepository) *Controller {
-	return &Controller{IUserRepository: IUserRepository, IUserPreferencesRepository: IUserPreferencesRepository, IShipPortsRepository: IShipPortsRepository}
+func NewUserController(IUserRepository interfaces.IUserRepository) *Controller {
+	return &Controller{IUserRepository: IUserRepository}
 }
 
 func (c *Controller) Create(w http.ResponseWriter, r *http.Request) {
