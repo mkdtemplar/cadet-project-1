@@ -14,7 +14,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func NewUserPrefController(IUserPreferencesRepository interfaces.IUserPreferencesRepository) *Controller {
+func NewUserPrefController(IUserPreferencesRepository interfaces.IUserPreferencesRepository) interfaces.IUserPrefController {
 	return &Controller{IUserPreferencesRepository: IUserPreferencesRepository}
 }
 

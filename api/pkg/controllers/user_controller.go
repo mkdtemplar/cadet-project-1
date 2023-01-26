@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func NewUserController(IUserRepository interfaces.IUserRepository) *Controller {
+func NewUserController(IUserRepository interfaces.IUserRepository) interfaces.IUserController {
 	return &Controller{IUserRepository: IUserRepository}
 }
 
