@@ -18,7 +18,7 @@ func NewLoginController(IUserRepository interfaces.IUserRepository, IShipPortsRe
 	return &Controller{IUserRepository: IUserRepository, IShipPortsRepository: IShipPortsRepository}
 }
 
-func (c *Controller) Login(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) ServeHTTPLogin(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	var err error
 	v := validation.Validation{}

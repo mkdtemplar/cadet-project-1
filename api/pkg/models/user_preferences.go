@@ -10,3 +10,8 @@ type UserPreferences struct {
 	UserId      uuid.UUID   `gorm:"type:uuid" json:"user_id"`
 	Ports       []ShipPorts `gorm:"-" json:"ports"`
 }
+
+func (u UserPreferences) Error() string {
+	var err error
+	return err.Error()
+}

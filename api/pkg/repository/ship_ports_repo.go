@@ -3,6 +3,7 @@ package repository
 import (
 	"cadet-project/pkg/interfaces"
 	"cadet-project/pkg/models"
+	"errors"
 
 	"context"
 
@@ -39,7 +40,7 @@ func (u *PG) FindUserPorts(ctx context.Context, id uuid.UUID) (*models.User, err
 
 	user := &models.User{}
 	if err = u.DB.WithContext(ctx).Model(&models.User{}).Where("id = ?", id).Find(&user).Error; err != nil {
-		return &models.User{}, err
+		return &models.User{}, errors.New("user not found")
 	}
 
 	userPref := models.UserPreferences{}
