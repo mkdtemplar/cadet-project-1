@@ -17,38 +17,26 @@ func (c *Controller) ShipPortsRepoConstructor() interfaces.IShipPortsRepository 
 	return repository.NewShipPortsRepo(c.DB)
 }
 
-func (c *Controller) ControllersConstructor() (interfaces.IUserController, interfaces.IUserPrefController, interfaces.IShipController) {
+func (c *Controller) LoginController() *Controller {
 	userRepo := c.UserRepoConstructor()
-	userPrefRepo := c.UserPrefRepoConstructor()
 	shipPortsRepo := c.ShipPortsRepoConstructor()
-	return NewUserController(userRepo, userPrefRepo, shipPortsRepo), NewUserPrefController(userPrefRepo), NewShipPortsController(userRepo, userPrefRepo, shipPortsRepo)
+	return NewLoginController(userRepo, shipPortsRepo)
 }
 
-func (c *Controller) UserController() interfaces.IUserController {
+func (c *Controller) UserController() *Controller {
 	userRepo := c.UserRepoConstructor()
-	userPrefRepo := c.UserPrefRepoConstructor()
-	shipPortsRepo := c.ShipPortsRepoConstructor()
-	return NewUserController(userRepo, userPrefRepo, shipPortsRepo)
+
+	return NewUserController(userRepo)
 }
 
-func (c *Controller) UserPrefController() interfaces.IUserPrefController {
+func (c *Controller) UserPrefController() *Controller {
 	userPrefRepo := c.UserPrefRepoConstructor()
 	return NewUserPrefController(userPrefRepo)
 }
 
-func (c *Controller) ShipController() interfaces.IShipController {
+func (c *Controller) ShipPortsController() *Controller {
 	userRepo := c.UserRepoConstructor()
-	userPrefRepo := c.UserPrefRepoConstructor()
 	shipPortsRepo := c.ShipPortsRepoConstructor()
+	userPrefRepo := c.UserPrefRepoConstructor()
 	return NewShipPortsController(userRepo, userPrefRepo, shipPortsRepo)
-}
-
-func (c *Controller) Controllers() *Controller {
-	userRepo := c.UserRepoConstructor()
-	userPrefRepo := c.UserPrefRepoConstructor()
-	shipPortsRepo := c.ShipPortsRepoConstructor()
-	userController := c.UserController()
-	userPrefController := c.UserPrefController()
-	shipController := c.ShipController()
-	return NewController(userRepo, userPrefRepo, shipPortsRepo, userController, userPrefController, shipController)
 }

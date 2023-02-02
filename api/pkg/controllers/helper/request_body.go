@@ -1,64 +1,58 @@
 package helper
 
 import (
-	models2 "cadet-project/pkg/models"
-	"cadet-project/pkg/responses"
+	"cadet-project/pkg/models"
 	"encoding/json"
-	"errors"
 	"io"
 	"net/http"
 
 	"github.com/google/uuid"
 )
 
-func ParseUserRequestBody(w http.ResponseWriter, r *http.Request) *models2.User {
+func ParseUserRequestBody(r *http.Request) (*models.User, error) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return nil, err
 	}
 
-	user := &models2.User{}
+	user := &models.User{}
 	err = json.Unmarshal(body, user)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return &models2.User{}
+		return nil, err
 	}
 	user.Clean()
-	return user
+	return user, nil
 }
 
-func ParseUserPrefRequestBody(w http.ResponseWriter, r *http.Request) *models2.UserPreferences {
+func ParseUserPrefRequestBody(r *http.Request) (*models.UserPreferences, error) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return nil, err
 	}
 
-	userPref := &models2.UserPreferences{}
+	userPref := &models.UserPreferences{}
 	err = json.Unmarshal(body, &userPref)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return &models2.UserPreferences{}
+		return &models.UserPreferences{}, err
 	}
 
-	return userPref
+	return userPref, nil
 }
 
-func GetQueryID(w http.ResponseWriter, r *http.Request) uuid.UUID {
+func GetQueryID(r *http.Request) (uuid.UUID, error) {
 	queryString := r.URL.Query().Get("id")
 	paramsID, err := uuid.Parse(queryString)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in id format must be uuid"))
-		return uuid.Nil
+		return uuid.Nil, err
 	}
-	return paramsID
+	return paramsID, nil
 }
 
-func GetQueryUserID(w http.ResponseWriter, r *http.Request) uuid.UUID {
+func GetQueryUserID(r *http.Request) (uuid.UUID, error) {
 	queryString := r.URL.Query().Get("user_id")
 	paramsID, err := uuid.Parse(queryString)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, errors.New("error in user_id format must be uuid"))
-		return uuid.Nil
+		return uuid.Nil, err
 	}
-	return paramsID
+	return paramsID, err
 }

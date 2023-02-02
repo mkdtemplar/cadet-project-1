@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"cadet-project/pkg/config"
 	"cadet-project/pkg/controllers/helper"
 	"cadet-project/pkg/interfaces"
 	"cadet-project/pkg/models"
@@ -8,83 +9,113 @@ import (
 	"cadet-project/pkg/repository/generate_id"
 	"cadet-project/pkg/repository/validation"
 	"cadet-project/pkg/responses"
-	"errors"
+	"context"
 	"net/http"
-
-	"github.com/google/uuid"
 )
 
 func NewUserPrefController(IUserPreferencesRepository interfaces.IUserPreferencesRepository) *Controller {
 	return &Controller{IUserPreferencesRepository: IUserPreferencesRepository}
 }
+func (c *Controller) ServeHTTPUserPreferences(w http.ResponseWriter, r *http.Request) {
+	c.Writer = w
+	c.Request = r
 
-func (c *Controller) CreateUserPreferences(w http.ResponseWriter, r *http.Request) {
+	config.InitConfig("configurations")
+
+	w.Header().Set("content-type", "application/json")
+
+	currentPath := r.URL.Path
+
+	var err error
+	var val interface{}
+
+	defer func() {
+		if err != nil {
+			http.Error(w, err.Error(), 401)
+		} else {
+			responses.JSON(w, http.StatusOK, val)
+		}
+	}()
+
+	switch currentPath {
+	case config.Config.UserPref:
+		c.ServeUserPrefEndPoints(w, r)
+	}
+}
+
+func (c *Controller) CreateUserPref() (*models.UserPreferences, error) {
 	v := validation.Validation{}
-	userPref := helper.ParseUserPrefRequestBody(w, r)
+	userPref, err := helper.ParseUserPrefRequestBody(c.Request)
 
 	validateUserPefData := v.ValidateUserPrefCountry(userPref.UserCountry).ValidateUserId(userPref.UserId)
 	if validateUserPefData.Err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, validateUserPefData.Err)
-		return
+		responses.ERROR(c.Writer, http.StatusUnprocessableEntity, validateUserPefData.Err)
+		return nil, validateUserPefData.Err
 	}
 
 	userPreferencesStore := repository.NewUserPrefObject(generate_id.GenerateID(), userPref.UserCountry, userPref.UserId)
 
-	_, err := c.IUserPreferencesRepository.SaveUserPreferences(r.Context(), &userPreferencesStore)
+	err, _ = c.IUserPreferencesRepository.SaveUserPreferences(context.Background(), &userPreferencesStore)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
+		responses.ERROR(c.Writer, http.StatusUnprocessableEntity, err)
+		return &models.UserPreferences{}, err
 	}
 
-	responses.JSON(w, http.StatusCreated, userPreferencesStore)
+	responses.JSON(c.Writer, http.StatusCreated, userPreferencesStore)
+
+	return &userPreferencesStore, nil
 }
 
-func (c *Controller) GetUserPreference(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
-
-	userPreferences, err := c.IUserPreferencesRepository.FindUserPreferences(r.Context(), id)
-
+func (c *Controller) GetUserPrefById() (*models.UserPreferences, error) {
+	id, err := helper.GetQueryID(c.Request)
 	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
+		return nil, err
 	}
-	responses.JSON(w, http.StatusOK, userPreferences)
+	return c.IUserPreferencesRepository.FindUserPreferences(context.Background(), id)
 }
 
-func (c *Controller) UpdateUserPreferences(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
-	var err error
-	v := validation.Validation{}
+func (c *Controller) UpdateUserPref() (*models.UserPreferences, error) {
+	id, err := helper.GetQueryID(c.Request)
+	if err != nil {
+		return nil, err
+	}
+
 	userPrefFind := &models.UserPreferences{}
-	userPrefFind, err = c.IUserPreferencesRepository.FindUserPreferences(r.Context(), id)
+	userPrefFind, err = c.IUserPreferencesRepository.FindUserPreferences(context.Background(), id)
 
 	if err != nil {
-		responses.ERROR(w, http.StatusNotFound, errors.New("user preferences not found"))
+		return nil, err
 	}
 
-	userPrefUpdate := helper.ParseUserPrefRequestBody(w, r)
+	userPrefUpdate, err := helper.ParseUserPrefRequestBody(c.Request)
 
-	validateCountry := v.ValidateUserPrefCountry(userPrefUpdate.UserCountry)
+	validateCountry := V.ValidateUserPrefCountry(userPrefUpdate.UserCountry)
 	if validateCountry.Err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, validateCountry.Err)
-		return
+		return nil, validateCountry.Err
 	}
 
-	userPrefFind, err = c.IUserPreferencesRepository.UpdateUserPref(r.Context(), id, userPrefUpdate.UserCountry)
+	userPrefFind, err = c.IUserPreferencesRepository.UpdateUserPref(context.Background(), id, userPrefUpdate.UserCountry)
 
 	if err != nil {
 
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
+		return nil, err
 	}
 
-	userPrefFind, err = c.IUserPreferencesRepository.FindUserPreferences(r.Context(), id)
-	responses.JSON(w, http.StatusOK, userPrefFind)
+	userPrefFind, err = c.IUserPreferencesRepository.FindUserPreferences(context.Background(), id)
+	return userPrefFind, nil
 }
 
-func (c *Controller) DeleteUserPref(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
-
-	if _, err := c.IUserPreferencesRepository.DeleteUserPreferences(r.Context(), id); err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
+func (c *Controller) DeleteUserPreferences() error {
+	id, err := helper.GetQueryID(c.Request)
+	if err != nil {
+		return err
 	}
-	responses.JSON(w, http.StatusNoContent, "")
+
+	if _, err := c.IUserPreferencesRepository.DeleteUserPreferences(context.Background(), id); err != nil {
+		responses.ERROR(c.Writer, http.StatusInternalServerError, err)
+		return err
+	}
+	responses.JSON(c.Writer, http.StatusNoContent, "")
+
+	return err
 }

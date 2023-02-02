@@ -14,11 +14,11 @@ import (
 	"time"
 )
 
-func NewLoginController(IUserRepository interfaces.IUserRepository, IUserPreferencesRepository interfaces.IUserPreferencesRepository, IShipPortsRepository interfaces.IShipPortsRepository) *Controller {
-	return &Controller{IUserRepository: IUserRepository, IUserPreferencesRepository: IUserPreferencesRepository, IShipPortsRepository: IShipPortsRepository}
+func NewLoginController(IUserRepository interfaces.IUserRepository, IShipPortsRepository interfaces.IShipPortsRepository) *Controller {
+	return &Controller{IUserRepository: IUserRepository, IShipPortsRepository: IShipPortsRepository}
 }
 
-func (c *Controller) Login(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) ServeHTTPLogin(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	var err error
 	v := validation.Validation{}
