@@ -3,11 +3,15 @@ package controllers
 import (
 	"cadet-project/pkg/config"
 	"cadet-project/pkg/controllers/helper"
+	"cadet-project/pkg/directions"
 	"cadet-project/pkg/interfaces"
 	"cadet-project/pkg/models"
 	"cadet-project/pkg/responses"
 	"context"
+	"errors"
 	"net/http"
+
+	"googlemaps.github.io/maps"
 )
 
 func NewShipPortsController(IUserRepository interfaces.IUserRepository, IUserPreferencesRepository interfaces.IUserPreferencesRepository, IShipPortsRepository interfaces.IShipPortsRepository) *Controller {
@@ -42,6 +46,10 @@ func (c *Controller) ServeHTTPShipPorts(w http.ResponseWriter, r *http.Request) 
 
 	case config.Config.UserPrefPorts:
 		val, err = c.GetUserPrefPortsName()
+		return
+
+	case config.Config.PortName:
+		val, err = c.GetDirections()
 		return
 	}
 }
@@ -89,4 +97,23 @@ func (c *Controller) GetUserPortsName() (*models.User, error) {
 	}
 	responses.JSON(c.Writer, http.StatusOK, userPorts)
 	return userPorts, nil
+}
+
+func (c *Controller) GetDirections() ([]maps.Route, error) {
+	start := helper.GetQueryStart(c.Request)
+	end := helper.GetQueryEnd(c.Request)
+
+	origin, err := c.IShipPortsRepository.GetCityByName(context.Background(), start)
+	if err != nil || origin == "" || origin != start {
+		return nil, errors.New("point of origin do not exist in database")
+	}
+
+	destination, err := c.IShipPortsRepository.GetCityByName(context.Background(), end)
+	if err != nil || destination == "" || destination != end {
+		return nil, errors.New("destination do not exist in database")
+	}
+
+	route := directions.GetDirections(start, end)
+
+	return route, nil
 }

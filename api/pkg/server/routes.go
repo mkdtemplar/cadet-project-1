@@ -21,4 +21,5 @@ func (s *Server) InitializeRoutes() {
 	s.Router.Handle("/user_pref", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(userPrefController.ServeHTTPUserPreferences)))
 	s.Router.Handle("/user_ports", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(shipPortsController.ServeHTTPShipPorts)))
 	s.Router.Handle("/user_pref_ports", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(shipPortsController.ServeHTTPShipPorts)))
+	s.Router.Handle("/port_directions", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(shipPortsController.ServeHTTPShipPorts)))
 }

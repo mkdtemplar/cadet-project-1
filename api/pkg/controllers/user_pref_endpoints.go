@@ -10,13 +10,6 @@ import (
 func (c *Controller) ServeUserPrefEndPoints(w http.ResponseWriter, r *http.Request) {
 	c.Writer = w
 	c.Request = r
-	/*
-		id, err := helper.GetQueryID(r)
-		if err != nil {
-			responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		}
-
-	*/
 
 	var val interface{}
 	var err error

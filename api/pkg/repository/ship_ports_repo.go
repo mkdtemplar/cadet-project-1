@@ -62,3 +62,17 @@ func (u *PG) FindUserPorts(ctx context.Context, id uuid.UUID) (*models.User, err
 	user.UserPref = userPref
 	return user, nil
 }
+
+// GetCityByName will be used in the ships_ports_controller for checking if the city exist in database as well as to
+// i.e. start point and end point
+func (u *PG) GetCityByName(ctx context.Context, name string) (string, error) {
+
+	portName := models.ShipPorts{}
+
+	if err := u.DB.WithContext(ctx).Model(&models.ShipPorts{}).Where("name = ?", name).Find(&portName).Error; err != nil || portName.Name == "" {
+		return "", errors.New("city not exists in database")
+	}
+
+	return portName.Name, nil
+
+}

@@ -7,6 +7,8 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 func ParseUserRequestBody(r *http.Request) (*models.User, error) {
@@ -46,6 +48,24 @@ func GetQueryID(r *http.Request) (uuid.UUID, error) {
 		return uuid.Nil, err
 	}
 	return paramsID, nil
+}
+
+func GetQueryCityName(r *http.Request) string {
+	queryString := r.URL.Query().Get("name")
+	queryString = cases.Title(language.Und).String(queryString)
+	return queryString
+}
+
+func GetQueryStart(r *http.Request) string {
+	queryString := r.URL.Query().Get("start")
+	queryString = cases.Title(language.Und).String(queryString)
+	return queryString
+}
+
+func GetQueryEnd(r *http.Request) string {
+	queryString := r.URL.Query().Get("end")
+	queryString = cases.Title(language.Und).String(queryString)
+	return queryString
 }
 
 func GetQueryUserID(r *http.Request) (uuid.UUID, error) {
