@@ -1,4 +1,4 @@
-package directions
+package google_API
 
 import (
 	"cadet-project/pkg/config"
@@ -8,22 +8,21 @@ import (
 	"googlemaps.github.io/maps"
 )
 
-func GetDirections(start string, end string) []maps.Route {
+func (cl *ClientData) FindRoute() []maps.Route {
 	config.InitConfig("configurations")
 
 	c, err := maps.NewClient(maps.WithAPIKey(config.Config.MapsKey))
 	if err != nil {
 		log.Fatalf("fatal error: %s", err)
+		return nil
 	}
+
 	r := &maps.DirectionsRequest{
-		Origin:      start,
-		Destination: end,
+		Origin:      cl.Origin,
+		Destination: cl.Destination,
 	}
 
 	route, _, err := c.Directions(context.Background(), r)
-	if err != nil {
-		log.Fatalf("fatal error: %s", err)
-	}
 
 	return route
 }

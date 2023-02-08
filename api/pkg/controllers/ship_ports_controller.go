@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"cadet-project/google_API"
 	"cadet-project/pkg/config"
 	"cadet-project/pkg/controllers/helper"
-	"cadet-project/pkg/directions"
 	"cadet-project/pkg/interfaces"
 	"cadet-project/pkg/models"
 	"cadet-project/pkg/responses"
@@ -102,18 +102,20 @@ func (c *Controller) GetUserPortsName() (*models.User, error) {
 func (c *Controller) GetDirections() ([]maps.Route, error) {
 	start := helper.GetQueryStart(c.Request)
 	end := helper.GetQueryEnd(c.Request)
+	var err error
+	var clientRequest google_API.ClientData
 
-	origin, err := c.IShipPortsRepository.GetCityByName(context.Background(), start)
-	if err != nil || origin == "" || origin != start {
+	clientRequest.Origin, err = c.IShipPortsRepository.GetCityByName(context.Background(), start)
+	if err != nil || clientRequest.Origin == "" || clientRequest.Origin != start {
 		return nil, errors.New("point of origin do not exist in database")
 	}
 
-	destination, err := c.IShipPortsRepository.GetCityByName(context.Background(), end)
-	if err != nil || destination == "" || destination != end {
+	clientRequest.Destination, err = c.IShipPortsRepository.GetCityByName(context.Background(), end)
+	if err != nil || clientRequest.Destination == "" || clientRequest.Destination != end {
 		return nil, errors.New("destination do not exist in database")
 	}
 
-	route := directions.GetDirections(start, end)
+	route := google_API.NewClientData(clientRequest.Origin, clientRequest.Destination)
 
-	return route, nil
+	return route.FindRoute(), nil
 }
