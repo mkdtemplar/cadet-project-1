@@ -23,6 +23,10 @@ func (cl *ClientData) FindRoute() []maps.Route {
 	}
 
 	route, _, err := c.Directions(context.Background(), r)
+	if err != nil {
+		log.Fatalf("fatal error: %s", err)
+		return nil
+	}
 
 	return route
 }
