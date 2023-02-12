@@ -11,6 +11,7 @@ type Controller struct {
 	interfaces.IUserRepository
 	interfaces.IUserPreferencesRepository
 	interfaces.IShipPortsRepository
+	interfaces.IUserVehicleRepository
 	repository.PG
 	Writer  http.ResponseWriter
 	Request *http.Request

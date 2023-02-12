@@ -17,6 +17,10 @@ func (c *Controller) ShipPortsRepoConstructor() interfaces.IShipPortsRepository 
 	return repository.NewShipPortsRepo(c.DB)
 }
 
+func (c *Controller) VehicleRepoConstructor() interfaces.IUserVehicleRepository {
+	return repository.NewVehicleRepo(c.DB)
+}
+
 func (c *Controller) LoginController() *Controller {
 	userRepo := c.UserRepoConstructor()
 	shipPortsRepo := c.ShipPortsRepoConstructor()
