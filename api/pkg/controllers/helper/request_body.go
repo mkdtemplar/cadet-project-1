@@ -41,6 +41,18 @@ func ParseUserPrefRequestBody(r *http.Request) (*models.UserPreferences, error) 
 	return userPref, nil
 }
 
+func ParseVehicleRequestBody(r *http.Request) (*models.Vehicle, error) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	vehicle := &models.Vehicle{}
+	err = json.Unmarshal(body, &vehicle)
+
+	return vehicle, nil
+}
+
 func GetQueryID(r *http.Request) (uuid.UUID, error) {
 	queryString := r.URL.Query().Get("id")
 	paramsID, err := uuid.Parse(queryString)

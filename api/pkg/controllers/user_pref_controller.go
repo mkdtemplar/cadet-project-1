@@ -7,7 +7,6 @@ import (
 	"cadet-project/pkg/models"
 	"cadet-project/pkg/repository"
 	"cadet-project/pkg/repository/generate_id"
-	"cadet-project/pkg/repository/validation"
 	"cadet-project/pkg/responses"
 	"context"
 	"net/http"
@@ -44,10 +43,10 @@ func (c *Controller) ServeHTTPUserPreferences(w http.ResponseWriter, r *http.Req
 }
 
 func (c *Controller) CreateUserPref() (*models.UserPreferences, error) {
-	v := validation.Validation{}
+
 	userPref, err := helper.ParseUserPrefRequestBody(c.Request)
 
-	validateUserPefData := v.ValidateUserPrefCountry(userPref.UserCountry).ValidateUserId(userPref.UserId)
+	validateUserPefData := V.ValidateUserPrefCountry(userPref.UserCountry).ValidateUserId(userPref.UserId)
 	if validateUserPefData.Err != nil {
 		responses.ERROR(c.Writer, http.StatusUnprocessableEntity, validateUserPefData.Err)
 		return nil, validateUserPefData.Err
