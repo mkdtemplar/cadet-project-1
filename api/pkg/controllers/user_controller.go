@@ -64,14 +64,12 @@ func (c *Controller) CreateIn() (*models.User, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	checkCredentials := V.ValidateUserEmail(user.Email).ValidateUserName(user.Name)
 
 	if checkCredentials.Err != nil {
 		responses.ERROR(c.Writer, http.StatusUnprocessableEntity, checkCredentials.Err)
 		return nil, err
 	}
-
 	_, err = c.IUserRepository.Create(c.Request.Context(), user)
 	if err != nil {
 		return nil, err

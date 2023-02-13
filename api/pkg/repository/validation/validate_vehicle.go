@@ -7,18 +7,18 @@ import (
 )
 
 func (v *Validation) ValidateVehicleName(name string) *Validation {
-	checkLetters := regexp.MustCompile(`^[a-zA-Z ]*$`)
+	checkLetters := regexp.MustCompile(`^[a-zA-Z ]+$`)
 	if !checkLetters.MatchString(name) {
-		v.Err = errors.New("invalid vehicle name")
+		v.Err = errors.New("invalid vehicle name only letters and white space")
 		return v
 	}
 	return v
 }
 
 func (v *Validation) ValidateVehicleModel(model string) *Validation {
-	checkLetters := regexp.MustCompile(`^[a-zA-Z ]*$`)
+	checkLetters := regexp.MustCompile(`^[a-zA-Z ]+$`)
 	if !checkLetters.MatchString(model) {
-		v.Err = errors.New("invalid vehicle name")
+		v.Err = errors.New("invalid vehicle model only letters and white space")
 		return v
 	}
 	return v
