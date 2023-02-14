@@ -11,6 +11,7 @@ func (s *Server) InitializeRoutes() {
 	userController := C.UserController()
 	userPrefController := C.UserPrefController()
 	shipPortsController := C.ShipPortsController()
+	vehicleController := C.VehicleController()
 	samlSp := saml_handler.AuthorizationRequest()
 	app := http.HandlerFunc(loginController.ServeHTTPLogin)
 
@@ -22,4 +23,5 @@ func (s *Server) InitializeRoutes() {
 	s.Router.Handle("/user_ports", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(shipPortsController.ServeHTTPShipPorts)))
 	s.Router.Handle("/user_pref_ports", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(shipPortsController.ServeHTTPShipPorts)))
 	s.Router.Handle("/port_directions", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(shipPortsController.ServeHTTPShipPorts)))
+	s.Router.Handle("/vehicle", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(vehicleController.ServeHTTPUserVehicle)))
 }

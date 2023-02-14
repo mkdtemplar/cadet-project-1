@@ -44,3 +44,8 @@ func (c *Controller) ShipPortsController() *Controller {
 	userPrefRepo := c.UserPrefRepoConstructor()
 	return NewShipPortsController(userRepo, userPrefRepo, shipPortsRepo)
 }
+
+func (c *Controller) VehicleController() *Controller {
+	vehicleRepo := c.VehicleRepoConstructor()
+	return NewVehicleController(vehicleRepo)
+}

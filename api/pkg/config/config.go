@@ -27,6 +27,7 @@ type AppConfig struct {
 	UserPrefPorts string `mapstructure:"USER_PREF_PORTS"`
 	MapsKey       string `mapstructure:"GOOGLE_API_KEY"`
 	PortName      string `mapstructure:"PORT_NAME"`
+	Vehicle       string `mapstructure:"VEHICLE"`
 }
 
 var Config AppConfig
