@@ -34,9 +34,6 @@ func NewVehicleObject(id uuid.UUID, name string, model string, mileage float32, 
 }
 
 func (u *PG) CreateUserVehicle(ctx context.Context, vehicle *models.Vehicle) (*models.Vehicle, error) {
-	if vehicle == nil {
-		return vehicle, errors.New("vehicle object can not be empty")
-	}
 
 	userId, _ := uuid.Parse("26810825-80e2-46be-b72b-744c2de4a872")
 
@@ -46,6 +43,10 @@ func (u *PG) CreateUserVehicle(ctx context.Context, vehicle *models.Vehicle) (*m
 		Model:   "R8",
 		Mileage: 200,
 		UserId:  userId,
+	}
+
+	if vehicle == nil {
+		return vehicle, errors.New("vehicle object can not be empty")
 	}
 
 	if err := u.DB.WithContext(ctx).Model(vehicle).Create(&vehicle).Error; err != nil {
