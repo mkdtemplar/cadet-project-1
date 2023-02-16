@@ -9,6 +9,7 @@ import (
 	"cadet-project/pkg/repository/generate_id"
 	"cadet-project/pkg/responses"
 	"context"
+	"errors"
 	"net/http"
 )
 
@@ -39,7 +40,7 @@ func (c *Controller) ServeHTTPUserVehicle(w http.ResponseWriter, r *http.Request
 
 	switch currentPath {
 	case config.Config.Vehicle:
-		val, err = c.CreateVehicle()
+		c.ServeVehicleEndPoints(w, r)
 		return
 	}
 }
@@ -47,6 +48,9 @@ func (c *Controller) ServeHTTPUserVehicle(w http.ResponseWriter, r *http.Request
 func (c *Controller) CreateVehicle() (*models.Vehicle, error) {
 
 	vehicle, err := helper.ParseVehicleRequestBody(c.Request)
+	if err != nil {
+		return nil, errors.New("can not parse request body")
+	}
 
 	validateVehicleData := V.ValidateVehicleName(vehicle.Name).ValidateVehicleModel(vehicle.Model).
 		ValidateVehicleMileage(vehicle.Mileage).ValidateUserId(vehicle.UserId)
@@ -73,4 +77,52 @@ func (c *Controller) GetVehicleById() (*models.Vehicle, error) {
 		return nil, err
 	}
 	return c.IUserVehicleRepository.GetUserVehicleById(context.Background(), id)
+}
+
+func (c *Controller) UpdateVehicle() (*models.Vehicle, error) {
+	id, err := helper.GetQueryID(c.Request)
+	if err != nil {
+		return nil, err
+	}
+
+	findVehicle, err := c.IUserVehicleRepository.GetUserVehicleById(context.Background(), id)
+
+	if err != nil {
+		return &models.Vehicle{}, errors.New("vehicle not found")
+	}
+
+	vehicleUpdate, err := helper.ParseVehicleRequestBody(c.Request)
+	if err != nil {
+		return &models.Vehicle{}, errors.New("cannot parse request body")
+	}
+
+	validateVehicle := V.ValidateVehicleName(vehicleUpdate.Name).ValidateVehicleModel(vehicleUpdate.Model).
+		ValidateVehicleMileage(vehicleUpdate.Mileage)
+
+	if validateVehicle.Err != nil {
+		return &models.Vehicle{}, validateVehicle.Err
+	}
+
+	findVehicle, err = c.IUserVehicleRepository.UpdateUserVehicle(context.Background(), vehicleUpdate.Name, vehicleUpdate.Model, vehicleUpdate.Mileage, id)
+
+	findVehicle, err = c.IUserVehicleRepository.GetUserVehicleById(context.Background(), id)
+
+	return findVehicle, nil
+}
+
+func (c *Controller) DeleteVehicle() error {
+	id, err := helper.GetQueryID(c.Request)
+	if err != nil {
+		return err
+	}
+	_, err = c.IUserVehicleRepository.GetUserVehicleById(context.Background(), id)
+	if err != nil {
+		return errors.New("vehicle do not exist in database")
+	}
+
+	if _, err = c.IUserVehicleRepository.DeleteUserVehicle(context.Background(), id); err != nil {
+		return errors.New("cannot delete vehicle")
+	}
+
+	return nil
 }

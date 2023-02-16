@@ -9,7 +9,7 @@ import (
 
 type IUserVehicleRepository interface {
 	CreateUserVehicle(ctx context.Context, vehicle *models.Vehicle) (*models.Vehicle, error)
-	UpdateUserVehicle(ctx context.Context, vehicle *models.Vehicle, id uuid.UUID) (*models.Vehicle, error)
+	UpdateUserVehicle(ctx context.Context, vehicleName string, vehicleModel string, vehicleMileage float32, userid uuid.UUID) (*models.Vehicle, error)
 	GetUserVehicleById(ctx context.Context, id uuid.UUID) (*models.Vehicle, error)
 	DeleteUserVehicle(ctx context.Context, id uuid.UUID) (int64, error)
 }
