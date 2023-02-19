@@ -8,11 +8,10 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
-func NewShipPortsRepo(db *gorm.DB) interfaces.IShipPortsRepository {
-	return &PG{DB: db}
+func NewShipPortsRepo() interfaces.IShipPortsRepository {
+	return &PG{DB: GetDb()}
 }
 
 func (u *PG) FindUserPrefPorts(ctx context.Context, in *models.UserPreferences) (*models.UserPreferences, error) {

@@ -7,21 +7,21 @@ import (
 )
 
 func (s *Server) InitializeRoutes() {
-	loginController := C.LoginController()
-	userController := C.UserController()
-	userPrefController := C.UserPrefController()
-	shipPortsController := C.ShipPortsController()
-	vehicleController := C.VehicleController()
+	loginController := LoginController.LoginController()
+	userController := UserController.UserController()
+	userPrefController := UserPrefController.UserPrefController()
+	shipPortsController := ShipController.ShipPortsController()
+	vehicleController := Vehicle.VehicleController()
 	samlSp := saml_handler.AuthorizationRequest()
-	app := http.HandlerFunc(loginController.ServeHTTPLogin)
+	app := http.HandlerFunc(loginController.ServeHTTP)
 
 	s.Router.Handle("/login", samlSp.RequireAccount(app))
 	s.Router.Handle("/saml/acs", samlSp)
 
-	s.Router.Handle("/", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(userController.ServeHTTPUser)))
-	s.Router.Handle("/user_pref", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(userPrefController.ServeHTTPUserPreferences)))
-	s.Router.Handle("/user_ports", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(shipPortsController.ServeHTTPShipPorts)))
-	s.Router.Handle("/user_pref_ports", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(shipPortsController.ServeHTTPShipPorts)))
-	s.Router.Handle("/port_directions", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(shipPortsController.ServeHTTPShipPorts)))
-	s.Router.Handle("/vehicle", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(vehicleController.ServeHTTPUserVehicle)))
+	s.Router.Handle("/", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(userController.ServeHTTP)))
+	s.Router.Handle("/user_pref", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(userPrefController.ServeHTTP)))
+	s.Router.Handle("/user_ports", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(shipPortsController.ServeHTTP)))
+	s.Router.Handle("/user_pref_ports", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(shipPortsController.ServeHTTP)))
+	s.Router.Handle("/port_directions", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(shipPortsController.ServeHTTP)))
+	s.Router.Handle("/vehicle", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(vehicleController.ServeHTTP)))
 }

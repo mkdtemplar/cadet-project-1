@@ -7,9 +7,9 @@ import (
 	"net/http"
 )
 
-func (c *Controller) ServeUserPrefEndPoints(w http.ResponseWriter, r *http.Request) {
-	c.Writer = w
-	c.Request = r
+func (upc *UserPrefController) ServeUserPrefEndPoints(w http.ResponseWriter, r *http.Request) {
+	upc.Writer = w
+	upc.Request = r
 
 	var val interface{}
 	var err error
@@ -23,16 +23,16 @@ func (c *Controller) ServeUserPrefEndPoints(w http.ResponseWriter, r *http.Reque
 
 	switch {
 	case r.Method == http.MethodPost:
-		val, err = c.CreateUserPref()
+		val, err = upc.CreateUserPref()
 		return
 	case r.Method == http.MethodGet:
-		val, err = c.GetUserPrefById()
+		val, err = upc.GetUserPrefById()
 		return
 	case r.Method == http.MethodPatch:
-		val, err = c.UpdateUserPref()
+		val, err = upc.UpdateUserPref()
 		return
 	case r.Method == http.MethodDelete:
-		err = c.DeleteUserPreferences()
+		err = upc.DeleteUserPreferences()
 		return
 	default:
 		err = fmt.Errorf("not found")

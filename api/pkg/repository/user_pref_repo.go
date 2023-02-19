@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 func NewUserPrefObject(id uuid.UUID, country string, userId uuid.UUID) models.UserPreferences {
@@ -24,8 +23,8 @@ func NewUserPrefObject(id uuid.UUID, country string, userId uuid.UUID) models.Us
 	return userPref
 }
 
-func NewUserPrefRepo(db *gorm.DB) interfaces.IUserPreferencesRepository {
-	return &PG{DB: db}
+func NewUserPrefRepo() interfaces.IUserPreferencesRepository {
+	return &PG{DB: GetDb()}
 }
 
 func (u *PG) GetAllUserPreferences(ctx context.Context, userId uuid.UUID) ([]*models.UserPreferences, error) {

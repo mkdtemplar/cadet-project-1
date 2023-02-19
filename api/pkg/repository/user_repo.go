@@ -15,8 +15,8 @@ type PG struct {
 	DB *gorm.DB
 }
 
-func NewUserRepo(db *gorm.DB) interfaces.IUserRepository {
-	return &PG{DB: db}
+func NewUserRepo() interfaces.IUserRepository {
+	return &PG{DB: GetDb()}
 }
 
 func (u *PG) Create(ctx context.Context, usr *models.User) (*models.User, error) {

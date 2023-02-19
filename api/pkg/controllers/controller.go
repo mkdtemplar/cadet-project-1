@@ -8,13 +8,38 @@ import (
 )
 
 type Controller struct {
-	interfaces.IUserRepository
-	interfaces.IUserPreferencesRepository
-	interfaces.IShipPortsRepository
-	interfaces.IUserVehicleRepository
 	repository.PG
 	Writer  http.ResponseWriter
 	Request *http.Request
+}
+
+type UserController struct {
+	Controller
+	interfaces.IUserRepository
+}
+
+type VehicleController struct {
+	Controller
+	interfaces.IUserVehicleRepository
+}
+
+type UserPrefController struct {
+	Controller
+	interfaces.IUserPreferencesRepository
+}
+
+type ShipController struct {
+	Controller
+	interfaces.IShipPortsRepository
+	interfaces.IUserPreferencesRepository
+	interfaces.IUserRepository
+}
+
+type LoginController struct {
+	Controller
+	interfaces.IShipPortsRepository
+	interfaces.IUserPreferencesRepository
+	interfaces.IUserRepository
 }
 
 var V validation.Validation

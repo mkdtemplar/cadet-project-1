@@ -6,9 +6,9 @@ import (
 	"net/http"
 )
 
-func (c *Controller) ServeVehicleEndPoints(w http.ResponseWriter, r *http.Request) {
-	c.Writer = w
-	c.Request = r
+func (v *VehicleController) ServeVehicleEndPoints(w http.ResponseWriter, r *http.Request) {
+	v.Writer = w
+	v.Request = r
 
 	var val interface{}
 	var err error
@@ -22,16 +22,16 @@ func (c *Controller) ServeVehicleEndPoints(w http.ResponseWriter, r *http.Reques
 
 	switch {
 	case r.Method == http.MethodPost:
-		val, err = c.CreateVehicle()
+		val, err = v.CreateVehicle()
 		return
 	case r.Method == http.MethodGet:
-		val, err = c.GetVehicleById()
+		val, err = v.GetVehicleById()
 		return
 	case r.Method == http.MethodPatch:
-		val, err = c.UpdateVehicle()
+		val, err = v.UpdateVehicle()
 		return
 	case r.Method == http.MethodDelete:
-		err = c.DeleteVehicle()
+		err = v.DeleteVehicle()
 		return
 	default:
 		err = fmt.Errorf("not found")

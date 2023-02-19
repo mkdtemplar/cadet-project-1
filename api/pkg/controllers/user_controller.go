@@ -12,18 +12,18 @@ import (
 	"net/http"
 )
 
-func NewUserController(IUserRepository interfaces.IUserRepository) *Controller {
-	return &Controller{IUserRepository: IUserRepository}
+func NewUserController(IUserRepository interfaces.IUserRepository) *UserController {
+	return &UserController{IUserRepository: IUserRepository}
 }
 
-func (c *Controller) notFound(w http.ResponseWriter) {
+func (uc *UserController) notFound(w http.ResponseWriter) {
 	responses.ERROR(w, http.StatusInternalServerError, errors.New("path not found"))
 	return
 }
 
-func (c *Controller) ServeHTTPUser(w http.ResponseWriter, r *http.Request) {
-	c.Writer = w
-	c.Request = r
+func (uc *UserController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	uc.Writer = w
+	uc.Request = r
 
 	config.InitConfig("configurations")
 
@@ -44,14 +44,14 @@ func (c *Controller) ServeHTTPUser(w http.ResponseWriter, r *http.Request) {
 
 	switch currentPath {
 	case config.Config.UserDelete:
-		err = c.DeleteUser()
+		err = uc.DeleteUser()
 		return
 	case config.Config.UserCreate:
-		val, err = c.CreateIn()
+		val, err = uc.CreateIn()
 		return
 
 	case config.Config.UserId:
-		val, err = c.GetUserById()
+		val, err = uc.GetUserById()
 		return
 	default:
 		err = fmt.Errorf("not found")
@@ -59,39 +59,39 @@ func (c *Controller) ServeHTTPUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
-func (c *Controller) CreateIn() (*models.User, error) {
-	user, err := helper.ParseUserRequestBody(c.Request)
+func (uc *UserController) CreateIn() (*models.User, error) {
+	user, err := helper.ParseUserRequestBody(uc.Request)
 	if err != nil {
 		return nil, err
 	}
 	checkCredentials := V.ValidateUserEmail(user.Email).ValidateUserName(user.Name)
 
 	if checkCredentials.Err != nil {
-		responses.ERROR(c.Writer, http.StatusUnprocessableEntity, checkCredentials.Err)
+		responses.ERROR(uc.Writer, http.StatusUnprocessableEntity, checkCredentials.Err)
 		return nil, err
 	}
-	_, err = c.IUserRepository.Create(c.Request.Context(), user)
+	_, err = uc.IUserRepository.Create(uc.Request.Context(), user)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (c *Controller) GetUserById() (*models.User, error) {
-	id, err := helper.GetQueryID(c.Request)
+func (uc *UserController) GetUserById() (*models.User, error) {
+	id, err := helper.GetQueryID(uc.Request)
 	if err != nil {
 		return nil, err
 	}
-	return c.IUserRepository.GetById(context.Background(), id)
+	return uc.IUserRepository.GetById(context.Background(), id)
 }
 
-func (c *Controller) DeleteUser() error {
-	id, err := helper.GetQueryID(c.Request)
+func (uc *UserController) DeleteUser() error {
+	id, err := helper.GetQueryID(uc.Request)
 	if err != nil {
 		return err
 	}
 
-	_, err = c.IUserRepository.Delete(context.Background(), id)
+	_, err = uc.IUserRepository.Delete(context.Background(), id)
 	return err
 
 }

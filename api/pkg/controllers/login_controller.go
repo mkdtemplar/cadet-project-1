@@ -14,11 +14,11 @@ import (
 	"time"
 )
 
-func NewLoginController(IUserRepository interfaces.IUserRepository, IShipPortsRepository interfaces.IShipPortsRepository) *Controller {
-	return &Controller{IUserRepository: IUserRepository, IShipPortsRepository: IShipPortsRepository}
+func NewLoginController(IUserRepository interfaces.IUserRepository, IShipPortsRepository interfaces.IShipPortsRepository) *LoginController {
+	return &LoginController{IUserRepository: IUserRepository, IShipPortsRepository: IShipPortsRepository}
 }
 
-func (c *Controller) ServeHTTPLogin(w http.ResponseWriter, r *http.Request) {
+func (l *LoginController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	var err error
 	v := validation.Validation{}
@@ -46,9 +46,9 @@ func (c *Controller) ServeHTTPLogin(w http.ResponseWriter, r *http.Request) {
 	models.Cookie.Path = "/"
 	http.SetCookie(w, &models.Cookie)
 
-	checkUser, err := c.IUserRepository.GetUserEmail(r.Context(), userEmail)
+	checkUser, err := l.IUserRepository.GetUserEmail(r.Context(), userEmail)
 	if err == nil {
-		userPorts, err := c.IShipPortsRepository.FindUserPorts(r.Context(), checkUser.ID)
+		userPorts, err := l.IShipPortsRepository.FindUserPorts(r.Context(), checkUser.ID)
 		if err != nil {
 			responses.ERROR(w, http.StatusNotFound, err)
 			return
@@ -57,7 +57,7 @@ func (c *Controller) ServeHTTPLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userNew, err := c.IUserRepository.Create(r.Context(), user)
+	userNew, err := l.IUserRepository.Create(r.Context(), user)
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return

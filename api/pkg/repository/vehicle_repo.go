@@ -9,11 +9,10 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
-func NewVehicleRepo(db *gorm.DB) interfaces.IUserVehicleRepository {
-	return &PG{DB: db}
+func NewVehicleRepo() interfaces.IUserVehicleRepository {
+	return &PG{DB: GetDb()}
 }
 
 func NewVehicleObject(id uuid.UUID, name string, model string, mileage float32, userId uuid.UUID) models.Vehicle {

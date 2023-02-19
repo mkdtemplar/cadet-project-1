@@ -13,14 +13,14 @@ import (
 	"net/http"
 )
 
-func NewVehicleController(IUserVehicleRepository interfaces.IUserVehicleRepository) *Controller {
-	return &Controller{IUserVehicleRepository: IUserVehicleRepository}
+func NewVehicleController(IUserVehicleRepository interfaces.IUserVehicleRepository) *VehicleController {
+	return &VehicleController{IUserVehicleRepository: IUserVehicleRepository}
 }
 
-func (c *Controller) ServeHTTPUserVehicle(w http.ResponseWriter, r *http.Request) {
-	c.Writer = w
-	c.Request = r
+func (v *VehicleController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
+	v.Request = r
+	v.Writer = w
 	config.InitConfig("configurations")
 
 	w.Header().Set("content-type", "application/json")
@@ -40,14 +40,14 @@ func (c *Controller) ServeHTTPUserVehicle(w http.ResponseWriter, r *http.Request
 
 	switch currentPath {
 	case config.Config.Vehicle:
-		c.ServeVehicleEndPoints(w, r)
+		v.ServeVehicleEndPoints(w, r)
 		return
 	}
 }
 
-func (c *Controller) CreateVehicle() (*models.Vehicle, error) {
+func (v *VehicleController) CreateVehicle() (*models.Vehicle, error) {
 
-	vehicle, err := helper.ParseVehicleRequestBody(c.Request)
+	vehicle, err := helper.ParseVehicleRequestBody(v.Request)
 	if err != nil {
 		return nil, errors.New("can not parse request body")
 	}
@@ -56,42 +56,42 @@ func (c *Controller) CreateVehicle() (*models.Vehicle, error) {
 		ValidateVehicleMileage(vehicle.Mileage).ValidateUserId(vehicle.UserId)
 
 	if validateVehicleData.Err != nil {
-		responses.ERROR(c.Writer, http.StatusUnprocessableEntity, validateVehicleData.Err)
+		responses.ERROR(v.Writer, http.StatusUnprocessableEntity, validateVehicleData.Err)
 		return nil, validateVehicleData.Err
 	}
 
 	storeVehicle := repository.NewVehicleObject(generate_id.GenerateID(), vehicle.Name, vehicle.Model, vehicle.Mileage, vehicle.UserId)
 
-	createdVehicle, err := c.IUserVehicleRepository.CreateUserVehicle(context.Background(), &storeVehicle)
+	createdVehicle, err := v.IUserVehicleRepository.CreateUserVehicle(context.Background(), &storeVehicle)
 	if err != nil {
-		responses.ERROR(c.Writer, http.StatusUnprocessableEntity, err)
+		responses.ERROR(v.Writer, http.StatusUnprocessableEntity, err)
 		return nil, err
 	}
 
 	return createdVehicle, nil
 }
 
-func (c *Controller) GetVehicleById() (*models.Vehicle, error) {
-	id, err := helper.GetQueryID(c.Request)
+func (v *VehicleController) GetVehicleById() (*models.Vehicle, error) {
+	id, err := helper.GetQueryID(v.Request)
 	if err != nil {
 		return nil, err
 	}
-	return c.IUserVehicleRepository.GetUserVehicleById(context.Background(), id)
+	return v.IUserVehicleRepository.GetUserVehicleById(context.Background(), id)
 }
 
-func (c *Controller) UpdateVehicle() (*models.Vehicle, error) {
-	id, err := helper.GetQueryID(c.Request)
+func (v *VehicleController) UpdateVehicle() (*models.Vehicle, error) {
+	id, err := helper.GetQueryID(v.Request)
 	if err != nil {
 		return nil, err
 	}
 
-	findVehicle, err := c.IUserVehicleRepository.GetUserVehicleById(context.Background(), id)
+	findVehicle, err := v.IUserVehicleRepository.GetUserVehicleById(context.Background(), id)
 
 	if err != nil {
 		return &models.Vehicle{}, errors.New("vehicle not found")
 	}
 
-	vehicleUpdate, err := helper.ParseVehicleRequestBody(c.Request)
+	vehicleUpdate, err := helper.ParseVehicleRequestBody(v.Request)
 	if err != nil {
 		return &models.Vehicle{}, errors.New("cannot parse request body")
 	}
@@ -103,24 +103,24 @@ func (c *Controller) UpdateVehicle() (*models.Vehicle, error) {
 		return &models.Vehicle{}, validateVehicle.Err
 	}
 
-	findVehicle, err = c.IUserVehicleRepository.UpdateUserVehicle(context.Background(), vehicleUpdate.Name, vehicleUpdate.Model, vehicleUpdate.Mileage, id)
+	findVehicle, err = v.IUserVehicleRepository.UpdateUserVehicle(context.Background(), vehicleUpdate.Name, vehicleUpdate.Model, vehicleUpdate.Mileage, id)
 
-	findVehicle, err = c.IUserVehicleRepository.GetUserVehicleById(context.Background(), id)
+	findVehicle, err = v.IUserVehicleRepository.GetUserVehicleById(context.Background(), id)
 
 	return findVehicle, nil
 }
 
-func (c *Controller) DeleteVehicle() error {
-	id, err := helper.GetQueryID(c.Request)
+func (v *VehicleController) DeleteVehicle() error {
+	id, err := helper.GetQueryID(v.Request)
 	if err != nil {
 		return err
 	}
-	_, err = c.IUserVehicleRepository.GetUserVehicleById(context.Background(), id)
+	_, err = v.IUserVehicleRepository.GetUserVehicleById(context.Background(), id)
 	if err != nil {
 		return errors.New("vehicle do not exist in database")
 	}
 
-	if _, err = c.IUserVehicleRepository.DeleteUserVehicle(context.Background(), id); err != nil {
+	if _, err = v.IUserVehicleRepository.DeleteUserVehicle(context.Background(), id); err != nil {
 		return errors.New("cannot delete vehicle")
 	}
 
