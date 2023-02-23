@@ -38,7 +38,6 @@ type ShipController struct {
 type LoginController struct {
 	Controller
 	interfaces.IShipPortsRepository
-	interfaces.IUserPreferencesRepository
 	interfaces.IUserRepository
 }
 
