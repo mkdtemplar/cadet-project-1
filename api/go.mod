@@ -3,9 +3,11 @@ module cadet-project
 go 1.19
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/crewjam/saml v0.4.10
 	github.com/google/uuid v1.3.0
 	github.com/spf13/viper v1.14.0
+	github.com/stretchr/testify v1.8.1
 	golang.org/x/text v0.5.0
 	googlemaps.github.io/maps v1.3.3
 	gorm.io/driver/postgres v1.4.6
@@ -15,6 +17,7 @@ require (
 require (
 	github.com/beevik/etree v1.1.0 // indirect
 	github.com/crewjam/httperr v0.2.0 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/golang-jwt/jwt/v4 v4.4.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
@@ -30,6 +33,7 @@ require (
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.5 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/russellhaering/goxmldsig v1.1.1 // indirect
 	github.com/spf13/afero v1.9.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
