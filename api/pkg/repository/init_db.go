@@ -13,7 +13,7 @@ var DB PG
 
 func InitDb() {
 	var err error
-	config.InitDbConfig("configurations")
+	config.InitDbConfig("pkg/config")
 
 	DbUrl := config.ConfigureDB.ConnectionString()
 

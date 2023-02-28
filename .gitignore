@@ -8,4 +8,4 @@
 /example-response/
 /response.json
 /api/queryes_filter_and_set_unlocks_1.txt
-/api/pkg/repository/tests/configurations/app.env
+/api/pkg/repository/tests/pkg/config/app.env

@@ -25,8 +25,6 @@ func (uc *UserController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	uc.Writer = w
 	uc.Request = r
 
-	config.InitConfig("configurations")
-
 	w.Header().Set("content-type", "application/json")
 
 	currentPath := r.URL.Path
