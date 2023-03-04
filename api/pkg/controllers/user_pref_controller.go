@@ -8,7 +8,6 @@ import (
 	"cadet-project/pkg/repository"
 	"cadet-project/pkg/repository/generate_id"
 	"cadet-project/pkg/responses"
-	"context"
 	"net/http"
 )
 
@@ -54,7 +53,7 @@ func (upc *UserPrefController) CreateUserPref() (*models.UserPreferences, error)
 
 	userPreferencesStore := repository.NewUserPrefObject(generate_id.GenerateID(), userPref.UserCountry, userPref.UserId)
 
-	err, _ = upc.IUserPreferencesRepository.SaveUserPreferences(context.Background(), &userPreferencesStore)
+	err, _ = upc.IUserPreferencesRepository.SaveUserPreferences(upc.Request.Context(), &userPreferencesStore)
 	if err != nil {
 		responses.ERROR(upc.Writer, http.StatusUnprocessableEntity, err)
 		return &models.UserPreferences{}, err
@@ -70,7 +69,7 @@ func (upc *UserPrefController) GetUserPrefById() (*models.UserPreferences, error
 	if err != nil {
 		return nil, err
 	}
-	return upc.IUserPreferencesRepository.FindUserPreferences(context.Background(), id)
+	return upc.IUserPreferencesRepository.FindUserPreferences(upc.Request.Context(), id)
 }
 
 func (upc *UserPrefController) UpdateUserPref() (*models.UserPreferences, error) {
@@ -80,7 +79,7 @@ func (upc *UserPrefController) UpdateUserPref() (*models.UserPreferences, error)
 	}
 
 	userPrefFind := &models.UserPreferences{}
-	userPrefFind, err = upc.IUserPreferencesRepository.FindUserPreferences(context.Background(), id)
+	userPrefFind, err = upc.IUserPreferencesRepository.FindUserPreferences(upc.Request.Context(), id)
 
 	if err != nil {
 		return nil, err
@@ -93,14 +92,14 @@ func (upc *UserPrefController) UpdateUserPref() (*models.UserPreferences, error)
 		return nil, validateCountry.Err
 	}
 
-	userPrefFind, err = upc.IUserPreferencesRepository.UpdateUserPref(context.Background(), id, userPrefUpdate.UserCountry)
+	userPrefFind, err = upc.IUserPreferencesRepository.UpdateUserPref(upc.Request.Context(), id, userPrefUpdate.UserCountry)
 
 	if err != nil {
 
 		return nil, err
 	}
 
-	userPrefFind, err = upc.IUserPreferencesRepository.FindUserPreferences(context.Background(), id)
+	userPrefFind, err = upc.IUserPreferencesRepository.FindUserPreferences(upc.Request.Context(), id)
 	return userPrefFind, nil
 }
 
@@ -110,7 +109,7 @@ func (upc *UserPrefController) DeleteUserPreferences() error {
 		return err
 	}
 
-	if _, err := upc.IUserPreferencesRepository.DeleteUserPreferences(context.Background(), id); err != nil {
+	if _, err := upc.IUserPreferencesRepository.DeleteUserPreferences(upc.Request.Context(), id); err != nil {
 		responses.ERROR(upc.Writer, http.StatusInternalServerError, err)
 		return err
 	}

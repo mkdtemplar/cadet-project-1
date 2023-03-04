@@ -32,7 +32,7 @@ func (v *VehicleController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	defer func() {
 		if err != nil {
-			http.Error(w, err.Error(), 401)
+			responses.JSON(w, http.StatusUnprocessableEntity, err)
 		} else {
 			responses.JSON(w, http.StatusOK, val)
 		}
@@ -62,7 +62,7 @@ func (v *VehicleController) CreateVehicle() (*models.Vehicle, error) {
 
 	storeVehicle := repository.NewVehicleObject(generate_id.GenerateID(), vehicle.Name, vehicle.Model, vehicle.Mileage, vehicle.UserId)
 
-	createdVehicle, err := v.IUserVehicleRepository.CreateUserVehicle(context.Background(), &storeVehicle)
+	createdVehicle, err := v.IUserVehicleRepository.CreateUserVehicle(v.Request.Context(), &storeVehicle)
 	if err != nil {
 		responses.ERROR(v.Writer, http.StatusUnprocessableEntity, err)
 		return nil, err
@@ -76,7 +76,7 @@ func (v *VehicleController) GetVehicleById() (*models.Vehicle, error) {
 	if err != nil {
 		return nil, err
 	}
-	return v.IUserVehicleRepository.GetUserVehicleById(context.Background(), id)
+	return v.IUserVehicleRepository.GetUserVehicleById(v.Request.Context(), id)
 }
 
 func (v *VehicleController) UpdateVehicle() (*models.Vehicle, error) {
@@ -103,9 +103,9 @@ func (v *VehicleController) UpdateVehicle() (*models.Vehicle, error) {
 		return &models.Vehicle{}, validateVehicle.Err
 	}
 
-	findVehicle, err = v.IUserVehicleRepository.UpdateUserVehicle(context.Background(), vehicleUpdate.Name, vehicleUpdate.Model, vehicleUpdate.Mileage, id)
+	findVehicle, err = v.IUserVehicleRepository.UpdateUserVehicle(v.Request.Context(), vehicleUpdate.Name, vehicleUpdate.Model, vehicleUpdate.Mileage, id)
 
-	findVehicle, err = v.IUserVehicleRepository.GetUserVehicleById(context.Background(), id)
+	findVehicle, err = v.IUserVehicleRepository.GetUserVehicleById(v.Request.Context(), id)
 
 	return findVehicle, nil
 }
@@ -115,12 +115,12 @@ func (v *VehicleController) DeleteVehicle() error {
 	if err != nil {
 		return err
 	}
-	_, err = v.IUserVehicleRepository.GetUserVehicleById(context.Background(), id)
+	_, err = v.IUserVehicleRepository.GetUserVehicleById(v.Request.Context(), id)
 	if err != nil {
 		return errors.New("vehicle do not exist in database")
 	}
 
-	if _, err = v.IUserVehicleRepository.DeleteUserVehicle(context.Background(), id); err != nil {
+	if _, err = v.IUserVehicleRepository.DeleteUserVehicle(v.Request.Context(), id); err != nil {
 		return errors.New("cannot delete vehicle")
 	}
 

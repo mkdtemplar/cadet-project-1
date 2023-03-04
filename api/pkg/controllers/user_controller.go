@@ -89,7 +89,7 @@ func (uc *UserController) DeleteUser() error {
 		return err
 	}
 
-	_, err = uc.IUserRepository.Delete(context.Background(), id)
+	_, err = uc.IUserRepository.Delete(uc.Request.Context(), id)
 	return err
 
 }
