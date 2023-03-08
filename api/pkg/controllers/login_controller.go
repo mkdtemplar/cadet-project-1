@@ -21,13 +21,17 @@ func NewLoginController(IUserRepository interfaces.IUserRepository, IShipPortsRe
 func (l *LoginController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	var err error
+	defer func() {
+		if err != nil {
+			responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		}
+	}()
 	v := validation.Validation{}
 	userEmail, userName := saml_handler.Credentials(w, r, config.Config.Email, config.Config.DisplayName)
 
 	checkCredentials := v.ValidateUserEmail(userEmail).ValidateUserName(userName)
-
-	if checkCredentials.Err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, checkCredentials.Err)
+	err = checkCredentials.Err
+	if err != nil {
 		return
 	}
 
@@ -45,21 +49,20 @@ func (l *LoginController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	models.Cookie.Expires = expiresAt
 	models.Cookie.Path = "/"
 	http.SetCookie(w, &models.Cookie)
-
-	checkUser, err := l.IUserRepository.GetUserEmail(r.Context(), userEmail)
+	var checkUser *models.User
+	checkUser, err = l.IUserRepository.GetUserEmail(r.Context(), userEmail)
 	if err == nil {
-		userPorts, err := l.IShipPortsRepository.FindUserPorts(r.Context(), checkUser.ID)
+		var userPorts *models.User
+		userPorts, err = l.IShipPortsRepository.FindUserPorts(r.Context(), checkUser.ID)
 		if err != nil {
-			responses.ERROR(w, http.StatusNotFound, err)
 			return
 		}
 		responses.JSON(w, http.StatusCreated, userPorts)
 		return
 	}
-
-	userNew, err := l.IUserRepository.Create(r.Context(), user)
+	var userNew *models.User
+	userNew, err = l.IUserRepository.Create(r.Context(), user)
 	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
 
