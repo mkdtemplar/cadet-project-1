@@ -44,7 +44,7 @@ func (l *LoginController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	tokenValue := middlewares.ExtractToken(r)
 	expiresAt := time.Now().Add(900 * time.Second)
 
-	models.Sessions[tokenValue] = models.Session{Expiry: expiresAt}
+	models.AddSession(tokenValue, models.Session{Expiry: expiresAt})
 
 	models.Cookie.Expires = expiresAt
 	models.Cookie.Path = "/"

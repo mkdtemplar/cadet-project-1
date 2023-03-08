@@ -33,7 +33,7 @@ func (sp *ShipController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	defer func() {
 		if err != nil {
-			http.Error(w, err.Error(), 401)
+			responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		} else {
 			responses.JSON(w, http.StatusOK, val)
 		}
@@ -62,17 +62,14 @@ func (sp *ShipController) GetUserPrefPortsName() (*models.UserPreferences, error
 
 	userPreferences, err := sp.IUserPreferencesRepository.FindUserPreferences(context.Background(), id)
 	if err != nil {
-		responses.ERROR(sp.Writer, http.StatusInternalServerError, err)
 		return nil, err
 	}
 
 	userPrefPorts, err := sp.IShipPortsRepository.FindUserPrefPorts(context.Background(), userPreferences)
 
 	if err != nil {
-		responses.ERROR(sp.Writer, http.StatusInternalServerError, err)
 		return nil, err
 	}
-	responses.JSON(sp.Writer, http.StatusOK, userPrefPorts)
 	return userPrefPorts, nil
 }
 
@@ -85,17 +82,13 @@ func (sp *ShipController) GetUserPortsName() (*models.User, error) {
 	user, err := sp.IUserRepository.GetById(context.Background(), id)
 
 	if err != nil {
-		responses.ERROR(sp.Writer, http.StatusInternalServerError, err)
 		return nil, err
 	}
-
 	userPorts, err := sp.IShipPortsRepository.FindUserPorts(context.Background(), user.ID)
 
 	if err != nil {
-		responses.ERROR(sp.Writer, http.StatusInternalServerError, err)
 		return nil, err
 	}
-	responses.JSON(sp.Writer, http.StatusOK, userPorts)
 	return userPorts, nil
 }
 
