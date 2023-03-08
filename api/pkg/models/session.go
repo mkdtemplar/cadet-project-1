@@ -15,8 +15,8 @@ func AddSession(key string, session Session) {
 	mu.Unlock()
 }
 
-func GetSession(key string) Session {
-	return sessions[key]
+func GetSession() map[string]Session {
+	return sessions
 }
 
 type Session struct {

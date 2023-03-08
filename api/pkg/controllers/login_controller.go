@@ -21,6 +21,7 @@ func NewLoginController(IUserRepository interfaces.IUserRepository, IShipPortsRe
 func (l *LoginController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
 	var err error
+	config.InitDbConfig("pkg/config")
 	defer func() {
 		if err != nil {
 			responses.ERROR(w, http.StatusUnprocessableEntity, err)
@@ -42,7 +43,7 @@ func (l *LoginController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tokenValue := middlewares.ExtractToken(r)
-	expiresAt := time.Now().Add(900 * time.Second)
+	expiresAt := time.Now().Add(time.Duration(config.Config.ExpireTime))
 
 	models.AddSession(tokenValue, models.Session{Expiry: expiresAt})
 

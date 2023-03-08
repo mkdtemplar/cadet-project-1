@@ -29,7 +29,7 @@ func (upc *UserPrefController) ServeHTTP(w http.ResponseWriter, r *http.Request)
 
 	defer func() {
 		if err != nil {
-			http.Error(w, err.Error(), 401)
+			responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		} else {
 			responses.JSON(w, http.StatusOK, val)
 		}
@@ -47,7 +47,6 @@ func (upc *UserPrefController) CreateUserPref() (*models.UserPreferences, error)
 
 	validateUserPefData := V.ValidateUserPrefCountry(userPref.UserCountry).ValidateUserId(userPref.UserId)
 	if validateUserPefData.Err != nil {
-		responses.ERROR(upc.Writer, http.StatusUnprocessableEntity, validateUserPefData.Err)
 		return nil, validateUserPefData.Err
 	}
 
@@ -55,11 +54,8 @@ func (upc *UserPrefController) CreateUserPref() (*models.UserPreferences, error)
 
 	err, _ = upc.IUserPreferencesRepository.SaveUserPreferences(upc.Request.Context(), &userPreferencesStore)
 	if err != nil {
-		responses.ERROR(upc.Writer, http.StatusUnprocessableEntity, err)
 		return &models.UserPreferences{}, err
 	}
-
-	responses.JSON(upc.Writer, http.StatusCreated, userPreferencesStore)
 
 	return &userPreferencesStore, nil
 }

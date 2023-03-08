@@ -28,6 +28,7 @@ type AppConfig struct {
 	MapsKey       string `mapstructure:"GOOGLE_API_KEY"`
 	PortName      string `mapstructure:"PORT_NAME"`
 	Vehicle       string `mapstructure:"VEHICLE"`
+	ExpireTime    int    `mapstructure:"EXPIRE"`
 }
 
 var Config AppConfig
