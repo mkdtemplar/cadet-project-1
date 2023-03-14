@@ -14,7 +14,7 @@ func (v *VehicleController) ServeVehicleEndPoints(w http.ResponseWriter, r *http
 	var err error
 	defer func() {
 		if err != nil {
-			http.Error(w, err.Error(), 401)
+			http.Error(w, err.Error(), http.StatusBadRequest)
 		} else {
 			responses.JSON(w, http.StatusOK, val)
 		}

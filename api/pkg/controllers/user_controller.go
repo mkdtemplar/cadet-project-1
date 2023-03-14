@@ -7,18 +7,12 @@ import (
 	"cadet-project/pkg/models"
 	"cadet-project/pkg/responses"
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 )
 
 func NewUserController(IUserRepository interfaces.IUserRepository) *UserController {
 	return &UserController{IUserRepository: IUserRepository}
-}
-
-func (uc *UserController) notFound(w http.ResponseWriter) {
-	responses.ERROR(w, http.StatusInternalServerError, errors.New("path not found"))
-	return
 }
 
 func (uc *UserController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -34,7 +28,7 @@ func (uc *UserController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	defer func() {
 		if err != nil {
-			http.Error(w, err.Error(), 401)
+			responses.JSON(w, http.StatusBadRequest, err)
 		} else {
 			responses.JSON(w, http.StatusOK, val)
 		}

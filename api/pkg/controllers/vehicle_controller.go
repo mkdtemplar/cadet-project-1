@@ -87,7 +87,7 @@ func (v *VehicleController) UpdateVehicle() (*models.Vehicle, error) {
 
 	findVehicle, err := v.IUserVehicleRepository.GetUserVehicleById(context.Background(), id)
 
-	if err != nil {
+	if err != nil && findVehicle == nil {
 		return &models.Vehicle{}, errors.New("vehicle not found")
 	}
 
@@ -104,8 +104,14 @@ func (v *VehicleController) UpdateVehicle() (*models.Vehicle, error) {
 	}
 
 	findVehicle, err = v.IUserVehicleRepository.UpdateUserVehicle(v.Request.Context(), vehicleUpdate.Name, vehicleUpdate.Model, vehicleUpdate.Mileage, id)
+	if err != nil {
+		return nil, err
+	}
 
 	findVehicle, err = v.IUserVehicleRepository.GetUserVehicleById(v.Request.Context(), id)
+	if err != nil {
+		return nil, err
+	}
 
 	return findVehicle, nil
 }

@@ -44,6 +44,9 @@ func (upc *UserPrefController) ServeHTTP(w http.ResponseWriter, r *http.Request)
 func (upc *UserPrefController) CreateUserPref() (*models.UserPreferences, error) {
 
 	userPref, err := helper.ParseUserPrefRequestBody(upc.Request)
+	if err != nil {
+		return nil, err
+	}
 
 	validateUserPefData := V.ValidateUserPrefCountry(userPref.UserCountry).ValidateUserId(userPref.UserId)
 	if validateUserPefData.Err != nil {
@@ -77,11 +80,14 @@ func (upc *UserPrefController) UpdateUserPref() (*models.UserPreferences, error)
 	userPrefFind := &models.UserPreferences{}
 	userPrefFind, err = upc.IUserPreferencesRepository.FindUserPreferences(upc.Request.Context(), id)
 
-	if err != nil {
+	if err != nil && userPrefFind == nil {
 		return nil, err
 	}
 
 	userPrefUpdate, err := helper.ParseUserPrefRequestBody(upc.Request)
+	if err != nil {
+		return nil, err
+	}
 
 	validateCountry := V.ValidateUserPrefCountry(userPrefUpdate.UserCountry)
 	if validateCountry.Err != nil {
@@ -90,12 +96,15 @@ func (upc *UserPrefController) UpdateUserPref() (*models.UserPreferences, error)
 
 	userPrefFind, err = upc.IUserPreferencesRepository.UpdateUserPref(upc.Request.Context(), id, userPrefUpdate.UserCountry)
 
-	if err != nil {
+	if err != nil && userPrefFind == nil {
 
 		return nil, err
 	}
 
 	userPrefFind, err = upc.IUserPreferencesRepository.FindUserPreferences(upc.Request.Context(), id)
+	if err != nil {
+		return nil, err
+	}
 	return userPrefFind, nil
 }
 
