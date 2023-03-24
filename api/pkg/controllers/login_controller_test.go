@@ -1,9 +1,13 @@
+package controllers
+
 import (
 	"cadet-project/pkg/models"
 	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/google/uuid"
 )
 
 func TestServeHTTP(t *testing.T) {
@@ -26,9 +30,9 @@ func TestServeHTTP(t *testing.T) {
 	}
 
 	expectedResponseBody := `{
-            "id": "123",
+            "id": "7e0b6165-701e-478f-8282-4b6611a523cd",
             "email": "test@test.com",
-            "name": "Test User"
+            "name": "name surname"
         }`
 	if w.Body.String() != expectedResponseBody {
 		t.Errorf("Expected response body %s; got %s", expectedResponseBody, w.Body.String())
@@ -38,11 +42,22 @@ func TestServeHTTP(t *testing.T) {
 // Mock UserRepository implementation used in test cases
 type mockUserRepository struct{}
 
+func (m *mockUserRepository) Delete(ctx context.Context, uid uuid.UUID) (int64, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *mockUserRepository) GetById(ctx context.Context, id uuid.UUID) (*models.User, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (m *mockUserRepository) GetUserEmail(ctx context.Context, email string) (*models.User, error) {
+	id, _ := uuid.Parse("7e0b6165-701e-478f-8282-4b6611a523cd")
 	return &models.User{
-		ID:    "123",
+		ID:    id,
 		Email: "test@test.com",
-		Name:  "Test User",
+		Name:  "name surname",
 	}, nil
 }
 
@@ -53,10 +68,21 @@ func (m *mockUserRepository) Create(ctx context.Context, u *models.User) (*model
 // Mock ShipPortsRepository implementation used in test cases
 type mockShipPortsRepository struct{}
 
-func (m *mockShipPortsRepository) FindUserPorts(ctx context.Context, userID string) (*models.User, error) {
+func (m *mockShipPortsRepository) FindUserPrefPorts(ctx context.Context, usrpref *models.UserPreferences) (*models.UserPreferences, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *mockShipPortsRepository) FindUserPorts(ctx context.Context, id uuid.UUID) (*models.User, error) {
+	id, _ = uuid.Parse("7e0b6165-701e-478f-8282-4b6611a523cd")
 	return &models.User{
-		ID:    "123",
+		ID:    id,
 		Email: "test@test.com",
-		Name:  "Test User",
+		Name:  "name surname",
 	}, nil
+}
+
+func (m *mockShipPortsRepository) GetCityByName(ctx context.Context, name string) (string, error) {
+	//TODO implement me
+	panic("implement me")
 }
