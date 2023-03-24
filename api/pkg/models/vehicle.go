@@ -9,3 +9,5 @@ type Vehicle struct {
 	Mileage float32   `json:"mileage"`
 	UserId  uuid.UUID `gorm:"type:uuid" json:"user_id"`
 }
+
+// separate gorm and JSON
