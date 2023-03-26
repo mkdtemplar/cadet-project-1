@@ -21,7 +21,7 @@ func TestUserRepoGetById(t *testing.T) {
 	defer func(db *sql.DB) {
 		err := db.Close()
 		if err != nil {
-
+			return
 		}
 	}(db)
 	repository.InitDb()
@@ -49,7 +49,7 @@ func TestUserRepoCreate(t *testing.T) {
 	defer func(db *sql.DB) {
 		err := db.Close()
 		if err != nil {
-
+			return
 		}
 	}(db)
 	repository.InitDb()
@@ -81,7 +81,7 @@ func TestUserRepoDelete(t *testing.T) {
 	defer func(db *sql.DB) {
 		err := db.Close()
 		if err != nil {
-
+			return
 		}
 	}(db)
 	repository.InitDb()
@@ -107,7 +107,7 @@ func TestUserRepoGetUserEmail(t *testing.T) {
 	defer func(db *sql.DB) {
 		err := db.Close()
 		if err != nil {
-
+			return
 		}
 	}(db)
 	repository.InitDb()
