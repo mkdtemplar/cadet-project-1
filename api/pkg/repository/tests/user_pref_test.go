@@ -21,7 +21,7 @@ func TestUserPrefCreate(t *testing.T) {
 	defer func(db *sql.DB) {
 		err := db.Close()
 		if err != nil {
-
+			return
 		}
 	}(db)
 	repository.InitDb()
@@ -57,7 +57,7 @@ func TestFindUserPreferences(t *testing.T) {
 	defer func(db *sql.DB) {
 		err := db.Close()
 		if err != nil {
-
+			return
 		}
 	}(db)
 	repository.InitDb()
@@ -90,13 +90,13 @@ func TestUpdateUserPref(t *testing.T) {
 	defer func(db *sql.DB) {
 		err := db.Close()
 		if err != nil {
-
+			return
 		}
 	}(db)
 	repository.InitDb()
 	userPref := repository.NewUserPrefRepo()
 
-	id, err := uuid.Parse("36cfb416-780b-405a-bab1-b2e4a44bf226")
+	id, _ := uuid.Parse("36cfb416-780b-405a-bab1-b2e4a44bf226")
 	userCountry := "Macedonia"
 	const updateCountry = `UPDATE user_preferences SET "user_country" = $1 WHERE id = $2`
 
@@ -119,13 +119,13 @@ func TestDeleteUserPreferences(t *testing.T) {
 	defer func(db *sql.DB) {
 		err := db.Close()
 		if err != nil {
-
+			return
 		}
 	}(db)
 	repository.InitDb()
 	userPref := repository.NewUserPrefRepo()
 
-	id, err := uuid.Parse("2faeb522-e78d-4c6c-87b0-6bee3986f802")
+	id, _ := uuid.Parse("2faeb522-e78d-4c6c-87b0-6bee3986f802")
 
 	mock.ExpectBegin()
 	mock.ExpectExec(`DELETE FROM user_preferences WHERE id = $1`).WithArgs(id).
