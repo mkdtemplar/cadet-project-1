@@ -73,5 +73,4 @@ func (u *PG) GetCityByName(ctx context.Context, name string) (string, error) {
 	}
 
 	return portName.Name, nil
-
 }
