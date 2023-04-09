@@ -14,4 +14,5 @@ type IUserVehicleRepository interface {
 	DeleteUserVehicle(ctx context.Context, id uuid.UUID) (int64, error)
 	FindUserVehicle(ctx context.Context, userID uuid.UUID) (*models.User, error)
 	FindVehiclesForUser(ctx context.Context, userID uuid.UUID) ([]*models.Vehicle, error)
+	FindVehicleWithUserID(ctx context.Context, userID uuid.UUID) ([]*models.Vehicle, error)
 }

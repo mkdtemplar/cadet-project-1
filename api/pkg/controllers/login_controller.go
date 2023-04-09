@@ -14,8 +14,11 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
+
+var UserID uuid.UUID
 
 func NewLoginController(IUserRepository interfaces.IUserRepository, IShipPortsRepository interfaces.IShipPortsRepository) *LoginController {
 	return &LoginController{IUserRepository: IUserRepository, IShipPortsRepository: IShipPortsRepository}
@@ -56,6 +59,7 @@ func (l *LoginController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var checkUser *models.User
 	checkUser, err = l.IUserRepository.GetUserEmail(r.Context(), userEmail)
 	if err == nil && checkUser != nil {
+		UserID = checkUser.ID
 		var userPorts *models.User
 		userPorts, err = l.IShipPortsRepository.FindUserPorts(r.Context(), checkUser.ID)
 		if err != nil {
@@ -68,6 +72,7 @@ func (l *LoginController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var userNew *models.User
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		userNew, err = l.IUserRepository.Create(r.Context(), user)
+		UserID = userNew.ID
 		if err != nil {
 			return
 		}

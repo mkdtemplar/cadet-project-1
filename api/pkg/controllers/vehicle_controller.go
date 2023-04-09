@@ -52,6 +52,10 @@ func (v *VehicleController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		val, err = v.GetAllVehiclesForUser()
 		return
 
+	case config.Config.VehiclesUserId:
+		val, err = v.GetVehicleWithUserId()
+		return
+
 	case config.Config.PortName:
 		val, err = v.GetDirections()
 		return
@@ -109,6 +113,16 @@ func (v *VehicleController) GetAllVehiclesForUser() ([]*models.Vehicle, error) {
 		return nil, err
 	}
 	vehicles, err := v.IUserVehicleRepository.FindVehiclesForUser(v.Request.Context(), userId)
+
+	return vehicles, nil
+}
+
+func (v *VehicleController) GetVehicleWithUserId() ([]*models.Vehicle, error) {
+
+	vehicles, err := v.IUserVehicleRepository.FindVehiclesForUser(v.Request.Context(), UserID)
+	if err != nil {
+		return nil, err
+	}
 
 	return vehicles, nil
 }

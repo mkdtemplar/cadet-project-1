@@ -26,4 +26,5 @@ func (s *Server) InitializeRoutes() {
 	s.Router.Handle("/vehicle", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(vehicleController.ServeHTTP)))
 	s.Router.Handle("/user_vehicle", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(vehicleController.ServeHTTP)))
 	s.Router.Handle("/all_vehicles", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(vehicleController.ServeHTTP)))
+	s.Router.Handle("/vehicles_user_id", middlewares.SetMiddlewareJSON(middlewares.SetMiddlewareAuthentication(vehicleController.ServeHTTP)))
 }

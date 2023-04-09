@@ -9,28 +9,29 @@ import (
 )
 
 type AppConfig struct {
-	TenantID      string `mapstructure:"TENANT_ID"`
-	AppId         string `mapstructure:"APP_ID"`
-	MSUrl         string `mapstructure:"MS_URL"`
-	Crt           string `mapstructure:"CRT"`
-	Key           string `mapstructure:"KEY"`
-	RootUrl       string `mapstructure:"ROOT_URL"`
-	Email         string `mapstructure:"EMAIL"`
-	DisplayName   string `mapstructure:"DISPLAY_NAME"`
-	ApiPort       string `mapstructure:"API_PORT"`
-	UserDelete    string `mapstructure:"USER_DELETE"`
-	UserCreate    string `mapstructure:"USER_CREATE"`
-	UserPref      string `mapstructure:"USER_PREF"`
-	UserPorts     string `mapstructure:"USER_PORTS"`
-	ListUserPref  string `mapstructure:"LIST_USER_PREF"`
-	UserId        string `mapstructure:"USER_GET"`
-	UserPrefPorts string `mapstructure:"USER_PREF_PORTS"`
-	MapsKey       string `mapstructure:"GOOGLE_API_KEY"`
-	PortName      string `mapstructure:"PORT_NAME"`
-	Vehicle       string `mapstructure:"VEHICLE"`
-	ExpireTime    int    `mapstructure:"EXPIRE"`
-	UserVehicle   string `mapstructure:"USER_VEHICLE"`
-	AllVehicles   string `mapstructure:"ALL_VEHICLES"`
+	TenantID       string `mapstructure:"TENANT_ID"`
+	AppId          string `mapstructure:"APP_ID"`
+	MSUrl          string `mapstructure:"MS_URL"`
+	Crt            string `mapstructure:"CRT"`
+	Key            string `mapstructure:"KEY"`
+	RootUrl        string `mapstructure:"ROOT_URL"`
+	Email          string `mapstructure:"EMAIL"`
+	DisplayName    string `mapstructure:"DISPLAY_NAME"`
+	ApiPort        string `mapstructure:"API_PORT"`
+	UserDelete     string `mapstructure:"USER_DELETE"`
+	UserCreate     string `mapstructure:"USER_CREATE"`
+	UserPref       string `mapstructure:"USER_PREF"`
+	UserPorts      string `mapstructure:"USER_PORTS"`
+	ListUserPref   string `mapstructure:"LIST_USER_PREF"`
+	UserId         string `mapstructure:"USER_GET"`
+	UserPrefPorts  string `mapstructure:"USER_PREF_PORTS"`
+	MapsKey        string `mapstructure:"GOOGLE_API_KEY"`
+	PortName       string `mapstructure:"PORT_NAME"`
+	Vehicle        string `mapstructure:"VEHICLE"`
+	ExpireTime     int    `mapstructure:"EXPIRE"`
+	UserVehicle    string `mapstructure:"USER_VEHICLE"`
+	AllVehicles    string `mapstructure:"ALL_VEHICLES"`
+	VehiclesUserId string `mapstructure:"VEHICLES_USER_ID"`
 }
 
 var Config AppConfig
