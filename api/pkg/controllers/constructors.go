@@ -30,6 +30,7 @@ func (sp *ShipController) ShipPortsController() *ShipController {
 
 func (v *VehicleController) VehicleController() *VehicleController {
 	vehicleRepo := repository.NewVehicleRepo()
-
-	return NewVehicleController(vehicleRepo)
+	userRepo := repository.NewUserRepo()
+	shipPortsRepo := repository.NewShipPortsRepo()
+	return NewVehicleController(vehicleRepo, shipPortsRepo, userRepo)
 }

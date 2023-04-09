@@ -72,3 +72,12 @@ func GetQueryEnd(r *http.Request) string {
 	queryString = cases.Title(language.Und).String(queryString)
 	return queryString
 }
+
+func GetQueryUserID(r *http.Request) (uuid.UUID, error) {
+	queryString := r.URL.Query().Get("user_id")
+	paramsID, err := uuid.Parse(queryString)
+	if err != nil {
+		return uuid.Nil, err
+	}
+	return paramsID, nil
+}

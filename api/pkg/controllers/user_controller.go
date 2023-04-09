@@ -6,7 +6,6 @@ import (
 	"cadet-project/pkg/interfaces"
 	"cadet-project/pkg/models"
 	"cadet-project/pkg/responses"
-	"context"
 	"fmt"
 	"net/http"
 )
@@ -74,7 +73,7 @@ func (uc *UserController) GetUserById() (*models.User, error) {
 	if err != nil {
 		return nil, err
 	}
-	return uc.IUserRepository.GetById(context.Background(), id)
+	return uc.IUserRepository.GetById(uc.Request.Context(), id)
 }
 
 func (uc *UserController) DeleteUser() error {

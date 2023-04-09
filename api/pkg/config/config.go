@@ -29,6 +29,8 @@ type AppConfig struct {
 	PortName      string `mapstructure:"PORT_NAME"`
 	Vehicle       string `mapstructure:"VEHICLE"`
 	ExpireTime    int    `mapstructure:"EXPIRE"`
+	UserVehicle   string `mapstructure:"USER_VEHICLE"`
+	AllVehicles   string `mapstructure:"ALL_VEHICLES"`
 }
 
 var Config AppConfig

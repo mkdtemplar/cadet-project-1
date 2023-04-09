@@ -84,3 +84,31 @@ func (u *PG) DeleteUserVehicle(ctx context.Context, id uuid.UUID) (int64, error)
 
 	return delTx.RowsAffected, nil
 }
+
+func (u *PG) FindUserVehicle(ctx context.Context, userID uuid.UUID) (*models.User, error) {
+	var err error
+	user := &models.User{}
+
+	if err = u.DB.WithContext(ctx).Joins("join vehicles ON vehicles.user_id = users.id").Find(&user).Error; err != nil {
+		return nil, err
+	}
+
+	var vehicles []models.Vehicle
+
+	if err = u.DB.WithContext(ctx).Model(&vehicles).Where("user_id = ?", userID).Find(&vehicles).Error; err != nil {
+		return nil, err
+	}
+	user.UserVehicle = vehicles
+
+	return user, nil
+}
+
+func (u *PG) FindVehiclesForUser(ctx context.Context, userID uuid.UUID) ([]*models.Vehicle, error) {
+	var err error
+	var vehicles []*models.Vehicle
+	if err = u.DB.WithContext(ctx).Model(&vehicles).Where("user_id = ?", userID).Find(&vehicles).Error; err != nil {
+		return nil, err
+	}
+
+	return vehicles, nil
+}

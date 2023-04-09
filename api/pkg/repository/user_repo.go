@@ -29,7 +29,6 @@ func (u *PG) Create(ctx context.Context, usr *models.User) (*models.User, error)
 	if err != nil {
 		return &models.User{}, err
 	}
-
 	return usr, nil
 }
 
@@ -59,7 +58,6 @@ func (u *PG) GetUserEmail(ctx context.Context, email string) (*models.User, erro
 		Email: user.Email,
 		Name:  user.Name,
 	}
-
 	return userFind, err
 }
 

@@ -21,6 +21,8 @@ type UserController struct {
 type VehicleController struct {
 	Controller
 	interfaces.IUserVehicleRepository
+	interfaces.IShipPortsRepository
+	interfaces.IUserRepository
 }
 
 type UserPrefController struct {

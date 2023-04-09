@@ -1,10 +1,19 @@
 package google_API
 
-type ClientData struct {
+type Request struct {
 	Origin      string
 	Destination string
 }
 
-func NewClientData(origin string, destination string) *ClientData {
-	return &ClientData{Origin: origin, Destination: destination}
+type Client struct {
+	Apikey string
+}
+
+func New(apikey string) *Client {
+	return &Client{Apikey: apikey}
+}
+
+// rename to client
+func NewClientData(origin string, destination string, apikey string) *Request {
+	return &Request{Origin: origin, Destination: destination}
 }
