@@ -18,6 +18,7 @@ var UserController controllers.UserController
 var UserPrefController controllers.UserPrefController
 var ShipController controllers.ShipController
 var LoginController controllers.LoginController
+var RouteController controllers.RouteController
 
 func (s *Server) InitializeServer() {
 	config.InitDbConfig("pkg/config")

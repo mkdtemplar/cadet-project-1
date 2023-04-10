@@ -21,8 +21,6 @@ type UserController struct {
 type VehicleController struct {
 	Controller
 	interfaces.IUserVehicleRepository
-	interfaces.IShipPortsRepository
-	interfaces.IUserRepository
 }
 
 type UserPrefController struct {
@@ -41,6 +39,12 @@ type LoginController struct {
 	Controller
 	interfaces.IShipPortsRepository
 	interfaces.IUserRepository
+}
+
+type RouteController struct {
+	Controller
+	interfaces.IUserVehicleRepository
+	interfaces.IShipPortsRepository
 }
 
 var V validation.Validation
