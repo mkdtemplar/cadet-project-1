@@ -48,6 +48,5 @@ func DistanceMatrix(startLat float32, startLong float32, endLat float32, endLong
 		log.Println("Cannot unmarshal response")
 	}
 
-	fmt.Println(distanceMatrix)
 	return distanceMatrix, err
 }

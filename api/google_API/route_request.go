@@ -3,15 +3,14 @@ package google_API
 import (
 	"cadet-project/pkg/config"
 	"context"
-	"fmt"
 
 	"googlemaps.github.io/maps"
 )
 
 var totalDistance int
 
-func (cl *Client) FindRoute(request Request) ([]Route, error) {
-
+func (rq *Request) FindRoute(request Request) ([]Route, error) {
+	config.InitConfig("pkg/config")
 	c, err := maps.NewClient(maps.WithAPIKey(config.Config.MapsKey))
 	if err != nil {
 		return nil, err
@@ -27,22 +26,7 @@ func (cl *Client) FindRoute(request Request) ([]Route, error) {
 		return nil, err
 	}
 
-	//for i, j := range ToRoutes(routes) {
-	//	fmt.Println("Total Distance: ", j.Legs[i].Distance.Value)
-	//	legs := ToLegs(routes[i].Legs)
-	//	fmt.Println("Printing legs: ", legs[i].Distance)
-	//	fmt.Println("-----------------------")
-	//	for k := range legs {
-	//		steps := ToSteps(routes[i].Legs[k].Steps)
-	//		for _, n := range steps {
-	//			fmt.Println("Steps: ", n.Distance.Text)
-	//			fmt.Println("Time: ", n.Duration.Seconds())
-	//		}
-	//	}
-	//}
-
 	totalDistance = ToRoutes(routes)[0].Legs[0].Distance.Value
-	fmt.Println("Total distance: ", totalDistance)
 
 	return ToRoutes(routes), nil
 }

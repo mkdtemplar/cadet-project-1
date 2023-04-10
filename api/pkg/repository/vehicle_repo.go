@@ -112,13 +112,3 @@ func (u *PG) FindVehiclesForUser(ctx context.Context, userID uuid.UUID) ([]*mode
 
 	return vehicles, nil
 }
-
-func (u *PG) FindVehicleWithUserID(ctx context.Context, userID uuid.UUID) ([]*models.Vehicle, error) {
-	var err error
-	var vehicles []*models.Vehicle
-	if err = u.DB.WithContext(ctx).Model(&vehicles).Where("user_id = ?", userID).Find(&vehicles).Error; err != nil {
-		return nil, err
-	}
-
-	return vehicles, nil
-}
