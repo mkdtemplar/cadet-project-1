@@ -46,16 +46,13 @@ func (rq *Request) FindRoute(request Request, mileage float64) ([]maps.Route, er
 		}
 		for _, row := range distance.Rows {
 			for _, element := range row.Elements {
-				if element.Distance.Value/1000 > int(mileage) {
-					return nil, errors.New("route not possible no gas stations available")
-				}
 				sum += element.Distance.Value
 				if sum/1000 >= (int(mileage) - (element.Distance.Value / 1000)) {
 					lat := decode[i].Lat
 					lng := decode[i].Lng
 					gasStations, err := GasStations(lat, lng, element.Distance.Value)
 					if gasStations.Results == nil || err != nil {
-						return nil, err
+						return nil, errors.New("route not possible no gas stations available")
 					}
 					stop++
 					sum = 0
