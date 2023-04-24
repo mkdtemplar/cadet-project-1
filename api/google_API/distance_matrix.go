@@ -10,11 +10,12 @@ import (
 	"cadet-project/pkg/config"
 )
 
-func DistanceMatrix(startLat float32, startLong float32, endLat float32, endLong float32) (DistanceMatrixObject, error) {
+func DistanceMatrix(startLat float64, startLong float64, endLat float64, endLong float64) (DistanceMatrixObject, error) {
 	distanceMatrix := DistanceMatrixObject{}
-	url := fmt.Sprintf("%s, %f, %s, %f, %s, %f, %s, %f, %s, %s",
+	url := fmt.Sprintf("%s%f%s%f%s%f%s%f%s%s",
 		"https://maps.googleapis.com/maps/api/distancematrix/json?origins=", startLat, ",", startLong,
 		"&destinations=", endLat, ",", endLong, "&key=", config.Config.MapsKey)
+	fmt.Println(url)
 
 	method := "GET"
 

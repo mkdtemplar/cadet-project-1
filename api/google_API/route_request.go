@@ -3,13 +3,16 @@ package google_API
 import (
 	"cadet-project/pkg/config"
 	"context"
+	"errors"
 
 	"googlemaps.github.io/maps"
 )
 
 var totalDistance int
 
-func (rq *Request) FindRoute(request Request) ([]Route, error) {
+var stop = -1
+
+func (rq *Request) FindRoute(request Request, mileage float64) ([]maps.Route, error) {
 	config.InitConfig("pkg/config")
 	c, err := maps.NewClient(maps.WithAPIKey(config.Config.MapsKey))
 	if err != nil {
@@ -26,13 +29,55 @@ func (rq *Request) FindRoute(request Request) ([]Route, error) {
 		return nil, err
 	}
 
+	var decode []maps.LatLng
+	for _, route := range routes {
+		decode, err = route.OverviewPolyline.Decode()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	var sum = 0
+
+	for i := 0; i < len(decode)-1; i++ {
+		distance, err := DistanceMatrix(decode[i].Lat, decode[i].Lng, decode[i+1].Lat, decode[i+1].Lng)
+		if err != nil {
+			return nil, err
+		}
+		for _, row := range distance.Rows {
+			for _, element := range row.Elements {
+				if element.Distance.Value/1000 > int(mileage) {
+					return nil, errors.New("route not possible no gas stations available")
+				}
+				sum += element.Distance.Value
+				if sum/1000 >= (int(mileage) - (element.Distance.Value / 1000)) {
+					lat := decode[i].Lat
+					lng := decode[i].Lng
+					gasStations, err := GasStations(lat, lng, element.Distance.Value)
+					if gasStations.Results == nil || err != nil {
+						return nil, err
+					}
+					stop++
+					sum = 0
+				}
+			}
+		}
+	}
+	if stop == -1 {
+		stop = 0
+	}
+
 	totalDistance = ToRoutes(routes)[0].Legs[0].Distance.Value
 
-	return ToRoutes(routes), nil
+	return routes, nil
 }
 
 func GetTotalDistance() int {
 	return totalDistance
+}
+
+func GetStops() int {
+	return stop
 }
 
 func ToRoutes(routes []maps.Route) []Route {

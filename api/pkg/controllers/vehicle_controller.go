@@ -83,7 +83,7 @@ func (v *VehicleController) CreateVehicle() (*models.Vehicle, error) {
 }
 
 func (v *VehicleController) GetVehicleById() (*models.Vehicle, error) {
-	id, err := helper.GetQueryID(v.Request)
+	id, err := helper.GetID(v.Request)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +91,7 @@ func (v *VehicleController) GetVehicleById() (*models.Vehicle, error) {
 }
 
 func (v *VehicleController) GetUserVehicle() (*models.User, error) {
-	userId, err := helper.GetQueryID(v.Request)
+	userId, err := helper.GetID(v.Request)
 
 	userVehicle, err := v.IUserVehicleRepository.FindUserVehicle(v.Request.Context(), userId)
 	if err != nil {
@@ -102,7 +102,7 @@ func (v *VehicleController) GetUserVehicle() (*models.User, error) {
 }
 
 func (v *VehicleController) GetAllVehiclesForUser() ([]*models.Vehicle, error) {
-	userId, err := helper.GetQueryID(v.Request)
+	userId, err := helper.GetID(v.Request)
 	if err != nil {
 		return nil, err
 	}
@@ -122,7 +122,7 @@ func (v *VehicleController) GetVehicleWithUserId() ([]*models.Vehicle, error) {
 }
 
 func (v *VehicleController) UpdateVehicle() (*models.Vehicle, error) {
-	id, err := helper.GetQueryID(v.Request)
+	id, err := helper.GetID(v.Request)
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +159,7 @@ func (v *VehicleController) UpdateVehicle() (*models.Vehicle, error) {
 }
 
 func (v *VehicleController) DeleteVehicle() error {
-	id, err := helper.GetQueryID(v.Request)
+	id, err := helper.GetID(v.Request)
 	if err != nil {
 		return err
 	}

@@ -69,7 +69,7 @@ func (uc *UserController) CreateIn() (*models.User, error) {
 }
 
 func (uc *UserController) GetUserById() (*models.User, error) {
-	id, err := helper.GetQueryID(uc.Request)
+	id, err := helper.GetID(uc.Request)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (uc *UserController) GetUserById() (*models.User, error) {
 }
 
 func (uc *UserController) DeleteUser() error {
-	id, err := helper.GetQueryID(uc.Request)
+	id, err := helper.GetID(uc.Request)
 	if err != nil {
 		return err
 	}

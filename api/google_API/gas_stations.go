@@ -8,8 +8,8 @@ import (
 	"net/http"
 )
 
-func GasStations(latitude float32, longitude float32, radius int) (GasStationsObject, error) {
-	url := fmt.Sprintf("%s, %f, %s, %f, %s, %d, %s, %s, %s", "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=",
+func GasStations(latitude float64, longitude float64, radius int) (GasStationsObject, error) {
+	url := fmt.Sprintf("%s%f%s%f%s%d%s%s%s", "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=",
 		latitude, ",%20", longitude, "&radius=", radius, "&type=gas_station&", "key=", config.Config.MapsKey)
 
 	resp, err := http.Get(url)
@@ -25,6 +25,13 @@ func GasStations(latitude float32, longitude float32, radius int) (GasStationsOb
 	mapResponse := GasStationsObject{}
 
 	err = json.Unmarshal(body, &mapResponse)
+	for _, i := range mapResponse.Results {
+		fmt.Println(i.BusinessStatus)
+		fmt.Println(i.Name)
+		fmt.Println(i.Geometry.Location)
+		fmt.Println(i.OpeningHours.OpenNow)
+		fmt.Println(i.Vicinity)
+	}
 
 	return mapResponse, nil
 }

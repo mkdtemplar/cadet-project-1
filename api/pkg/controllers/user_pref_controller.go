@@ -64,7 +64,7 @@ func (upc *UserPrefController) CreateUserPref() (*models.UserPreferences, error)
 }
 
 func (upc *UserPrefController) GetUserPrefById() (*models.UserPreferences, error) {
-	id, err := helper.GetQueryID(upc.Request)
+	id, err := helper.GetID(upc.Request)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func (upc *UserPrefController) GetUserPrefById() (*models.UserPreferences, error
 }
 
 func (upc *UserPrefController) UpdateUserPref() (*models.UserPreferences, error) {
-	id, err := helper.GetQueryID(upc.Request)
+	id, err := helper.GetID(upc.Request)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +109,7 @@ func (upc *UserPrefController) UpdateUserPref() (*models.UserPreferences, error)
 }
 
 func (upc *UserPrefController) DeleteUserPreferences() error {
-	id, err := helper.GetQueryID(upc.Request)
+	id, err := helper.GetID(upc.Request)
 	if err != nil {
 		return err
 	}

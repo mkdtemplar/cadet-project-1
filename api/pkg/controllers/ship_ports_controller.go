@@ -47,7 +47,7 @@ func (sp *ShipController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (sp *ShipController) GetUserPrefPortsName() (*models.UserPreferences, error) {
-	id, err := helper.GetQueryID(sp.Request)
+	id, err := helper.GetID(sp.Request)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (sp *ShipController) GetUserPrefPortsName() (*models.UserPreferences, error
 }
 
 func (sp *ShipController) GetUserPortsName() (*models.User, error) {
-	id, err := helper.GetQueryID(sp.Request)
+	id, err := helper.GetID(sp.Request)
 	if err != nil {
 		return nil, err
 	}
