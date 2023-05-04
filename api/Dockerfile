@@ -1,5 +1,5 @@
 # Start from golang base image
-FROM golang:1.19-alpine
+FROM golang:latest
 
 # Add Maintainer info
 LABEL maintainer="ShipsRoutes application"

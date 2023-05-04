@@ -8,3 +8,6 @@
 /example-response/
 /response.json
 /api/queryes_filter_and_set_unlocks_1.txt
+/api/pkg/repository/tests/pkg/config/app.env
+.DS_Store
+/api/pkg/controllers/pkg/config/app.env

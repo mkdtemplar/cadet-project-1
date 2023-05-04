@@ -1,42 +1,41 @@
 package controllers
 
 import (
-	"cadet-project/pkg/interfaces"
 	"cadet-project/pkg/repository"
 )
 
-func (c *Controller) UserRepoConstructor() interfaces.IUserRepository {
-	return repository.NewUserRepo(c.DB)
-}
-
-func (c *Controller) UserPrefRepoConstructor() interfaces.IUserPreferencesRepository {
-	return repository.NewUserPrefRepo(c.DB)
-}
-
-func (c *Controller) ShipPortsRepoConstructor() interfaces.IShipPortsRepository {
-	return repository.NewShipPortsRepo(c.DB)
-}
-
-func (c *Controller) LoginController() *Controller {
-	userRepo := c.UserRepoConstructor()
-	shipPortsRepo := c.ShipPortsRepoConstructor()
+func (l *LoginController) LoginController() *LoginController {
+	userRepo := repository.NewUserRepo()
+	shipPortsRepo := repository.NewShipPortsRepo()
 	return NewLoginController(userRepo, shipPortsRepo)
 }
 
-func (c *Controller) UserController() *Controller {
-	userRepo := c.UserRepoConstructor()
+func (uc *UserController) UserController() *UserController {
+	userRepo := repository.NewUserRepo()
 
 	return NewUserController(userRepo)
 }
 
-func (c *Controller) UserPrefController() *Controller {
-	userPrefRepo := c.UserPrefRepoConstructor()
+func (upc *UserPrefController) UserPrefController() *UserPrefController {
+	userPrefRepo := repository.NewUserPrefRepo()
 	return NewUserPrefController(userPrefRepo)
 }
 
-func (c *Controller) ShipPortsController() *Controller {
-	userRepo := c.UserRepoConstructor()
-	shipPortsRepo := c.ShipPortsRepoConstructor()
-	userPrefRepo := c.UserPrefRepoConstructor()
+func (sp *ShipController) ShipPortsController() *ShipController {
+	userRepo := repository.NewUserRepo()
+	shipPortsRepo := repository.NewShipPortsRepo()
+	userPrefRepo := repository.NewUserPrefRepo()
 	return NewShipPortsController(userRepo, userPrefRepo, shipPortsRepo)
+}
+
+func (v *VehicleController) VehicleController() *VehicleController {
+	vehicleRepo := repository.NewVehicleRepo()
+
+	return NewVehicleController(vehicleRepo)
+}
+
+func (r *RouteController) RouteController() *RouteController {
+	vehicleRepo := repository.NewVehicleRepo()
+	shipPortsRepo := repository.NewShipPortsRepo()
+	return NewRouteController(vehicleRepo, shipPortsRepo)
 }

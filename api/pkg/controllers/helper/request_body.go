@@ -41,7 +41,19 @@ func ParseUserPrefRequestBody(r *http.Request) (*models.UserPreferences, error) 
 	return userPref, nil
 }
 
-func GetQueryID(r *http.Request) (uuid.UUID, error) {
+func ParseVehicleRequestBody(r *http.Request) (*models.Vehicle, error) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	vehicle := &models.Vehicle{}
+	err = json.Unmarshal(body, &vehicle)
+
+	return vehicle, nil
+}
+
+func GetID(r *http.Request) (uuid.UUID, error) {
 	queryString := r.URL.Query().Get("id")
 	paramsID, err := uuid.Parse(queryString)
 	if err != nil {
@@ -49,13 +61,13 @@ func GetQueryID(r *http.Request) (uuid.UUID, error) {
 	}
 	return paramsID, nil
 }
-func GetQueryStart(r *http.Request) string {
+func GetStartLocation(r *http.Request) string {
 	queryString := r.URL.Query().Get("start")
 	queryString = cases.Title(language.Und).String(queryString)
 	return queryString
 }
 
-func GetQueryEnd(r *http.Request) string {
+func GetEndLocation(r *http.Request) string {
 	queryString := r.URL.Query().Get("end")
 	queryString = cases.Title(language.Und).String(queryString)
 	return queryString

@@ -11,14 +11,23 @@ CREATE TABLE IF NOT EXISTS public.user_preferences
     user_id      uuid CONSTRAINT fk_users_user_pref REFERENCES public.users on DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS public.vehicles
+(
+    id      uuid not null primary key,
+    name    varchar(100),
+    model   varchar(100),
+    mileage double precision,
+    user_id uuid CONSTRAINT fk_users_user_vehicle REFERENCES public.users on DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS public.ship_ports
 (
     _key      varchar(6),
     name      text,
     city      text,
     country   text,
-    latitude  double precision,
     longitude double precision,
+    latitude  double precision,
     province  varchar(40),
     timezone  varchar(40),
     unlocks_0 varchar(6),

@@ -22,14 +22,14 @@ func ValidateToken(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 	sessionToken := cookie.Value
-	userSession, exists := models.Sessions[sessionToken]
+	userSession, exists := models.GetSession()[sessionToken]
 	if !exists {
 		responses.ERROR(w, http.StatusBadRequest, errors.New("token not present in session"))
 		return errors.New("invalid token")
 	}
 
 	if userSession.IsExpired() {
-		delete(models.Sessions, sessionToken)
+		delete(models.GetSession(), sessionToken)
 		responses.ERROR(w, http.StatusUnauthorized, errors.New("unauthorized"))
 		return errors.New("unauthorized")
 	}

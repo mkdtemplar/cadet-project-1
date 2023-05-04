@@ -8,11 +8,10 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
-func NewShipPortsRepo(db *gorm.DB) interfaces.IShipPortsRepository {
-	return &PG{DB: db}
+func NewShipPortsRepo() interfaces.IShipPortsRepository {
+	return &PG{DB: GetDb()}
 }
 
 func (u *PG) FindUserPrefPorts(ctx context.Context, in *models.UserPreferences) (*models.UserPreferences, error) {
@@ -74,5 +73,24 @@ func (u *PG) GetCityByName(ctx context.Context, name string) (string, error) {
 	}
 
 	return portName.Name, nil
+}
 
+func (u *PG) GetCityLatitude(ctx context.Context, name string) (float32, error) {
+	portName := models.ShipPorts{}
+
+	if err := u.DB.WithContext(ctx).Model(&models.ShipPorts{}).Where("name = ?", name).Find(&portName).Error; err != nil || portName.Latitude == 0 {
+		return 0, errors.New("latitude not exists in database")
+	}
+
+	return portName.Latitude, nil
+}
+
+func (u *PG) GetCityLongitude(ctx context.Context, name string) (float32, error) {
+	portName := models.ShipPorts{}
+
+	if err := u.DB.WithContext(ctx).Model(&models.ShipPorts{}).Where("name = ?", name).Find(&portName).Error; err != nil || portName.Longitude == 0 {
+		return 0, errors.New("longitude not exists in database")
+	}
+
+	return portName.Longitude, nil
 }

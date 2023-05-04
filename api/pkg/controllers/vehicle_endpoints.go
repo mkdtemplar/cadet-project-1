@@ -1,15 +1,14 @@
 package controllers
 
-import "C"
 import (
 	"cadet-project/pkg/responses"
 	"fmt"
 	"net/http"
 )
 
-func (upc *UserPrefController) ServeUserPrefEndPoints(w http.ResponseWriter, r *http.Request) {
-	upc.Writer = w
-	upc.Request = r
+func (v *VehicleController) ServeVehicleEndPoints(w http.ResponseWriter, r *http.Request) {
+	v.Writer = w
+	v.Request = r
 
 	var val interface{}
 	var err error
@@ -23,16 +22,16 @@ func (upc *UserPrefController) ServeUserPrefEndPoints(w http.ResponseWriter, r *
 
 	switch {
 	case r.Method == http.MethodPost:
-		val, err = upc.CreateUserPref()
+		val, err = v.CreateVehicle()
 		return
 	case r.Method == http.MethodGet:
-		val, err = upc.GetUserPrefById()
+		val, err = v.GetVehicleById()
 		return
 	case r.Method == http.MethodPatch:
-		val, err = upc.UpdateUserPref()
+		val, err = v.UpdateVehicle()
 		return
 	case r.Method == http.MethodDelete:
-		err = upc.DeleteUserPreferences()
+		err = v.DeleteVehicle()
 		return
 	default:
 		err = fmt.Errorf("not found")
