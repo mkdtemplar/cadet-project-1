@@ -10,7 +10,7 @@ import (
 
 var totalDistance int
 
-var stop = -1
+var stop = 0
 
 func (rq *Request) FindRoute(request Request, mileage float64) ([]maps.Route, error) {
 	config.InitConfig("pkg/config")
