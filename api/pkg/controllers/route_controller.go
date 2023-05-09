@@ -5,12 +5,11 @@ import (
 	"cadet-project/pkg/config"
 	"cadet-project/pkg/controllers/helper"
 	"cadet-project/pkg/interfaces"
-	"cadet-project/pkg/models"
 	"cadet-project/pkg/responses"
+	"cadet-project/pkg/utils"
 	"errors"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"googlemaps.github.io/maps"
 )
@@ -30,23 +29,25 @@ func (r *RouteController) ServeHTTP(w http.ResponseWriter, rq *http.Request) {
 
 	var err error
 	var val interface{}
+	var val1 any
 
 	defer func() {
 		if err != nil {
 			responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		} else {
 			responses.JSON(w, http.StatusOK, val)
+			responses.JSON(w, http.StatusOK, val1)
 		}
 	}()
 
 	switch currentPath {
 	case config.Config.PortName:
-		val, err = r.GetDirections()
+		val, val1, err = r.GetDirections()
 		return
 	}
 }
 
-func (r *RouteController) GetDirections() ([]maps.Route, error) {
+func (r *RouteController) GetDirections() ([]maps.Route, []google_API.GasStationsObject, error) {
 	start := helper.GetStartLocation(r.Request)
 	end := helper.GetEndLocation(r.Request)
 	var err error
@@ -54,48 +55,25 @@ func (r *RouteController) GetDirections() ([]maps.Route, error) {
 
 	clientRequest.Origin, err = r.IShipPortsRepository.GetCityByName(r.Request.Context(), start)
 
-	origin := checkCity(clientRequest.Origin, start)
+	origin := utils.CheckCity(clientRequest.Origin, start)
 	if origin == false {
-		return nil, errors.New("point of origin do not exist in database")
+		return nil, nil, errors.New("point of origin do not exist in database")
 	}
 
 	clientRequest.Destination, err = r.IShipPortsRepository.GetCityByName(r.Request.Context(), end)
-	destination := checkCity(clientRequest.Destination, end)
+	destination := utils.CheckCity(clientRequest.Destination, end)
 	if destination == false {
-		return nil, errors.New("destination do not exist in database")
+		return nil, nil, errors.New("destination do not exist in database")
 	}
 
 	client := google_API.NewClientRequest(clientRequest.Origin, clientRequest.Destination)
 	vehicles, err := r.IUserVehicleRepository.FindVehiclesForUser(r.Request.Context(), UserID)
-	mileage := maxMileage(vehicles)
-	route, err := client.FindRoute(clientRequest, float64(mileage))
+	mileage := utils.MaxMileage(vehicles)
+	route, gasStations, err := client.FindRoute(clientRequest, float64(mileage))
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	responses.JSON(r.Writer, 200, fmt.Sprintf("%s%d", "Total stops: ", google_API.GetStops()))
-	return route, nil
-}
-
-func maxMileage(vehicles []*models.Vehicle) float32 {
-	max := vehicles[0].Mileage
-
-	for _, m := range vehicles {
-		if max < m.Mileage {
-			max = m.Mileage
-		}
-	}
-
-	return max
-}
-
-func checkCity(clientRequest string, start string) bool {
-	var err error
-
-	start = strings.Title(strings.ToLower(start))
-	if err != nil || clientRequest == "" || clientRequest != start {
-		return false
-	}
-
-	return true
+	return route, gasStations, nil
 }

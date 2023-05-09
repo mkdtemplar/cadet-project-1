@@ -12,11 +12,12 @@ var totalDistance int
 
 var stop = 0
 
-func (rq *Request) FindRoute(request Request, mileage float64) ([]maps.Route, error) {
+func (rq *Request) FindRoute(request Request, mileage float64) ([]maps.Route, []GasStationsObject, error) {
+	var gasStations []GasStationsObject
 	config.InitConfig("pkg/config")
 	c, err := maps.NewClient(maps.WithAPIKey(config.Config.MapsKey))
 	if err != nil {
-		return nil, err
+		return nil, []GasStationsObject{}, err
 	}
 
 	r := &maps.DirectionsRequest{
@@ -26,36 +27,34 @@ func (rq *Request) FindRoute(request Request, mileage float64) ([]maps.Route, er
 
 	routes, _, err := c.Directions(context.Background(), r)
 	if err != nil {
-		return nil, err
+		return nil, []GasStationsObject{}, err
 	}
 
-	var decode []maps.LatLng
-	for _, route := range routes {
-		decode, err = route.OverviewPolyline.Decode()
-		if err != nil {
-			return nil, err
-		}
+	polyline, err := decodePolyline(routes)
+	if err != nil {
+		return nil, []GasStationsObject{}, err
 	}
 
 	var sum = 0
 
-	for i := 0; i < len(decode)-1; i++ {
-		distance, err := DistanceMatrix(decode[i].Lat, decode[i].Lng, decode[i+1].Lat, decode[i+1].Lng)
+	for i := 0; i < len(polyline)-1; i++ {
+		distance, err := DistanceMatrix(polyline[i].Lat, polyline[i].Lng, polyline[i+1].Lat, polyline[i+1].Lng)
 		if err != nil {
-			return nil, err
+			return nil, []GasStationsObject{}, err
 		}
 		for _, row := range distance.Rows {
 			for _, element := range row.Elements {
 				sum += element.Distance.Value
 				if sum/1000 >= (int(mileage) - (element.Distance.Value / 1000)) {
-					lat := decode[i].Lat
-					lng := decode[i].Lng
-					gasStations, err := GasStations(lat, lng, element.Distance.Value)
-					if gasStations.Results == nil || err != nil {
-						return nil, errors.New("route not possible no gas stations available")
+					lat := polyline[i].Lat
+					lng := polyline[i].Lng
+					gasStation, err := GasStations(lat, lng, element.Distance.Value)
+					if gasStation.Results == nil || err != nil {
+						return nil, []GasStationsObject{}, errors.New("route not possible no gas stations available")
 					}
 					stop++
 					sum = 0
+					gasStations = append(gasStations, gasStation)
 				}
 			}
 		}
@@ -66,11 +65,18 @@ func (rq *Request) FindRoute(request Request, mileage float64) ([]maps.Route, er
 
 	totalDistance = ToRoutes(routes)[0].Legs[0].Distance.Value
 
-	return routes, nil
+	return routes, gasStations, nil
 }
-
-func GetTotalDistance() int {
-	return totalDistance
+func decodePolyline(r []maps.Route) ([]maps.LatLng, error) {
+	var decode []maps.LatLng
+	var err error
+	for _, route := range r {
+		decode, err = route.OverviewPolyline.Decode()
+		if err != nil {
+			return nil, err
+		}
+	}
+	return decode, nil
 }
 
 func GetStops() int {
