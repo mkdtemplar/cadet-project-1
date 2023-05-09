@@ -54,11 +54,7 @@ func (rq *Request) FindRoute(request Request, mileage float64) ([]maps.Route, []
 					}
 					stop++
 					sum = 0
-					for _, station := range gasStation.Results {
-						if station.BusinessStatus == "OPERATIONAL" && station.OpeningHours.OpenNow == true {
-							gasStations = append(gasStations, gasStation)
-						}
-					}
+					gasStations = append(gasStations, gasStation)
 				}
 			}
 		}
