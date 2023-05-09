@@ -35,7 +35,7 @@ func (rq *Request) FindRoute(request Request, mileage float64) ([]maps.Route, []
 		return nil, []GasStationsObject{}, err
 	}
 
-	var sum = 0
+	var sum = -1
 
 	for i := 0; i < len(polyline)-1; i++ {
 		distance, err := DistanceMatrix(polyline[i].Lat, polyline[i].Lng, polyline[i+1].Lat, polyline[i+1].Lng)
@@ -54,14 +54,11 @@ func (rq *Request) FindRoute(request Request, mileage float64) ([]maps.Route, []
 					}
 					stop++
 					sum = 0
-					for _, station := range gasStations {
-						for _, result := range station.Results {
-							if station.Status == "OPERATIONAL" && result.OpeningHours.OpenNow == true {
-								gasStations = append(gasStations, gasStation)
-							}
+					for _, station := range gasStation.Results {
+						if station.BusinessStatus == "OPERATIONAL" && station.OpeningHours.OpenNow == true {
+							gasStations = append(gasStations, gasStation)
 						}
 					}
-
 				}
 			}
 		}
