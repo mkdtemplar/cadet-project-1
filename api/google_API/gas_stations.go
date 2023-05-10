@@ -25,6 +25,9 @@ func GasStations(latitude float64, longitude float64, radius int) (GasStationsOb
 	mapResponse := GasStationsObject{}
 
 	err = json.Unmarshal(body, &mapResponse)
+	if err!= nil {
+        return GasStationsObject{}, err
+    }
 
 	return mapResponse, nil
 }
