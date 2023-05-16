@@ -25,13 +25,9 @@ func GasStations(latitude float64, longitude float64, radius int) (GasStationsOb
 	mapResponse := GasStationsObject{}
 
 	err = json.Unmarshal(body, &mapResponse)
-	for _, i := range mapResponse.Results {
-		fmt.Println(i.BusinessStatus)
-		fmt.Println(i.Name)
-		fmt.Println(i.Geometry.Location)
-		fmt.Println(i.OpeningHours.OpenNow)
-		fmt.Println(i.Vicinity)
-	}
+	if err!= nil {
+        return GasStationsObject{}, err
+    }
 
 	return mapResponse, nil
 }
