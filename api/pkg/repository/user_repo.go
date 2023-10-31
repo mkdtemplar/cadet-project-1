@@ -51,7 +51,7 @@ func (u *PG) Delete(ctx context.Context, uid uuid.UUID) (int64, error) {
 func (u *PG) GetUserEmail(ctx context.Context, email string) (*models.User, error) {
 	user := &models.User{}
 
-	err := u.DB.WithContext(ctx).Model(&models.User{}).Where("email= ?", email).Find(&user).Error
+	err := u.DB.WithContext(ctx).Model(&models.User{}).Where("email= ?", email).Take(&user).Error
 
 	userFind := &models.User{
 		ID:    user.ID,

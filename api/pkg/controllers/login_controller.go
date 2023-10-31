@@ -58,27 +58,21 @@ func (l *LoginController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &models.Cookie)
 	var checkUser *models.User
 	checkUser, err = l.IUserRepository.GetUserEmail(r.Context(), userEmail)
-	if err == nil && checkUser != nil {
+	if checkUser != nil && err == nil {
 		UserID = checkUser.ID
-		var userPorts *models.User
-		userPorts, err = l.IShipPortsRepository.FindUserPorts(r.Context(), checkUser.ID)
-		if err != nil {
-			return
-		}
-		responses.JSON(w, http.StatusOK, userPorts)
+		responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %s  with E-mail: %s is authorized and present in database", checkUser.Email, checkUser.Name))
 		return
 	}
 
-	var userNew *models.User
 	if errors.Is(err, gorm.ErrRecordNotFound) {
+		var userNew *models.User
 		userNew, err = l.IUserRepository.Create(r.Context(), user)
 		UserID = userNew.ID
-		if err != nil {
-			return
-		}
+		responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %s  with E-mail: %s is authorized and created in database", userNew.Email, userNew.Name))
+		return
+
 	} else {
 		responses.ERROR(w, http.StatusInternalServerError, errors.New("problem with database or http server"))
+		return
 	}
-
-	responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %s  with E-mail: %s is authorized and created in database", userNew.Email, userNew.Name))
 }
