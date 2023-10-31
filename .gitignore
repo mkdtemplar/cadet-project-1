@@ -11,3 +11,5 @@
 /api/pkg/repository/tests/pkg/config/app.env
 .DS_Store
 /api/pkg/controllers/pkg/config/app.env
+/api/pkg/interfaces/._.DS_Store
+/api/pkg/server/._.DS_Store
