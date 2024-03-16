@@ -1,6 +1,5 @@
 package controllers
 
-import "C"
 import (
 	"cadet-project/pkg/responses"
 	"fmt"

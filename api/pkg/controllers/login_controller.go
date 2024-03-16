@@ -68,7 +68,7 @@ func (l *LoginController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		var userNew *models.User
 		userNew, err = l.IUserRepository.Create(r.Context(), user)
 		UserID = userNew.ID
-		responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %s  with E-mail: %s is authorized and created in database", userNew.Email, userNew.Name))
+		responses.JSON(w, http.StatusCreated, fmt.Sprintf("User : %s  with E-mail: %s is authorized and created in database", userNew.Name, userNew.Email))
 		return
 
 	} else {
